@@ -103,3 +103,28 @@ templates/*/.env.local
 templates/*/.env.*.local
 test-reports/
 *.tsbuildinfo
+
+# Node native addon build artifacts
+node_headers/
+*.tar.gz
+*.zip
+
+# Canvas native build artifacts
+canvas-prebuilt/
+canvas-win32/
+canvaspb/
+
+# Local install scripts
+install_native*.bat
+extract_canvas.bat
+
+# Codebase memory index
+.codebase-memory/
+
+# Arts IDE settings
+.arts/
+
+# Temp files
+temp/
+pnpm_install_fix_summary.md
+translate-status.js
