@@ -49,6 +49,7 @@ import {
   type TiptapComposerHandle,
 } from "@agent-native/core/client";
 import { toast } from "sonner";
+import { useI18n } from "@agent-native/i18n";
 import {
   CODE_AGENT_GOALS,
   DEFAULT_CODE_AGENT_PERMISSION_MODE,
@@ -287,6 +288,7 @@ export default function CodeAgentsApp({
   onOpenSettings,
   renderAppSurface,
 }: CodeAgentsAppProps) {
+  const { t } = useI18n();
   const [selectedGoalId, setSelectedGoalId] = useState<CodeAgentGoalId>("task");
   const selectedGoal =
     getCodeAgentGoal(selectedGoalId) ?? getDefaultCodeAgentGoal();
@@ -562,11 +564,11 @@ export default function CodeAgentsApp({
       const message = result.error ?? result.message;
       setBuilderConnectMessage(result.ok ? null : message);
       if (result.ok) {
-        toast("Builder.io connected", {
-          description: "Code can now use Builder credits.",
+        toast(t('codeAgents.toast.builderConnected'), {
+          description: t('codeAgents.toast.builderConnectedDesc'),
         });
       } else {
-        toast("Builder.io connect did not finish", {
+        toast(t('codeAgents.toast.builderConnectFail'), {
           description: message,
         });
       }
@@ -582,7 +584,7 @@ export default function CodeAgentsApp({
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setBuilderConnectMessage(message);
-      toast("Builder.io connect did not finish", { description: message });
+      toast(t('codeAgents.toast.builderConnectFail'), { description: message });
     } finally {
       setBuilderConnecting(false);
     }
@@ -627,8 +629,8 @@ export default function CodeAgentsApp({
   const canOpenTerminal = Boolean(host.openTerminal);
   const canChooseProjectFolder = Boolean(host.chooseProject);
   const providerGate = useMemo(
-    () => getProviderGate(hostMetadata),
-    [hostMetadata],
+    () => getProviderGate(hostMetadata, t),
+    [hostMetadata, t],
   );
   const normalizedSearchQuery = searchQuery.trim();
   const searchResults = useMemo(
@@ -831,9 +833,8 @@ export default function CodeAgentsApp({
 
   async function chooseProjectFolder() {
     if (!host.chooseProject) {
-      toast("Folder picker is not available here", {
-        description:
-          "Open Agent-Native Desktop to choose folders from the native picker.",
+      toast(t('codeAgents.toast.folderPickerUnavailable'), {
+        description: t('codeAgents.toast.openDesktopForFolder'),
         duration: 3200,
       });
       return;
@@ -842,7 +843,7 @@ export default function CodeAgentsApp({
       const result = await host.chooseProject();
       if (!result.ok || !result.selectedPath) {
         if (result.error && result.error !== "No folder selected.") {
-          toast("Could not choose folder", {
+          toast(t('codeAgents.toast.couldNotChooseFolder'), {
             description: result.error,
             duration: 3200,
           });
@@ -852,7 +853,7 @@ export default function CodeAgentsApp({
       setProjects(result.projects);
       setSelectedProjectPath(result.selectedPath);
     } catch (err) {
-      toast("Could not choose folder", {
+      toast(t('codeAgents.toast.couldNotChooseFolder'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3200,
       });
@@ -892,8 +893,8 @@ export default function CodeAgentsApp({
 
   async function openTerminal() {
     if (!host.openTerminal) {
-      toast("Terminal is not available here", {
-        description: "Open Agent-Native Desktop to launch a native terminal.",
+      toast(t('codeAgents.toast.terminalUnavailable'), {
+        description: t('codeAgents.toast.openDesktopForTerminal'),
         duration: 3200,
       });
       return;
@@ -907,17 +908,17 @@ export default function CodeAgentsApp({
     try {
       result = await host.openTerminal?.(terminalRequest);
     } catch (err) {
-      toast("Terminal was not opened", {
+      toast(t('codeAgents.toast.terminalNotOpened'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3200,
       });
       return;
     }
     if (result?.ok) {
-      toast("Terminal opened", { duration: 1600 });
+      toast(t('codeAgents.toast.terminalOpened'), { duration: 1600 });
       return;
     }
-    toast("Terminal was not opened", {
+    toast(t('codeAgents.toast.terminalNotOpened'), {
       description: result?.error ?? "This platform has no terminal launcher.",
       duration: 3200,
     });
@@ -949,16 +950,16 @@ export default function CodeAgentsApp({
 
   async function pairRemoteConnector(relayUrl: string) {
     if (!host.pairRemoteConnector) {
-      toast("Mobile pairing is not available here", {
-        description: "Open Agent-Native Desktop to pair this Mac.",
+      toast(t('codeAgents.toast.mobilePairingUnavailable'), {
+        description: t('codeAgents.toast.openDesktopForMobile'),
         duration: 3200,
       });
       return;
     }
     const trimmedRelayUrl = relayUrl.trim();
     if (!trimmedRelayUrl) {
-      toast("Choose a relay first", {
-        description: "A Dispatch relay URL is needed before pairing.",
+      toast(t('codeAgents.toast.chooseRelayFirst'), {
+        description: t('codeAgents.toast.relayNeeded'),
         duration: 3200,
       });
       return;
@@ -972,7 +973,7 @@ export default function CodeAgentsApp({
       });
       setRemoteConnectorStatus(result.status);
       setRemoteConnectorMessage(result.error ?? result.message ?? null);
-      toast(result.ok ? "Mobile pairing ready" : "Mobile pairing failed", {
+      toast(result.ok ? t('codeAgents.toast.mobilePairingReady') : t('codeAgents.toast.mobilePairingFailed'), {
         description: result.error ?? result.message,
         duration: result.ok ? 2200 : 3600,
       });
@@ -980,7 +981,7 @@ export default function CodeAgentsApp({
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setRemoteConnectorMessage(message);
-      toast("Mobile pairing failed", {
+      toast(t('codeAgents.toast.mobilePairingFailed'), {
         description: message,
         duration: 3600,
       });
@@ -991,8 +992,8 @@ export default function CodeAgentsApp({
 
   async function setRemoteConnectorEnabled(enabled: boolean) {
     if (!host.setRemoteConnectorEnabled) {
-      toast("Mobile pairing controls are not available here", {
-        description: "Open Agent-Native Desktop to manage mobile pairing.",
+      toast(t('codeAgents.toast.mobileControlsUnavailable'), {
+        description: t('codeAgents.toast.openDesktopForMobileControl'),
         duration: 3200,
       });
       return;
@@ -1003,14 +1004,14 @@ export default function CodeAgentsApp({
       const result = await host.setRemoteConnectorEnabled(enabled);
       setRemoteConnectorStatus(result.status);
       setRemoteConnectorMessage(result.error ?? null);
-      toast(enabled ? "Mobile pairing resumed" : "Mobile pairing paused", {
+      toast(enabled ? t('codeAgents.toast.mobileResumed') : t('codeAgents.toast.mobilePaused'), {
         description: result.error,
         duration: result.ok ? 1800 : 3600,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setRemoteConnectorMessage(message);
-      toast("Could not update mobile pairing", {
+      toast(t('codeAgents.toast.couldNotUpdateMobile'), {
         description: message,
         duration: 3600,
       });
@@ -1022,9 +1023,9 @@ export default function CodeAgentsApp({
   async function copyMobileLink(link: string) {
     try {
       await navigator.clipboard.writeText(link);
-      toast("Mobile link copied", { duration: 1600 });
+      toast(t('codeAgents.toast.mobileLinkCopied'), { duration: 1600 });
     } catch (err) {
-      toast("Could not copy mobile link", {
+      toast(t('codeAgents.toast.couldNotCopyMobileLink'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3200,
       });
@@ -1044,7 +1045,7 @@ export default function CodeAgentsApp({
 
   async function controlRun(command: CodeAgentControlCommand) {
     if (!selectedRunId) {
-      toast("Select a session first", { duration: 1800 });
+      toast(t('codeAgents.toast.selectSessionFirst'), { duration: 1800 });
       return;
     }
     if (command === "resume" && selectedRunUsesAppSurface) {
@@ -1060,7 +1061,7 @@ export default function CodeAgentsApp({
         selectedPermissionMode,
       );
     } catch (err) {
-      toast("Could not control the session", {
+      toast(t('codeAgents.toast.couldNotControlSession'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3600,
       });
@@ -1076,7 +1077,7 @@ export default function CodeAgentsApp({
 
   async function retrySelectedRun() {
     if (!selectedRunId || !host.retryRun) {
-      toast("Retry is not available here", { duration: 2200 });
+      toast(t('codeAgents.toast.retryUnavailable'), { duration: 2200 });
       return;
     }
     try {
@@ -1100,7 +1101,7 @@ export default function CodeAgentsApp({
         description: result.error,
       });
     } catch (err) {
-      toast("Could not retry the session", {
+      toast(t('codeAgents.toast.couldNotRetry'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3600,
       });
@@ -1109,7 +1110,7 @@ export default function CodeAgentsApp({
 
   async function rerunSelectedRun() {
     if (!selectedRunId || !host.rerunRun) {
-      toast("Re-run is not available here", { duration: 2200 });
+      toast(t('codeAgents.toast.rerunUnavailable'), { duration: 2200 });
       return;
     }
     try {
@@ -1136,7 +1137,7 @@ export default function CodeAgentsApp({
         description: result.error,
       });
     } catch (err) {
-      toast("Could not re-run the session", {
+      toast(t('codeAgents.toast.couldNotRerun'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3600,
       });
@@ -1148,7 +1149,7 @@ export default function CodeAgentsApp({
     attachments: CodeAgentPromptAttachment[],
   ) {
     if (providerGate.blocked) {
-      toast("Connect a model provider first", {
+      toast(t('codeAgents.toast.connectProviderFirst'), {
         description: providerGate.description,
         duration: 3600,
       });
@@ -1162,7 +1163,7 @@ export default function CodeAgentsApp({
       ) ?? selectedGoal;
     const prompt = normalizePromptForSelectedGoal(typedGoal, preparedPrompt);
     if (!prompt) {
-      toast("Enter a coding task first", { duration: 1800 });
+      toast(t('codeAgents.toast.enterTaskFirst'), { duration: 1800 });
       return;
     }
     setCreatingRun(true);
@@ -1205,7 +1206,7 @@ export default function CodeAgentsApp({
       }
       await loadTranscript(result.run.id, true);
     } catch (err) {
-      toast("Could not start the session", {
+      toast(t('codeAgents.toast.couldNotStart'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3600,
       });
@@ -1260,7 +1261,7 @@ export default function CodeAgentsApp({
           ),
         );
       }
-      toast("Mode updated", { duration: 1600 });
+      toast(t('codeAgents.toast.modeUpdated'), { duration: 1600 });
     } catch (err) {
       setSelectedPermissionMode(previousMode);
       setRuns((current) =>
@@ -1270,7 +1271,7 @@ export default function CodeAgentsApp({
             : run,
         ),
       );
-      toast("Could not update mode", {
+      toast(t('codeAgents.toast.couldNotUpdateMode'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3600,
       });
@@ -1312,14 +1313,14 @@ export default function CodeAgentsApp({
           ),
         );
       }
-      toast(pinned ? "Session unpinned" : "Session pinned", {
+      toast(pinned ? t('codeAgents.toast.sessionUnpinned') : t('codeAgents.toast.sessionPinned'), {
         duration: 1600,
       });
     } catch (err) {
       setRuns((current) =>
         current.map((item) => (item.id === run.id ? run : item)),
       );
-      toast(pinned ? "Could not unpin session" : "Could not pin session", {
+      toast(pinned ? t('codeAgents.toast.couldNotUnpin') : t('codeAgents.toast.couldNotPin'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3200,
       });
@@ -1353,12 +1354,12 @@ export default function CodeAgentsApp({
           ),
         );
       }
-      toast("Session renamed", { duration: 1600 });
+      toast(t('codeAgents.toast.sessionRenamed'), { duration: 1600 });
     } catch (err) {
       setRuns((current) =>
         current.map((item) => (item.id === run.id ? run : item)),
       );
-      toast("Could not rename session", {
+      toast(t('codeAgents.toast.couldNotRename'), {
         description: err instanceof Error ? err.message : String(err),
         duration: 3200,
       });
@@ -1387,7 +1388,7 @@ export default function CodeAgentsApp({
                 className="code-agents-title-icon"
               />
             )}
-            <h1>Code</h1>
+            <h1>{t('codeAgents.code')}</h1>
           </div>
         </div>
 
@@ -1405,7 +1406,7 @@ export default function CodeAgentsApp({
             }
           >
             <IconPlus size={15} strokeWidth={1.8} />
-            <span>New chat</span>
+            <span>{t('codeAgents.newChat')}</span>
           </button>
           <button
             type="button"
@@ -1416,7 +1417,7 @@ export default function CodeAgentsApp({
             aria-pressed={searchPanelOpen}
           >
             <IconSearch size={15} strokeWidth={1.8} />
-            <span>Search</span>
+            <span>{t('codeAgents.search')}</span>
           </button>
           {host.getRemoteConnectorStatus && (
             <MobileRailItem
@@ -1429,13 +1430,13 @@ export default function CodeAgentsApp({
         </div>
 
         <div className="code-agents-run-list">
-          <p className="code-agents-rail-label">Sessions</p>
+          <p className="code-agents-rail-label">{t('codeAgents.sessions')}</p>
           {loading ? (
             <RunListSkeleton />
           ) : runs.length === 0 ? (
             <div className="code-agents-empty-rail">
               <IconClock size={18} strokeWidth={1.7} />
-              <p>No sessions yet.</p>
+              <p>{t('codeAgents.noSessions')}</p>
             </div>
           ) : (
             <GroupedRunList
@@ -1467,11 +1468,11 @@ export default function CodeAgentsApp({
           <div className="code-agents-workbench">
             <div className="code-agents-workbench__toolbar">
               <div>
-                <p className="code-agents-kicker">Session</p>
+                <p className="code-agents-kicker">{t('codeAgents.session')}</p>
                 <h2>
                   {getRunTitle(selectedRun) ??
                     (selectedRunId
-                      ? `Session ${selectedRunId}`
+                      ? `${t('codeAgents.session')} ${selectedRunId}`
                       : selectedGoal.primaryActionLabel)}
                 </h2>
               </div>
@@ -1483,7 +1484,7 @@ export default function CodeAgentsApp({
                     onClick={openTerminal}
                   >
                     <IconTerminal2 size={14} strokeWidth={1.8} />
-                    Open Terminal
+                    {t('codeAgents.terminal')}
                   </button>
                 )}
                 <button
@@ -1491,7 +1492,7 @@ export default function CodeAgentsApp({
                   className="code-agents-button"
                   onClick={() => setWorkbenchOpen(false)}
                 >
-                  Close
+                  {t('general.close')}
                 </button>
               </div>
             </div>
@@ -1595,7 +1596,7 @@ export default function CodeAgentsApp({
                   />
                 ) : (
                   <div className="code-agents-start">
-                    <h2>What should we build?</h2>
+                    <h2>{t('codeAgents.newSession')}</h2>
                     {providerGate.blocked && (
                       <ProviderGateNotice
                         description={providerGate.description}
@@ -1641,7 +1642,7 @@ export default function CodeAgentsApp({
                           seedNewPrompt("Review the current changes");
                         }}
                       >
-                        Review the current changes
+                        {t('codeAgents.reviewCurrentChanges')}
                       </button>
                     </div>
                   </div>
@@ -1681,6 +1682,7 @@ function ProjectFolderPicker({
   onSelect: (path: string) => void;
   onChoose: () => void;
 }) {
+  const { t } = useI18n();
   const active = projects.find((project) => project.path === selectedPath);
 
   return (
@@ -1705,7 +1707,7 @@ function ProjectFolderPicker({
             aria-label="Select coding folder"
           >
             <SelectValue
-              placeholder={loading ? "Loading folders..." : "Choose folder"}
+              placeholder={`${loading ? t('codeAgents.loadingFolders') : t('codeAgents.chooseFolder')}`}
             />
           </SelectTrigger>
           <SelectContent className="code-agents-select-content">
@@ -1722,7 +1724,7 @@ function ProjectFolderPicker({
                 <SelectItem value="__choose__">
                   <span className="code-agents-project-select__item">
                     <IconFolderPlus size={14} strokeWidth={1.8} />
-                    <span>Add folder...</span>
+                    <span>{t('codeAgents.addFolder')}</span>
                   </span>
                 </SelectItem>
               )}
@@ -1734,15 +1736,15 @@ function ProjectFolderPicker({
             type="button"
             className="code-agents-icon-button"
             onClick={onChoose}
-            title="Add folder"
-            aria-label="Add folder"
+            title={t('codeAgents.addFolder')}
+            aria-label={t('codeAgents.addFolder')}
           >
             <IconFolderPlus size={15} strokeWidth={1.8} />
           </button>
         )}
       </div>
       <p className="code-agents-project-path" title={active?.path}>
-        {active?.path ?? "Runs use the selected folder as cwd."}
+        {active?.path ?? t('codeAgents.runsUseFolder')}
       </p>
     </div>
   );
@@ -1784,6 +1786,7 @@ function NewSessionComposer({
   ) => void;
   onConnectProvider?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <CodeAgentComposer
       prompt={prompt}
@@ -1794,7 +1797,7 @@ function NewSessionComposer({
       modelSelection={modelSelection}
       modelOptions={modelOptions}
       slashCommands={slashCommands}
-      placeholder="Describe a task or ask a question"
+      placeholder={t('codeAgents.describeTask')}
       variant="hero"
       disabled={disabled}
       onPromptChange={onPromptChange}
@@ -1852,9 +1855,10 @@ function CodeAgentComposer({
   onStop?: () => void;
   onConnectProvider?: () => void;
 }) {
+  const { t } = useI18n();
   const composerModelGroups = useMemo(
-    () => modelOptionsToComposerGroups(modelOptions),
-    [modelOptions],
+    () => modelOptionsToComposerGroups(modelOptions, t),
+    [modelOptions, t],
   );
   const normalizedModel = normalizeModelSelection(modelSelection, modelOptions);
   const selectedModel = normalizedModel.model ?? "auto";
@@ -1910,8 +1914,8 @@ function CodeAgentComposer({
         type="button"
         onClick={onStop}
         className="code-agents-composer-stop-button"
-        aria-label="Stop session"
-        title="Stop session (Esc)"
+        aria-label={t('codeAgents.stop')}
+        title={t('codeAgents.stop') + " (Esc)"
       >
         <IconPlayerStop size={14} strokeWidth={1.9} />
       </button>
@@ -1964,7 +1968,7 @@ function CodeAgentComposer({
   );
 }
 
-function modelOptionsToComposerGroups(models: CodeAgentModelOption[]): Array<{
+function modelOptionsToComposerGroups(models: CodeAgentModelOption[], t?: (key: string) => string): Array<{
   engine: string;
   label: string;
   models: string[];
@@ -1981,7 +1985,7 @@ function modelOptionsToComposerGroups(models: CodeAgentModelOption[]): Array<{
   >();
 
   for (const option of models) {
-    const label = providerLabelForModel(option);
+    const label = providerLabelForModel(option, t);
     const key = `${option.engine}:${label}`;
     const configured = option.configured !== false;
     const group = groups.get(key) ?? {
@@ -2000,13 +2004,13 @@ function modelOptionsToComposerGroups(models: CodeAgentModelOption[]): Array<{
   return [...groups.values()];
 }
 
-function providerLabelForModel(option: CodeAgentModelOption): string {
+function providerLabelForModel(option: CodeAgentModelOption, t?: (key: string) => string): string {
   const model = option.model.toLowerCase();
   if (option.engine === "auto" || model === "auto") return option.engineLabel;
-  if (model.startsWith("claude-")) return "Anthropic";
-  if (model.startsWith("gpt-") || model.startsWith("o")) return "OpenAI";
-  if (model.startsWith("gemini-")) return "Gemini";
-  return option.engineLabel === "Builder.io" ? "More" : option.engineLabel;
+  if (model.startsWith("claude-")) return t ? t('codeAgents.provider.anthropic') : "Anthropic";
+  if (model.startsWith("gpt-") || model.startsWith("o")) return t ? t('codeAgents.provider.openai') : "OpenAI";
+  if (model.startsWith("gemini-")) return t ? t('codeAgents.provider.gemini') : "Gemini";
+  return option.engineLabel === "Builder.io" ? (t ? t('codeAgents.more') : "More") : option.engineLabel;
 }
 
 function buildCodeAgentSlashCommands(
@@ -2039,15 +2043,14 @@ function buildCodeAgentSlashCommands(
   return commands;
 }
 
-function getProviderGate(metadata: CodeAgentHostMetadata | null): {
+function getProviderGate(metadata: CodeAgentHostMetadata | null, t?: (key: string) => string): {
   blocked: boolean;
   description: string;
 } {
   if (metadata?.llmProvider?.configured === false) {
     return {
       blocked: true,
-      description:
-        "Connect Builder.io, run codex login for Codex CLI, or add your own API key.",
+      description: t ? t('codeAgents.connectProviderDesc') : "Connect Builder.io, run codex login for Codex CLI, or add your own API key.",
     };
   }
   return {
@@ -2069,15 +2072,16 @@ function ProviderGateNotice({
   onConnectBuilder: () => void;
   onOpenSettings?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <CodeProviderNotice
       className="code-agents-provider-gate"
-      title="Connect a provider to chat"
+      title={t('codeAgents.connectProviderTitle')}
       description={message ?? description}
-      primaryActionLabel={connecting ? "Waiting..." : "Connect Builder.io"}
+      primaryActionLabel={connecting ? t('codeAgents.waiting') : t('codeAgents.connectBuilderio')}
       primaryDisabled={connecting}
       onPrimaryAction={onConnectBuilder}
-      secondaryActionLabel="Settings"
+      secondaryActionLabel={t('codeAgents.settings')}
       onOpenSettings={onOpenSettings}
     />
   );
@@ -2232,7 +2236,7 @@ function RunModeSelect({
   value,
   onChange,
   disabled = false,
-  title = "Mode",
+  title: titleProp = "Mode",
   compact = false,
 }: {
   value: CodeAgentPermissionMode;
@@ -2241,6 +2245,8 @@ function RunModeSelect({
   title?: string;
   compact?: boolean;
 }) {
+  const { t } = useI18n();
+  const title = titleProp === "Mode" ? t('codeAgents.mode') : titleProp;
   const selectedMode = runModeFromPermissionMode(value);
   const selected = getRunModeDefinition(selectedMode);
   return (
@@ -2311,6 +2317,7 @@ function NativeGoalSurface({
   goal: CodeAgentGoalDefinition;
   onOpenTerminal?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="code-agents-native-surface">
       <div className="code-agents-detail code-agents-detail--empty">
@@ -2327,7 +2334,7 @@ function NativeGoalSurface({
             onClick={onOpenTerminal}
           >
             <IconTerminal2 size={14} strokeWidth={1.8} />
-            Open Terminal
+            {t('codeAgents.terminal')}
           </button>
         )}
       </div>
@@ -2533,18 +2540,18 @@ function getSearchResultMeta(run: CodeAgentRun): string {
     .join(" · ");
 }
 
-function getRunStatusText(run: CodeAgentRun): string {
-  if (run.status === "completed" || run.phase === "complete") return "Done";
-  if (run.phase === "missing-credentials") return "Needs provider";
-  if (hasPendingApproval(run)) return "Approval needed";
-  if (run.status === "paused" || run.phase === "paused") return "Paused";
-  if (run.phase === "stopped") return "Stopped";
-  if (isRunActive(run)) return "Running";
+function getRunStatusText(run: CodeAgentRun, t?: (key: string) => string): string {
+  if (run.status === "completed" || run.phase === "complete") return t ? t('codeAgents.status.done') : "Done";
+  if (run.phase === "missing-credentials") return t ? t('codeAgents.status.needsProvider') : "Needs provider";
+  if (hasPendingApproval(run)) return t ? t('codeAgents.status.approvalNeeded') : "Approval needed";
+  if (run.status === "paused" || run.phase === "paused") return t ? t('codeAgents.status.paused') : "Paused";
+  if (run.phase === "stopped") return t ? t('codeAgents.status.stopped') : "Stopped";
+  if (isRunActive(run)) return t ? t('codeAgents.status.running') : "Running";
   return run.phase ?? run.status;
 }
 
-function getSessionMeta(run: CodeAgentRun, sourceLabel: string | null): string {
-  return [sourceLabel, getRunStatusText(run), formatRelativeTime(run.updatedAt)]
+function getSessionMeta(run: CodeAgentRun, sourceLabel: string | null, t?: (key: string) => string): string {
+  return [sourceLabel, getRunStatusText(run, t), formatRelativeTime(run.updatedAt)]
     .filter(Boolean)
     .join(" · ");
 }
@@ -2555,12 +2562,14 @@ function runControlButtons({
   onRerun,
   onOpenWorkbench,
   onOpenTerminal,
+  t,
 }: {
   goal: CodeAgentGoalDefinition;
   onRetry?: () => void;
   onRerun?: () => void;
   onOpenWorkbench: () => void;
   onOpenTerminal?: () => void;
+  t?: (key: string) => string;
 }): Array<{
   key: string;
   label: string;
@@ -2572,7 +2581,7 @@ function runControlButtons({
       ? [
           {
             key: "retry",
-            label: "Retry",
+            label: t ? t('codeAgents.retry') : "Retry",
             icon: <IconRefresh size={14} strokeWidth={1.8} />,
             onClick: onRetry,
           },
@@ -2582,7 +2591,7 @@ function runControlButtons({
       ? [
           {
             key: "rerun",
-            label: "Re-run",
+            label: t ? t('codeAgents.rerun') : "Re-run",
             icon: <IconRoute size={14} strokeWidth={1.8} />,
             onClick: onRerun,
           },
@@ -2590,7 +2599,7 @@ function runControlButtons({
       : []),
     {
       key: "workbench",
-      label: `Open ${goal.surfaceLabel}`,
+      label: `${t ? t('codeAgents.openIn') : "Open"} ${goal.surfaceLabel}`,
       icon: <IconExternalLink size={14} strokeWidth={1.8} />,
       onClick: onOpenWorkbench,
     },
@@ -2598,7 +2607,7 @@ function runControlButtons({
       ? [
           {
             key: "terminal",
-            label: "Terminal",
+            label: t ? t('codeAgents.terminal') : "Terminal",
             icon: <IconTerminal2 size={14} strokeWidth={1.8} />,
             onClick: onOpenTerminal,
           },
@@ -2643,6 +2652,7 @@ function RunRailItem({
   onTogglePin: () => void;
   onRename: (newTitle: string) => void;
 }) {
+  const { t } = useI18n();
   const pinned = isRunPinned(run);
   const active = isRunActive(run);
   const [renaming, setRenaming] = useState(false);
@@ -2693,7 +2703,7 @@ function RunRailItem({
             onKeyDown={handleRenameKeyDown}
             onBlur={commitRename}
             autoFocus
-            aria-label="Rename session"
+            aria-label={t('codeAgents.rename')}
           />
         </div>
       ) : (
@@ -2710,14 +2720,14 @@ function RunRailItem({
               {active ? (
                 <span
                   className="code-agents-run-status-spinner"
-                  aria-label="Running"
-                  title="Running"
+                  aria-label={t('codeAgents.status.running')}
+                  title={t('codeAgents.status.running')}
                 />
               ) : unread ? (
                 <span
                   className="code-agents-run-status-dot"
-                  aria-label="Done — unread"
-                  title="Done"
+                  aria-label={t('codeAgents.status.done') + " — unread"}
+                  title={t('codeAgents.status.done')}
                 />
               ) : (
                 formatRelativeTime(run.updatedAt)
@@ -2734,8 +2744,8 @@ function RunRailItem({
               className={`code-agents-run-menu${
                 pinned ? " code-agents-run-menu--pinned" : ""
               }`}
-              aria-label="Session options"
-              title="Session options"
+              aria-label={t('codeAgents.sessions')}
+              title={t('codeAgents.sessions')}
             >
               {pinned ? (
                 <IconPinned size={13} strokeWidth={1.8} />
@@ -2747,7 +2757,7 @@ function RunRailItem({
           <DropdownMenuContent align="end" side="right" sideOffset={8}>
             <DropdownMenuItem onSelect={startRename}>
               <IconPencil size={14} strokeWidth={1.8} />
-              <span>Rename</span>
+              <span>{t('codeAgents.rename')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={onTogglePin}>
               {pinned ? (
@@ -2755,7 +2765,7 @@ function RunRailItem({
               ) : (
                 <IconPinned size={14} strokeWidth={1.8} />
               )}
-              <span>{pinned ? "Unpin from top" : "Pin to top"}</span>
+              <span>{pinned ? t('codeAgents.unpinFromTop') : t('codeAgents.pinToTop')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -2787,21 +2797,22 @@ function SearchChatsPanel({
   onSelectRun: (run: CodeAgentRun) => void;
   onRefresh: () => void;
 }) {
+  const { t } = useI18n();
   const hasQuery = query.trim().length > 0;
   const statusText = loading
-    ? "Loading chats..."
+    ? t('codeAgents.loadingChats')
     : transcriptLoading && hasQuery
-      ? "Searching transcripts..."
+      ? t('codeAgents.searchingTranscripts')
       : hasQuery
-        ? `${results.length} matches`
-        : `${Math.min(results.length, totalRuns)} recent chats`;
+        ? `${results.length} ${t('codeAgents.matches')}`
+        : `${Math.min(results.length, totalRuns)} ${t('codeAgents.recentChats')}`;
 
   return (
     <div className="code-agents-search-panel">
       <div className="code-agents-search-header">
         <div>
-          <p className="code-agents-kicker">Search</p>
-          <h2>Search chats</h2>
+          <p className="code-agents-kicker">{t('codeAgents.search')}</p>
+          <h2>{t('codeAgents.searchChats')}</h2>
         </div>
         <button
           type="button"
@@ -2810,7 +2821,7 @@ function SearchChatsPanel({
           disabled={loading}
         >
           <IconRefresh size={14} strokeWidth={1.8} />
-          Refresh
+          {t('codeAgents.refresh')}
         </button>
       </div>
 
@@ -2820,8 +2831,8 @@ function SearchChatsPanel({
           ref={inputRef}
           value={query}
           onChange={(event) => onQueryChange(event.currentTarget.value)}
-          placeholder="Search chats"
-          aria-label="Search chats"
+          placeholder={t('codeAgents.searchChats')}
+          aria-label={t('codeAgents.searchChats')}
         />
       </label>
 
@@ -2847,11 +2858,11 @@ function SearchChatsPanel({
         ) : results.length === 0 ? (
           <div className="code-agents-detail code-agents-detail--empty">
             <IconSearch size={30} strokeWidth={1.5} />
-            <h3>{hasQuery ? "No chats found" : "No chats yet"}</h3>
+            <h3>{hasQuery ? t('codeAgents.noChatsFound') : t('codeAgents.noChatsYet')}</h3>
             <p>
               {hasQuery
-                ? "Try a title, folder, command, or phrase from the conversation."
-                : "Start a chat and it will show up here."}
+                ? t('codeAgents.noChatsFoundDesc')
+                : t('codeAgents.noChatsYetDesc')}
             </p>
           </div>
         ) : (
@@ -2890,7 +2901,8 @@ function MobileRailItem({
   active: boolean;
   onOpen: () => void;
 }) {
-  const copy = mobileConnectorCopy(status, error);
+  const { t } = useI18n();
+  const copy = mobileConnectorCopy(status, error, t);
   return (
     <button
       type="button"
@@ -2902,7 +2914,7 @@ function MobileRailItem({
       title={copy.description}
     >
       <IconDeviceMobile size={15} strokeWidth={1.8} />
-      <span>Mobile</span>
+      <span>{t('codeAgents.mobile.label')}</span>
     </button>
   );
 }
@@ -2910,51 +2922,52 @@ function MobileRailItem({
 function mobileConnectorCopy(
   status: CodeAgentRemoteConnectorStatus | null,
   error: string | null,
+  t: (key: string) => string,
 ): {
   description: string;
   tone: "connected" | "pending" | "idle" | "attention";
 } {
   if (error) {
-    return { description: "Mobile setup needs attention", tone: "attention" };
+    return { description: t('codeAgents.mobile.setupNeedsAttention'), tone: "attention" };
   }
   if (!status) {
     return {
-      description: "Checking mobile setup",
+      description: t('codeAgents.mobile.checkingSetup'),
       tone: "pending",
     };
   }
   if (!status.configured) {
     return {
-      description: "Set up mobile pairing",
+      description: t('codeAgents.mobile.setupPairing'),
       tone: "idle",
     };
   }
   if (!status.enabled) {
     return {
-      description: "Mobile pairing is paused",
+      description: t('codeAgents.mobile.pairingIsPaused'),
       tone: "idle",
     };
   }
   if (status.state === "error") {
     return {
-      description: "Mobile setup needs attention",
+      description: t('codeAgents.mobile.setupNeedsAttention'),
       tone: "attention",
     };
   }
   if (status.state === "running") {
     return {
-      description: `Mobile connected through ${hostForDisplay(status.relayUrl)}`,
+      description: `${t('codeAgents.mobile.connectedThrough')} ${hostForDisplay(status.relayUrl)}`,
       tone: "connected",
     };
   }
   if (status.state === "starting") {
     return {
-      description: "Connecting mobile",
+      description: t('codeAgents.mobile.connecting'),
       tone: "pending",
     };
   }
   return {
-    description: "Set up mobile pairing",
+    description: t('codeAgents.mobile.setupPairing'),
     tone: "idle",
   };
 }
@@ -2981,14 +2994,15 @@ function mobileDeepLinkForRelay(
 function connectorStatusTitle(
   status: CodeAgentRemoteConnectorStatus | null,
   error: string | null,
+  t: (key: string) => string,
 ): string {
-  if (error || status?.state === "error") return "Needs attention";
-  if (!status) return "Checking connector";
-  if (!status.configured) return "Pair this Mac";
-  if (!status.enabled) return "Pairing paused";
-  if (status.state === "running") return "Connected";
-  if (status.state === "starting") return "Connecting";
-  return "Ready to pair";
+  if (error || status?.state === "error") return t('codeAgents.mobile.setupNeedsAttention');
+  if (!status) return t('codeAgents.mobile.checkingSetup');
+  if (!status.configured) return t('codeAgents.mobile.pairThisMac');
+  if (!status.enabled) return t('codeAgents.mobile.pairingIsPaused');
+  if (status.state === "running") return t('codeAgents.mobile.connected');
+  if (status.state === "starting") return t('codeAgents.mobile.connecting');
+  return t('codeAgents.mobile.setupPairing');
 }
 
 function MobileConnectorPanel({
@@ -3022,8 +3036,9 @@ function MobileConnectorPanel({
   onCopyLink: (link: string) => Promise<void>;
   onOpenSettings?: () => void;
 }) {
+  const { t } = useI18n();
   const [platform, setPlatform] = useState<"ios" | "android">("ios");
-  const copy = mobileConnectorCopy(status, error);
+  const copy = mobileConnectorCopy(status, error, t);
   const mobileLink = mobileDeepLinkForRelay(relayUrl, platform);
   const needsPairing =
     !status?.configured || Boolean(error) || status?.state === "error";
@@ -3031,17 +3046,17 @@ function MobileConnectorPanel({
   const busy = pairing || updating;
   const primaryLabel = needsPairing
     ? pairing
-      ? "Pairing..."
-      : "Pair this Mac"
+      ? t('codeAgents.mobile.pairing')
+      : t('codeAgents.mobile.pairThisMac')
     : paused
       ? updating
-        ? "Turning on..."
-        : "Resume pairing"
-      : "Copy mobile link";
+        ? t('codeAgents.mobile.turningOn')
+        : t('codeAgents.mobile.resumePairing')
+      : t('codeAgents.mobile.copyLink');
   const primaryDisabled =
     busy || !relayUrl || (needsPairing && !canPair) || (paused && !canToggle);
   const statusMessage = error ?? status?.error ?? message;
-  const statusTitle = connectorStatusTitle(status, error);
+  const statusTitle = connectorStatusTitle(status, error, t);
 
   function handlePrimaryAction() {
     if (needsPairing) {
@@ -3056,16 +3071,15 @@ function MobileConnectorPanel({
   }
 
   return (
-    <section className="code-agents-mobile-panel" aria-label="Mobile pairing">
+    <section className="code-agents-mobile-panel" aria-label={t('codeAgents.mobile.label')}>
       <div className="code-agents-mobile-panel__header">
         <p className="code-agents-mobile-panel__eyebrow">
           <IconQrcode size={15} strokeWidth={1.8} />
-          Mobile
+          {t('codeAgents.mobile.label')}
         </p>
-        <h2>Agent Native mobile</h2>
+        <h2>{t('codeAgents.mobile.title')}</h2>
         <p>
-          Scan the QR code to open Sessions on your phone, then pair this Mac to
-          start and continue local Code work from mobile.
+          {t('codeAgents.mobile.desc')}
         </p>
       </div>
 
@@ -3087,7 +3101,7 @@ function MobileConnectorPanel({
               }
               onClick={() => setPlatform("ios")}
             >
-              iOS
+              {t('codeAgents.mobile.ios')}
             </button>
             <button
               type="button"
@@ -3100,7 +3114,7 @@ function MobileConnectorPanel({
               }
               onClick={() => setPlatform("android")}
             >
-              Android
+              {t('codeAgents.mobile.android')}
             </button>
           </div>
 
@@ -3110,7 +3124,7 @@ function MobileConnectorPanel({
               size={224}
               level="H"
               marginSize={3}
-              title="Open Agent Native mobile Sessions"
+              title={t('codeAgents.mobile.title')}
               bgColor="#ffffff"
               fgColor="#111111"
             />
@@ -3167,7 +3181,7 @@ function MobileConnectorPanel({
               onClick={() => void onRefresh()}
             >
               <IconRefresh size={14} strokeWidth={1.8} />
-              Refresh
+              {t('codeAgents.refresh')}
             </button>
             {onOpenSettings && (
               <button
@@ -3176,7 +3190,7 @@ function MobileConnectorPanel({
                 onClick={onOpenSettings}
               >
                 <IconSettings size={14} strokeWidth={1.8} />
-                Manage
+                {t('codeAgents.mobile.manage')}
               </button>
             )}
           </div>
@@ -3243,6 +3257,7 @@ function RunDetailCard({
   onOpenSettings?: () => void;
   onConnectProvider?: () => void;
 }) {
+  const { t } = useI18n();
   const runIsActive = run ? isRunActive(run) : false;
 
   useEffect(() => {
@@ -3260,11 +3275,11 @@ function RunDetailCard({
     return (
       <div className="code-agents-detail code-agents-detail--empty">
         <IconRoute size={30} strokeWidth={1.5} />
-        <h3>{selectedRunId ? "Session link ready" : "No session selected"}</h3>
+        <h3>{selectedRunId ? t('codeAgents.sessionLinkReady') : t('codeAgents.noSessionSelected')}</h3>
         <p>
           {selectedRunId
-            ? `Open ${goal.surfaceLabel} to load the linked slash-command session.`
-            : `Start ${goal.slashCommand} or select a session to review transcript events, artifacts, and follow-ups.`}
+            ? t('codeAgents.openGoalForSession', { surfaceLabel: goal.surfaceLabel })
+            : t('codeAgents.startOrSelectSession', { slashCommand: goal.slashCommand })}
         </p>
         <button
           type="button"
@@ -3272,23 +3287,24 @@ function RunDetailCard({
           onClick={onOpenWorkbench}
         >
           <IconExternalLink size={14} strokeWidth={1.8} />
-          Open {goal.surfaceLabel}
+          {t('codeAgents.openIn')} {goal.surfaceLabel}
         </button>
       </div>
     );
   }
 
   const progress = getRunProgressPercent(run);
-  const details = getRunDetails(run, goal);
+  const details = getRunDetails(run, goal, t);
   const sourceLabel = getRunSourceLabel(run);
   const hasCredentialGap = hasMissingCredentialSignal(run, transcriptEvents);
-  const pendingApproval = hasCredentialGap ? null : getPendingApproval(run);
+  const pendingApproval = hasCredentialGap ? null : getPendingApproval(run, t);
   const controlButtons = runControlButtons({
     goal,
     onRetry,
     onRerun,
     onOpenWorkbench,
     onOpenTerminal,
+    t,
   });
 
   return (
@@ -3296,21 +3312,21 @@ function RunDetailCard({
       <div className="code-agents-chat-header">
         <div>
           <h3>{getRunTitle(run)}</h3>
-          <p>{getSessionMeta(run, sourceLabel)}</p>
+          <p>{getSessionMeta(run, sourceLabel, t)}</p>
         </div>
         <details className="code-agents-session-details">
           <summary>
             <IconDots size={15} strokeWidth={1.8} />
-            <span>Details</span>
+            <span>{t('codeAgents.details')}</span>
           </summary>
           <div className="code-agents-session-details__body">
             <div className="code-agents-session-details__header">
-              <span>{getRunStatusText(run)}</span>
+              <span>{getRunStatusText(run, t)}</span>
             </div>
 
             <div className="code-agents-progress">
               <div className="code-agents-progress__label">
-                <span>{run.progress?.label ?? "Progress"}</span>
+                <span>{run.progress?.label ?? t('codeAgents.progress')}</span>
                 <span>{progress}%</span>
               </div>
               <div className="code-agents-progress__track">
@@ -3332,7 +3348,7 @@ function RunDetailCard({
               value={permissionMode}
               onChange={onPermissionModeChange}
               disabled={updatingPermissionMode}
-              title="Mode"
+              title={t('codeAgents.mode')}
             />
 
             <div className="code-agents-detail__footer">
@@ -3345,17 +3361,17 @@ function RunDetailCard({
       {hasCredentialGap && (
         <CodeProviderNotice
           className="code-agents-credential-callout"
-          title="Provider needed"
+          title={t('codeAgents.providerNeeded')}
           description={
             builderConnectMessage ??
-            "Connect Builder.io, run codex login for Codex CLI, or add your own API key."
+            t('codeAgents.connectProviderDesc')
           }
           primaryActionLabel={
-            builderConnecting ? "Waiting..." : "Connect Builder.io"
+            builderConnecting ? t('codeAgents.waiting') : t('codeAgents.connectBuilderio')
           }
           primaryDisabled={builderConnecting}
           onPrimaryAction={onConnectBuilder}
-          secondaryActionLabel="Settings"
+          secondaryActionLabel={t('codeAgents.settings')}
           onOpenSettings={onOpenSettings}
         />
       )}
@@ -3364,7 +3380,7 @@ function RunDetailCard({
         <div className="code-agents-approval-callout">
           <IconAlertCircle size={16} strokeWidth={1.8} />
           <div>
-            <strong>Approval pending</strong>
+            <strong>{t('codeAgents.approvalPending')}</strong>
             <span>{pendingApproval.reason}</span>
             {pendingApproval.command && <code>{pendingApproval.command}</code>}
           </div>
@@ -3373,19 +3389,19 @@ function RunDetailCard({
               type="button"
               className="code-agents-button code-agents-button--ghost code-agents-button--danger"
               onClick={onDeny}
-              title="Deny — model will adapt its plan"
+              title={t('codeAgents.denyTitle')}
             >
               <IconBan size={14} strokeWidth={1.8} />
-              Deny
+              {t('codeAgents.deny')}
             </button>
             <button
               type="button"
               className="code-agents-button"
               onClick={onApproveAlways}
-              title="Approve and always allow this exact command"
+              title={t('codeAgents.alwaysAllowTitle')}
             >
               <IconShieldCheck size={14} strokeWidth={1.8} />
-              Always allow
+              {t('codeAgents.alwaysAllow')}
             </button>
             <button
               type="button"
@@ -3393,7 +3409,7 @@ function RunDetailCard({
               onClick={onApprove}
             >
               <IconPlayerPlay size={14} strokeWidth={1.8} />
-              Approve
+              {t('codeAgents.approve')}
             </button>
           </div>
         </div>
@@ -3404,8 +3420,8 @@ function RunDetailCard({
           <div className="code-agents-approval-callout">
             <IconPlayerPlay size={16} strokeWidth={1.8} />
             <div>
-              <strong>Session paused</strong>
-              <span>Resume when you are ready for Code to continue.</span>
+              <strong>{t('codeAgents.sessionPaused')}</strong>
+              <span>{t('codeAgents.resumeDescription')}</span>
             </div>
             <button
               type="button"
@@ -3413,7 +3429,7 @@ function RunDetailCard({
               onClick={onResume}
             >
               <IconPlayerPlay size={14} strokeWidth={1.8} />
-              Resume
+              {t('codeAgents.resume')}
             </button>
           </div>
         )}
@@ -3474,6 +3490,7 @@ function TranscriptPanel({
   onStop: () => void;
   onConnectProvider?: () => void;
 }) {
+  const { t } = useI18n();
   const normalizedModel = normalizeModelSelection(modelSelection, modelOptions);
   const selectedModel = normalizedModel.model ?? "auto";
   const selectedEngine = normalizedModel.engine ?? "auto";
@@ -3537,8 +3554,8 @@ function TranscriptPanel({
     ].join(":");
   }, [events, hideCredentialMessages, run.id]);
   const composerGroups = useMemo(
-    () => modelOptionsToComposerGroups(modelOptions),
-    [modelOptions],
+    () => modelOptionsToComposerGroups(modelOptions, t),
+    [modelOptions, t],
   );
 
   return (
@@ -3551,7 +3568,7 @@ function TranscriptPanel({
       )}
       {loading && events.length === 0 ? (
         <div className="code-agents-transcript__empty">
-          Loading transcript...
+          {t('codeAgents.loadingChats')}
         </div>
       ) : (
         <AssistantChat
@@ -3559,7 +3576,7 @@ function TranscriptPanel({
           className="code-agents-transcript__assistant"
           tabId={`code-agent:${run.id}`}
           showHeader={false}
-          emptyStateText="No messages yet."
+          emptyStateText={t('codeAgents.noMessagesYet')}
           suggestions={[]}
           dynamicSuggestions={false}
           plusMenuMode="upload-only"
@@ -3636,6 +3653,7 @@ function formatTokenCount(n: number): string {
 }
 
 function TokenUsageMeter({ run }: { run: CodeAgentRun }) {
+  const { t } = useI18n();
   const usage = run.metadata?.tokenUsage;
   if (!usage || typeof usage !== "object" || Array.isArray(usage)) return null;
   const u = usage as Record<string, unknown>;
@@ -3659,18 +3677,18 @@ function TokenUsageMeter({ run }: { run: CodeAgentRun }) {
         className="code-agents-token-meter__icon"
       />
       <span className="code-agents-token-meter__label">
-        {formatTokenCount(input + output)} tokens
+        {formatTokenCount(input + output)} {t('codeAgents.tokens')}
       </span>
       {contextPct !== null && (
         <span
           className="code-agents-token-meter__ctx"
-          title={`~${contextPct}% of ${formatTokenCount(contextWindow!)} context window used`}
+          title={t('codeAgents.contextUsed', { pct: contextPct, total: formatTokenCount(contextWindow!) })}
         >
-          {contextPct}% ctx
+          {contextPct}% {t('codeAgents.percentCtx')}
         </span>
       )}
       <span className="code-agents-token-meter__detail">
-        {formatTokenCount(input)} in / {formatTokenCount(output)} out
+        {formatTokenCount(input)} {t('codeAgents.tokensIn')} / {formatTokenCount(output)} {t('codeAgents.tokensOut')}
       </span>
     </div>
   );
@@ -3695,13 +3713,14 @@ function CodeAgentChatComposerSlot({
 }
 
 function CodeAgentStopButton({ onStop }: { onStop: () => void }) {
+  const { t } = useI18n();
   return (
     <button
       type="button"
       onClick={onStop}
       className="code-agents-composer-stop-button"
-      aria-label="Stop session"
-      title="Stop session (Esc)"
+      aria-label={t('codeAgents.stop')}
+      title={t('codeAgents.stop') + " (Esc)"}
     >
       <IconPlayerStop size={14} strokeWidth={1.9} />
     </button>
@@ -3812,17 +3831,18 @@ function hasPendingApproval(run: CodeAgentRun): boolean {
 
 function getPendingApproval(
   run: CodeAgentRun,
+  t?: (key: string) => string,
 ): { reason: string; command?: string } | null {
   const value = run.metadata?.pendingApproval;
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return run.needsApproval ? { reason: "Review the pending action." } : null;
+    return run.needsApproval ? { reason: t ? t('codeAgents.reviewPendingAction') : "Review the pending action." } : null;
   }
 
   const record = value as Record<string, unknown>;
   const reason =
     typeof record.reason === "string" && record.reason.trim()
       ? record.reason.trim()
-      : "Review the pending action.";
+      : (t ? t('codeAgents.reviewPendingAction') : "Review the pending action.");
   const command =
     typeof record.command === "string" && record.command.trim()
       ? record.command.trim()
@@ -3875,33 +3895,35 @@ function getRunSubtitle(run: CodeAgentRun): string {
 function getRunDetails(
   run: CodeAgentRun,
   goal: CodeAgentGoalDefinition,
+  t?: (key: string) => string,
 ): CodeAgentRunDetail[] {
   const sourceDetail = getRunSourceDetail(run);
   const details =
     run.details?.filter(
       (detail) => detail.value.length > 0 && !isPermissionDetail(detail.label),
     ) ?? [];
+  const l = (key: string, fallback: string) => t ? t(key) : fallback;
   if (details.length > 0) {
     return [
       ...(sourceDetail ? [sourceDetail] : []),
       ...details,
-      { label: "Updated", value: formatRelativeTime(run.updatedAt) },
+      { label: l('codeAgents.metadata.updated', "Updated"), value: formatRelativeTime(run.updatedAt) },
     ];
   }
   if (isMigrationRun(run)) {
     return [
       ...(sourceDetail ? [sourceDetail] : []),
-      { label: "Source", value: run.sourceRoot },
-      { label: "Output", value: run.outputRoot },
-      { label: "Target", value: run.target },
-      { label: "Updated", value: formatRelativeTime(run.updatedAt) },
+      { label: l('codeAgents.metadata.source', "Source"), value: run.sourceRoot },
+      { label: l('codeAgents.metadata.output', "Output"), value: run.outputRoot },
+      { label: l('codeAgents.metadata.target', "Target"), value: run.target },
+      { label: l('codeAgents.metadata.updated', "Updated"), value: formatRelativeTime(run.updatedAt) },
     ];
   }
   return [
     ...(sourceDetail ? [sourceDetail] : []),
-    { label: "Goal", value: goal.slashCommand },
-    { label: "Status", value: run.status },
-    { label: "Updated", value: formatRelativeTime(run.updatedAt) },
+    { label: l('codeAgents.metadata.goal', "Goal"), value: goal.slashCommand },
+    { label: l('codeAgents.metadata.status', "Status"), value: run.status },
+    { label: l('codeAgents.metadata.updated', "Updated"), value: formatRelativeTime(run.updatedAt) },
   ];
 }
 
