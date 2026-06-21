@@ -37,10 +37,12 @@
   },
   "peerDependencies": {
     "@agent-native/core": ">=0.24.0",
+    "@agent-native/i18n": ">=0.1.0",
     "@agent-native/shared-app-config": ">=0.1.0"
   },
   "devDependencies": {
     "@agent-native/core": "workspace:*",
+    "@agent-native/i18n": "workspace:*",
     "@agent-native/shared-app-config": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

@@ -7,6 +7,7 @@ import {
   type FrameSettings,
   toAppDefinition,
 } from "@shared/app-registry";
+import { useI18n } from "@agent-native/i18n";
 import Sidebar from "./components/Sidebar.js";
 import TabBar from "./components/TabBar.js";
 import AppWebview, { type AppWebviewHandle } from "./components/AppWebview.js";
@@ -123,6 +124,7 @@ function isCodeTabShortcut(e: KeyboardEvent): boolean {
 }
 
 export default function App() {
+  const { t } = useI18n();
   const [apps, setApps] = useState<AppConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
@@ -527,7 +529,7 @@ export default function App() {
       } else {
         await navigator.clipboard.writeText(currentUrl);
       }
-      toast("URL copied", {
+      toast(t("general.copied"), {
         id: "url-copied",
         duration: 1600,
       });
@@ -712,7 +714,7 @@ export default function App() {
         className="shell"
         style={{ alignItems: "center", justifyContent: "center" }}
       >
-        <p style={{ color: "#666" }}>Loading...</p>
+        <p style={{ color: "#666" }}>{t("general.loading")}</p>
       </div>
     );
   }
@@ -769,7 +771,7 @@ export default function App() {
                 closeFind();
               }
             }}
-            placeholder="Find in page"
+            placeholder={t("find.placeholder")}
             className="find-input"
           />
           <button
@@ -780,7 +782,7 @@ export default function App() {
               runFind(findQuery, { findNext: true, forward: false })
             }
           >
-            Prev
+            {t("find.prev")}
           </button>
           <button
             type="button"
@@ -790,7 +792,7 @@ export default function App() {
               runFind(findQuery, { findNext: true, forward: true })
             }
           >
-            Next
+            {t("find.next")}
           </button>
           <button
             type="button"
@@ -798,7 +800,7 @@ export default function App() {
             className="find-button find-button--close"
             onClick={closeFind}
           >
-            Done
+            {t("find.done")}
           </button>
         </div>
       )}
@@ -809,7 +811,7 @@ export default function App() {
           )}
           <div className="tabbar-strip">
             <div className="tab tab--active tab--locked">
-              <span className="tab-label">Code</span>
+              <span className="tab-label">{t("sidebar.code")}</span>
             </div>
           </div>
         </div>

@@ -1915,7 +1915,7 @@ function CodeAgentComposer({
         onClick={onStop}
         className="code-agents-composer-stop-button"
         aria-label={t('codeAgents.stop')}
-        title={t('codeAgents.stop') + " (Esc)"
+        title={t('codeAgents.stop') + " (Esc)"}
       >
         <IconPlayerStop size={14} strokeWidth={1.9} />
       </button>

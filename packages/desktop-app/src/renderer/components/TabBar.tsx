@@ -1,4 +1,5 @@
 import { IconX, IconPlus } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 import type { Tab } from "../App.js";
 import { getTabDisplayTitle } from "../lib/tab-title.js";
 import { shouldReserveMacOSWindowControlsSpace } from "../lib/platform.js";
@@ -22,6 +23,7 @@ export default function TabBar({
   onTabClose,
   onNewTab,
 }: TabBarProps) {
+  const { t } = useI18n();
   return (
     <div className="tabbar">
       {reserveMacOSWindowControlsSpace && (
@@ -66,7 +68,7 @@ export default function TabBar({
           className="tab-new"
           tabIndex={-1}
           onClick={onNewTab}
-          title="New tab"
+          title={t("tab.new")}
         >
           <IconPlus size={14} strokeWidth={1.75} />
         </button>

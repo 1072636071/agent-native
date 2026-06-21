@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { I18nProvider } from "@agent-native/i18n";
 import App from "./App.js";
 import "./shell.css";
 import "@agent-native/code-agents-ui/styles.css";
@@ -11,6 +12,8 @@ document.body.classList.add(`platform-${platform}`);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <I18nProvider>
+      <App />
+    </I18nProvider>
   </React.StrictMode>,
 );

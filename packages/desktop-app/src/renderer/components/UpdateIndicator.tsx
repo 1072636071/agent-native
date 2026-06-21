@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { IconDownload, IconRefresh, IconLoader2 } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 
 /**
  * Subscribes to auto-update status from the main process. Returns the latest
@@ -27,6 +28,7 @@ export function useUpdateStatus(): UpdateStatus | null {
  * states so it doesn't add visual noise.
  */
 export function UpdateIndicator() {
+  const { t } = useI18n();
   const status = useUpdateStatus();
 
   if (!status) return null;
@@ -53,13 +55,13 @@ export function UpdateIndicator() {
       <button
         className="sidebar-item update-indicator update-indicator--pending"
         tabIndex={-1}
-        title={`Update ${status.version} available — downloading…`}
-        aria-label={`Update ${status.version} available`}
+        title={t("update.available.downloading", { version: status.version })}
+        aria-label={t("update.available", { version: status.version })}
       >
         <span className="icon-wrapper">
           <IconDownload size={18} strokeWidth={1.75} />
         </span>
-        <span className="item-label">Update</span>
+        <span className="item-label">{t("update.update")}</span>
       </button>
     );
   }
@@ -69,8 +71,8 @@ export function UpdateIndicator() {
       <button
         className="sidebar-item update-indicator update-indicator--downloading"
         tabIndex={-1}
-        title={`Downloading update — ${status.percent}%`}
-        aria-label={`Downloading update, ${status.percent} percent`}
+        title={t("update.downloading", { percent: status.percent })}
+        aria-label={t("update.downloading", { percent: status.percent })}
       >
         <span className="icon-wrapper">
           <IconLoader2 size={18} strokeWidth={1.75} className="spin" />
@@ -86,13 +88,13 @@ export function UpdateIndicator() {
       className="sidebar-item update-indicator update-indicator--ready"
       tabIndex={-1}
       onClick={() => window.electronAPI?.updater.install()}
-      title={`Update ${status.version} ready — click to restart`}
-      aria-label={`Update ${status.version} ready, click to restart`}
+      title={t("update.ready", { version: status.version })}
+      aria-label={t("update.ready", { version: status.version })}
     >
       <span className="icon-wrapper">
         <IconRefresh size={18} strokeWidth={1.75} />
       </span>
-      <span className="item-label">Relaunch</span>
+      <span className="item-label">{t("update.relaunch")}</span>
     </button>
   );
 }

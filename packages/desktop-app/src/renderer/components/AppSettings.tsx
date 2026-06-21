@@ -41,6 +41,7 @@ import {
   type DesktopShortcutSettings,
   type DesktopShortcutUpsertRequest,
 } from "@shared/desktop-shortcuts";
+import { useI18n } from "@agent-native/i18n";
 import { CodeProviderSettings } from "./CodeProviderSettings";
 import { useUpdateStatus } from "./UpdateIndicator.js";
 
@@ -103,78 +104,87 @@ function hostForDisplay(url: string | undefined): string {
   }
 }
 
-function remoteStatusCopy(status: CodeAgentRemoteConnectorStatus | null): {
+function remoteStatusCopy(
+  status: CodeAgentRemoteConnectorStatus | null,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): {
   label: string;
   description: string;
   tone: RemoteStatusTone;
 } {
   if (!status) {
     return {
-      label: "Checking",
-      description: "Reading remote-control status.",
+      label: t("settings.remote.status.checking"),
+      description: t("settings.remote.status.checkingDesc"),
       tone: "pending",
     };
   }
   if (!status.configured) {
     return {
-      label: "Offline",
-      description: "Pair this computer with an Agent-Native app.",
+      label: t("settings.remote.status.offline"),
+      description: t("settings.remote.status.offlineDesc"),
       tone: "offline",
     };
   }
   if (!status.enabled) {
     return {
-      label: "Off",
-      description: "Remote requests are paused on this computer.",
+      label: t("settings.remote.status.off"),
+      description: t("settings.remote.status.offDesc"),
       tone: "offline",
     };
   }
   if (status.state === "error") {
     return {
-      label: "Error",
-      description: status.error ?? "Remote control needs attention.",
+      label: t("settings.remote.status.error"),
+      description: status.error ?? t("settings.remote.status.errorDesc"),
       tone: "error",
     };
   }
   if (status.state === "running") {
     return {
-      label: "Polling",
-      description: `Connected to ${hostForDisplay(status.relayUrl)}.`,
+      label: t("settings.remote.status.polling"),
+      description: t("settings.remote.status.connectedTo", {
+        host: hostForDisplay(status.relayUrl),
+      }),
       tone: "ok",
     };
   }
   if (status.state === "starting") {
     return {
-      label: "Connecting",
+      label: t("settings.remote.status.connecting"),
       description: status.nextRestartAt
-        ? "Waiting to retry the remote connector."
-        : "Starting remote control.",
+        ? t("settings.remote.status.waitingRetry")
+        : t("settings.remote.status.startingRemote"),
       tone: "pending",
     };
   }
   return {
-    label: "Offline",
-    description: "Remote control is not currently polling.",
+    label: t("settings.remote.status.offline"),
+    description: t("settings.remote.status.notPolling"),
     tone: "offline",
   };
 }
 
-function updateStatusCopy(status: UpdateStatus | null): {
+
+function updateStatusCopy(
+  status: UpdateStatus | null,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): {
   label: string;
   description: string;
   tone: UpdateStatusTone;
 } {
   if (!status) {
     return {
-      label: "Checking",
-      description: "Reading software update status.",
+      label: "",
+      description: t("settings.update.status.reading"),
       tone: "pending",
     };
   }
 
   if (status.state === "unsupported") {
     return {
-      label: "Unavailable",
+      label: t("settings.update.status.unavailable"),
       description: status.reason,
       tone: "offline",
     };
@@ -182,55 +192,63 @@ function updateStatusCopy(status: UpdateStatus | null): {
 
   if (status.state === "checking") {
     return {
-      label: "Checking",
-      description: "Looking for the newest Agent Native release.",
+      label: t("settings.update.status.checking"),
+      description: t("settings.update.status.checkingDesc"),
       tone: "pending",
     };
   }
 
   if (status.state === "available") {
     return {
-      label: "Downloading",
-      description: `Version ${status.version} is available and will install after download.`,
+      label: t("settings.update.status.downloading"),
+      description: t("settings.update.status.availableDesc", {
+        version: status.version,
+      }),
       tone: "pending",
     };
   }
 
   if (status.state === "downloading") {
     return {
-      label: "Downloading",
-      description: `Update download is ${status.percent}% complete.`,
+      label: t("settings.update.status.downloading"),
+      description: t("settings.update.status.downloadingDesc", {
+        percent: status.percent ?? 0,
+      }),
       tone: "pending",
     };
   }
 
   if (status.state === "downloaded") {
     return {
-      label: "Ready",
-      description: `Version ${status.version} is downloaded. Relaunch to install it.`,
+      label: t("settings.update.status.ready"),
+      description: t("settings.update.status.readyDesc", {
+        version: status.version,
+      }),
       tone: "ready",
     };
   }
 
   if (status.state === "not-available") {
     return {
-      label: "Up to date",
-      description: `Agent Native ${status.currentVersion} is the latest available version.`,
+      label: t("settings.update.status.upToDate"),
+      description: t("settings.update.status.upToDateDesc", {
+        version: status.currentVersion,
+      }),
       tone: "ok",
     };
   }
 
   if (status.state === "error") {
     return {
-      label: "Needs retry",
+      label: t("settings.update.status.needsRetry"),
       description: status.message,
       tone: "error",
     };
   }
 
   return {
-    label: "Automatic",
-    description: "Agent Native checks for updates in the background.",
+    label: t("settings.update.status.automatic"),
+    description: t("settings.update.status.backgroundCheck"),
     tone: "ok",
   };
 }
@@ -307,6 +325,7 @@ function ShortcutRecorder({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const { t } = useI18n();
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -356,13 +375,13 @@ function ShortcutRecorder({
         <IconKeyboard size={14} />
         <span>
           {recording
-            ? "Press shortcut"
+            ? t("settings.shortcut.press")
             : value
               ? formatDesktopShortcutAccelerator(
                   value,
                   window.electronAPI?.platform,
                 )
-              : "Record shortcut"}
+              : t("settings.shortcut.record")}
         </span>
       </button>
       {error && <span className="settings-shortcut-error">{error}</span>}
@@ -371,8 +390,9 @@ function ShortcutRecorder({
 }
 
 function SoftwareUpdateCard() {
+  const { t } = useI18n();
   const status = useUpdateStatus();
-  const copy = updateStatusCopy(status);
+  const copy = updateStatusCopy(status, t);
   const [working, setWorking] = useState<"check" | "download" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const updater = window.electronAPI?.updater;
@@ -428,7 +448,7 @@ function SoftwareUpdateCard() {
             className={`settings-update-dot settings-update-dot--${copy.tone}`}
           />
           <div>
-            <span className="settings-mode-card-title">Software Updates</span>
+            <span className="settings-mode-card-title">{t("settings.softwareUpdates")}</span>
             <span className="settings-mode-card-status">
               {copy.label} · {copy.description}
             </span>
@@ -442,7 +462,7 @@ function SoftwareUpdateCard() {
               onClick={handleInstall}
             >
               <IconRefresh size={14} />
-              Relaunch
+              {t("settings.softwareUpdates.relaunch")}
             </button>
           ) : canDownload ? (
             <button
@@ -456,7 +476,7 @@ function SoftwareUpdateCard() {
               ) : (
                 <IconDownload size={14} />
               )}
-              Download
+              {t("settings.softwareUpdates.download")}
             </button>
           ) : (
             <button
@@ -470,7 +490,7 @@ function SoftwareUpdateCard() {
               ) : (
                 <IconRefresh size={14} />
               )}
-              Check
+              {t("settings.softwareUpdates.check")}
             </button>
           )}
         </div>
@@ -493,6 +513,7 @@ export default function AppSettings({
   onFrameSettingsChanged,
   onCodeAgentProvidersChanged,
 }: AppSettingsProps) {
+  const { t } = useI18n();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [frameSettings, setFrameSettings] = useState<FrameSettings | null>(
@@ -793,7 +814,7 @@ export default function AppSettings({
   );
 
   const editingApp = editingId ? apps.find((a) => a.id === editingId) : null;
-  const remoteCopy = remoteStatusCopy(remoteStatus);
+  const remoteCopy = remoteStatusCopy(remoteStatus, t);
   const normalizedShortcut = normalizeDesktopShortcutAccelerator(
     shortcutDraft.accelerator,
   );
@@ -805,7 +826,7 @@ export default function AppSettings({
     <div className="settings-overlay" onClick={onClose}>
       <div className="settings-panel" onClick={(e) => e.stopPropagation()}>
         <div className="settings-header">
-          <h2>App Settings</h2>
+          <h2>{t("settings.title")}</h2>
           <button className="settings-close" onClick={onClose}>
             <IconX size={18} />
           </button>
@@ -816,13 +837,13 @@ export default function AppSettings({
           {frameSettings && (
             <div className="settings-mode-card">
               <div className="settings-mode-card-text">
-                <span className="settings-mode-card-title">Mode</span>
+                <span className="settings-mode-card-title">{t("settings.mode.title")}</span>
                 <span className="settings-mode-card-status">
                   {allMode === "dev"
-                    ? "All apps run in dev mode"
+                    ? t("settings.mode.devAll")
                     : allMode === "prod"
-                      ? "All apps run on production"
-                      : "Mixed — some apps overridden"}
+                      ? t("settings.mode.prodAll")
+                      : t("settings.mode.mixed")}
                 </span>
               </div>
               <div className="settings-mode-toggle settings-mode-toggle--lg">
@@ -830,13 +851,13 @@ export default function AppSettings({
                   className={`settings-mode-btn${allMode === "prod" ? " settings-mode-btn--active" : ""}`}
                   onClick={() => handleAllToMode("prod")}
                 >
-                  Prod
+                  {t("settings.production")}
                 </button>
                 <button
                   className={`settings-mode-btn${allMode === "dev" ? " settings-mode-btn--active" : ""}`}
                   onClick={() => handleAllToMode("dev")}
                 >
-                  Dev
+                  {t("settings.localDev")}
                 </button>
               </div>
             </div>
@@ -860,17 +881,17 @@ export default function AppSettings({
           {frameSettings && (
             <div className="settings-code-tab-card">
               <div className="settings-code-tab-copy">
-                <span className="settings-mode-card-title">Code tab</span>
+                <span className="settings-mode-card-title">{t("settings.codeTab.title")}</span>
                 <span className="settings-mode-card-status">
-                  Show Agent-Native Code in the sidebar.
+                  {t("settings.codeTab.desc")}
                 </span>
               </div>
               <label
                 className="settings-toggle"
                 title={
                   frameSettings.showCodeTab
-                    ? "Hide the Code tab"
-                    : "Show the Code tab"
+                    ? t("settings.codeTab.title")
+                    : t("settings.codeTab.title")
                 }
               >
                 <input
@@ -895,7 +916,7 @@ export default function AppSettings({
                 />
                 <div>
                   <span className="settings-mode-card-title">
-                    Remote Control
+                    {t("settings.remote.title")}
                   </span>
                   <span className="settings-mode-card-status">
                     {remoteCopy.label} · {remoteCopy.description}
@@ -906,8 +927,8 @@ export default function AppSettings({
                 className="settings-toggle"
                 title={
                   remoteStatus?.enabled
-                    ? "Turn remote control off"
-                    : "Turn remote control on"
+                    ? t("settings.remote.off")
+                    : t("settings.remote.polling")
                 }
               >
                 <input
@@ -938,7 +959,7 @@ export default function AppSettings({
               className="settings-remote-link"
               onClick={() => setShowRemotePairing((value) => !value)}
             >
-              {showRemotePairing ? "Hide pairing" : "Pair or repair"}
+              {showRemotePairing ? t("settings.remote.hide") : t("settings.remote.repair")}
             </button>
 
             {showRemotePairing && (
@@ -955,7 +976,7 @@ export default function AppSettings({
                   onClick={handleRemotePair}
                   disabled={remotePairing || !remotePairUrl.trim()}
                 >
-                  {remotePairing ? "Pairing..." : "Pair This Mac"}
+                  {remotePairing ? t("settings.remote.pairing") : t("settings.remote.pair")}
                 </button>
                 <span className="settings-field-hint">
                   Use an app you are signed into inside Desktop.
@@ -975,14 +996,14 @@ export default function AppSettings({
             ) : (
               <IconChevronRight size={14} />
             )}
-            <span>Customize per app</span>
+            <span>{t("settings.customizePerApp")}</span>
           </button>
 
           {showAdvanced && (
             <>
               {/* App list */}
               <div className="settings-section">
-                <h3>Installed Apps</h3>
+                <h3>{t("settings.installedApps")}</h3>
                 {apps.map((app) => (
                   <div key={app.id} className="settings-app-row">
                     <div className="settings-app-info">
@@ -1011,7 +1032,7 @@ export default function AppSettings({
                       <button
                         className="settings-icon-btn"
                         onClick={() => setEditingId(app.id)}
-                        title="Edit"
+                        title={t("settings.installedApps.edit")}
                       >
                         <IconEdit size={14} />
                       </button>
@@ -1019,7 +1040,7 @@ export default function AppSettings({
                         <button
                           className="settings-icon-btn settings-icon-btn--danger"
                           onClick={() => handleRemove(app.id)}
-                          title="Remove"
+                          title={t("settings.installedApps.remove")}
                         >
                           <IconTrash size={14} />
                         </button>
@@ -1041,10 +1062,10 @@ export default function AppSettings({
                   <div className="settings-app-row">
                     <div className="settings-app-info">
                       <span className="settings-app-name">
-                        Code editing frame
+                        {t("settings.frame.codeEditingFrame")}
                       </span>
                       <span className="settings-app-url">
-                        Chat + CLI sidebar for code editing
+                        {t("settings.frame.chatCli")}
                       </span>
                     </div>
                     <div className="settings-app-actions">
@@ -1053,13 +1074,13 @@ export default function AppSettings({
                           className={`settings-mode-btn${frameSettings.mode === "prod" ? " settings-mode-btn--active" : ""}`}
                           onClick={() => handleFrameModeToggle("prod")}
                         >
-                          Prod
+                          {t("settings.production")}
                         </button>
                         <button
                           className={`settings-mode-btn${frameSettings.mode === "dev" ? " settings-mode-btn--active" : ""}`}
                           onClick={() => handleFrameModeToggle("dev")}
                         >
-                          Dev
+                          {t("settings.localDev")}
                         </button>
                       </div>
                       <label className="settings-toggle">
@@ -1086,7 +1107,7 @@ export default function AppSettings({
                   <IconChevronRight size={14} />
                 )}
                 <IconKeyboard size={14} />
-                <span>Keyboard launch shortcuts</span>
+                <span>{t("settings.shortcut.title")}</span>
               </button>
 
               {showShortcutSettings && (
@@ -1109,11 +1130,11 @@ export default function AppSettings({
                           app: event.target.value,
                         }))
                       }
-                      aria-label="Shortcut target app"
+                      aria-label={t("settings.shortcut.targetApp")}
                     >
                       {shortcutTargetApps.length === 0 ? (
                         <option value="" disabled>
-                          No enabled apps
+                          {t("settings.shortcut.noApps")}
                         </option>
                       ) : null}
                       {shortcutTargetApps.map((app) => (
@@ -1131,8 +1152,8 @@ export default function AppSettings({
                           view: event.target.value,
                         }))
                       }
-                      placeholder="view, optional"
-                      aria-label="Shortcut target view"
+                      placeholder={t("settings.shortcut.viewPlaceholder")}
+                      aria-label={t("settings.shortcut.targetView")}
                     />
                     <div className="settings-mode-toggle">
                       <button
@@ -1145,7 +1166,7 @@ export default function AppSettings({
                           }))
                         }
                       >
-                        Toggle
+                        {t("settings.shortcut.toggle")}
                       </button>
                       <button
                         type="button"
@@ -1157,7 +1178,7 @@ export default function AppSettings({
                           }))
                         }
                       >
-                        Show
+                        {t("settings.shortcut.show")}
                       </button>
                     </div>
                     <button
@@ -1167,7 +1188,7 @@ export default function AppSettings({
                       disabled={!shortcutDraftValid || shortcutSaving}
                     >
                       <IconCheck size={14} />
-                      {shortcutDraft.id ? "Save" : "Add"}
+                      {shortcutDraft.id ? t("general.save") : t("general.add")}
                     </button>
                     {shortcutDraft.id && (
                       <button
@@ -1177,7 +1198,7 @@ export default function AppSettings({
                           setShortcutDraft(defaultShortcutDraft(apps))
                         }
                       >
-                        Cancel
+                        {t("general.cancel")}
                       </button>
                     )}
                   </div>
@@ -1191,7 +1212,7 @@ export default function AppSettings({
                   <div className="settings-shortcut-list">
                     {(shortcutSettings?.bindings ?? []).length === 0 ? (
                       <div className="settings-shortcut-empty">
-                        No desktop shortcuts configured.
+                        {t("settings.shortcut.empty")}
                       </div>
                     ) : (
                       shortcutSettings?.bindings.map((binding) => {
@@ -1230,9 +1251,9 @@ export default function AppSettings({
                               >
                                 {binding.enabled
                                   ? registration?.registered
-                                    ? "Active"
-                                    : "Inactive"
-                                  : "Off"}
+                                    ? t("settings.shortcut.active")
+                                    : t("settings.shortcut.inactive")
+                                  : t("settings.shortcut.off")}
                               </span>
                               <button
                                 type="button"
@@ -1242,7 +1263,7 @@ export default function AppSettings({
                                     shortcutDraftFromBinding(binding),
                                   )
                                 }
-                                title="Edit shortcut"
+                                title={t("settings.installedApps.edit")}
                               >
                                 <IconEdit size={14} />
                               </button>
@@ -1250,7 +1271,7 @@ export default function AppSettings({
                                 type="button"
                                 className="settings-icon-btn settings-icon-btn--danger"
                                 onClick={() => handleShortcutRemove(binding.id)}
-                                title="Remove shortcut"
+                                title={t("settings.installedApps.remove")}
                               >
                                 <IconTrash size={14} />
                               </button>
@@ -1282,13 +1303,13 @@ export default function AppSettings({
                   className="settings-btn settings-btn--primary"
                   onClick={onAddAppClick}
                 >
-                  <IconPlus size={15} /> Add App
+                  <IconPlus size={15} /> {t("settings.installedApps.add")}
                 </button>
                 <button
                   className="settings-btn settings-btn--danger"
                   onClick={handleReset}
                 >
-                  <IconRotate size={14} /> Reset to Defaults
+                  <IconRotate size={14} /> {t("settings.installedApps.reset")}
                 </button>
               </div>
             </>
@@ -1319,6 +1340,7 @@ export function AddAppDialog({
   onSave: (app: AppConfig) => void | Promise<void>;
   onCancel: () => void;
 }) {
+  const { t } = useI18n();
   const [mode, setMode] = useState<"prod" | "dev">("dev");
   const [name, setName] = useState("");
   const [prodUrl, setProdUrl] = useState("");
@@ -1398,13 +1420,13 @@ export function AddAppDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="settings-form-header">
-          <h3>Add App</h3>
+          <h3>{t("settings.addApp.title")}</h3>
           <p className="settings-form-subtitle">
-            Add a localhost dev server or a deployed app.
+            {t("settings.addApp.desc")}
           </p>
         </div>
 
-        <div className="settings-choice-grid" aria-label="App target">
+        <div className="settings-choice-grid" aria-label={t("settings.addApp.targetLabel")}>
           <button
             type="button"
             className={`settings-choice-btn${mode === "prod" ? " settings-choice-btn--active" : ""}`}
@@ -1413,8 +1435,8 @@ export function AddAppDialog({
           >
             <IconWorld size={17} />
             <span>
-              <strong>Production</strong>
-              <small>Hosted URL</small>
+              <strong>{t("settings.production")}</strong>
+              <small>{t("settings.addApp.hostedUrl")}</small>
             </span>
           </button>
           <button
@@ -1422,12 +1444,12 @@ export function AddAppDialog({
             className={`settings-choice-btn${mode === "dev" ? " settings-choice-btn--active" : ""}`}
             onClick={() => setMode("dev")}
             aria-pressed={mode === "dev"}
-            title="Use this for a cloned local app folder; Desktop opens the inferred localhost URL."
+            title={t("settings.addApp.devTitle")}
           >
             <IconTerminal2 size={17} />
             <span>
-              <strong>Local dev</strong>
-              <small>Choose folder</small>
+              <strong>{t("settings.localDev")}</strong>
+              <small>{t("settings.addApp.chooseFolder")}</small>
             </span>
           </button>
         </div>
@@ -1435,23 +1457,23 @@ export function AddAppDialog({
         {mode === "prod" ? (
           <>
             <label>
-              Name *
+              {t("settings.addApp.name")}
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Dispatch"
+                placeholder={t("settings.addApp.namePlaceholder")}
                 required
               />
             </label>
 
             <label>
-              Production URL *
+              {t("settings.addApp.prodUrl")}
               <input
                 type="url"
                 value={prodUrl}
                 onChange={(e) => setProdUrl(e.target.value)}
-                placeholder="https://dispatch.agent-native.com"
+                placeholder={t("settings.addApp.prodUrlPlaceholder")}
                 required
               />
             </label>
@@ -1460,8 +1482,8 @@ export function AddAppDialog({
           <>
             <div className="settings-folder-picker">
               <div className="settings-folder-picker__label">
-                <span>Local Folder</span>
-                {localPath && <small>Selected</small>}
+                <span>{t("settings.addApp.localFolder")}</span>
+                {localPath && <small>{t("settings.addApp.selected")}</small>}
               </div>
               <button
                 type="button"
@@ -1478,10 +1500,10 @@ export function AddAppDialog({
                   <strong>
                     {localPath
                       ? localPath.split(/[\\/]/).filter(Boolean).at(-1)
-                      : "Choose app folder"}
+                      : t("settings.addApp.chooseAppFolder")}
                   </strong>
                   <small>
-                    {localPath || "Select the folder you cloned or created."}
+                    {localPath || t("settings.addApp.folderSelectHint")}
                   </small>
                 </span>
                 {choosingFolder && (
@@ -1507,38 +1529,37 @@ export function AddAppDialog({
             </div>
 
             <label>
-              Name *
+              {t("settings.addApp.name")}
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="My local app"
+                placeholder={t("settings.addApp.devNamePlaceholder")}
                 required
               />
             </label>
 
             <label>
-              Dev URL *
+              {t("settings.addApp.devUrl")}
               <input
                 type="url"
                 value={devUrl}
                 onChange={(e) => setDevUrl(e.target.value)}
-                placeholder="http://localhost:3000"
+                placeholder={t("settings.addApp.devUrlPlaceholder")}
                 required
               />
               <span className="settings-field-hint">
-                Auto-filled from the folder when possible. You can still edit it
-                manually.
+                {t("settings.addApp.autoFill")}
               </span>
             </label>
 
             <label>
-              Dev Command
+              {t("settings.addApp.devCommand")}
               <input
                 type="text"
                 value={devCommand}
                 onChange={(e) => setDevCommand(e.target.value)}
-                placeholder="pnpm dev"
+                placeholder={t("settings.addApp.devCommandPlaceholder")}
               />
             </label>
           </>
@@ -1550,14 +1571,14 @@ export function AddAppDialog({
             className="settings-btn settings-btn--ghost"
             onClick={onCancel}
           >
-            Cancel
+            {t("general.cancel")}
           </button>
           <button
             type="submit"
             className="settings-btn settings-btn--primary"
             disabled={!canSave}
           >
-            <IconCheck size={14} /> {mode === "dev" ? "Open App" : "Add App"}
+            <IconCheck size={14} /> {mode === "dev" ? t("settings.addApp.openApp") : t("settings.addApp.addAppSubmit")}
           </button>
         </div>
       </form>
@@ -1576,6 +1597,7 @@ function AppEditForm({
   onSave: (app: AppConfig) => void;
   onCancel: () => void;
 }) {
+  const { t } = useI18n();
   const [name, setName] = useState(app?.name ?? "");
   const [url, setUrl] = useState(app?.url ?? "");
   const [devUrl, setDevUrl] = useState(app?.devUrl ?? "");
@@ -1611,56 +1633,56 @@ function AppEditForm({
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3>{app ? "Edit App" : "Add App"}</h3>
+        <h3>{app ? t("settings.editApp.titleEdit") : t("settings.editApp.titleAdd")}</h3>
 
         <label>
-          Name *
+          {t("settings.addApp.name")}
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="My App"
+            placeholder={t("settings.editApp.namePlaceholder")}
             required
           />
         </label>
 
         <label>
-          Production URL
+          {t("settings.editApp.prodUrl")}
           <input
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://myapp.example.com"
+            placeholder={t("settings.editApp.prodUrlPlaceholder")}
           />
         </label>
 
         <label>
-          Dev URL
+          {t("settings.editApp.devUrl")}
           <input
             type="url"
             value={devUrl}
             onChange={(e) => setDevUrl(e.target.value)}
-            placeholder="http://localhost:3000"
+            placeholder={t("settings.editApp.devUrlPlaceholder")}
           />
         </label>
 
         <label>
-          Dev Command
+          {t("settings.editApp.devCommand")}
           <input
             type="text"
             value={devCommand}
             onChange={(e) => setDevCommand(e.target.value)}
-            placeholder="pnpm dev"
+            placeholder={t("settings.editApp.devCommandPlaceholder")}
           />
         </label>
 
         <label>
-          Description
+          {t("settings.editApp.description")}
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="What does this app do?"
+            placeholder={t("settings.editApp.descriptionPlaceholder")}
           />
         </label>
 
@@ -1670,10 +1692,10 @@ function AppEditForm({
             className="settings-btn settings-btn--ghost"
             onClick={onCancel}
           >
-            Cancel
+            {t("general.cancel")}
           </button>
           <button type="submit" className="settings-btn settings-btn--primary">
-            <IconCheck size={14} /> Save
+            <IconCheck size={14} /> {t("general.save")}
           </button>
         </div>
       </form>

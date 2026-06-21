@@ -16,6 +16,7 @@ import {
   getTemplateGatewayAppUrl,
   getTemplateGatewayUrl,
 } from "@agent-native/shared-app-config";
+import { useI18n, LanguageSwitcher } from "@agent-native/i18n";
 
 // Lazy-load the AgentPanel; it provides the full Chat/CLI/Workspace UI.
 const AgentPanel = lazy(() =>
@@ -129,6 +130,7 @@ function dispatchFrameSidebarStateChange(open: boolean, mode: FrameMode) {
 }
 
 export function App() {
+  const { t } = useI18n();
   const [appId] = useState(getAppId);
   const isDesktop = useAgentNativeDesktop();
   const [frameMode, setFrameMode] = useState<FrameMode>(() => {
@@ -172,9 +174,9 @@ export function App() {
   const app = getTemplate(appId);
   const suggestions = isDesktop
     ? [
-        "What does this app do?",
-        "Show me the current screen",
-        "Add a new feature",
+        t("suggestions.whatDoesItDo"),
+        t("suggestions.showCurrentScreen"),
+        t("suggestions.addNewFeature"),
       ]
     : undefined;
 
@@ -436,7 +438,7 @@ export function App() {
           ref={iframeRef}
           src={appUrl}
           className="w-full h-full border-none"
-          title={app?.label || "App"}
+          title={app?.label || t("general.app")}
           allow={APP_IFRAME_ALLOW}
         />
         {/* Overlay during drag to prevent iframe from capturing mouse events */}
@@ -476,12 +478,12 @@ export function App() {
                   className="flex items-center justify-center h-full text-sm"
                   style={{ color: "hsl(var(--muted-foreground))" }}
                 >
-                  Loading...
+                  {t("general.loading")}
                 </div>
               }
             >
               <AgentPanel
-                emptyStateText={`Ask me anything about ${app?.label || "your app"}`}
+                emptyStateText={t("frame.emptyState", { app: app?.label || t("general.app") })}
                 suggestions={suggestions}
                 onCollapse={() => setSidebarOpen(false)}
                 isFullscreen={sidebarFullscreen}
@@ -491,12 +493,11 @@ export function App() {
                 agentChatSurface="dev-frame"
                 codeAccess={{
                   enabled: isDesktop,
-                  unavailableTitle: "Open Desktop to use CLI",
-                  unavailableDescription:
-                    "Open Agent Native Desktop, click the + button, and add this app with its local dev URL to use CLI.",
-                  unavailableCtaLabel: "Open Desktop",
+                  unavailableTitle: t("frame.cliUnavailable.title"),
+                  unavailableDescription: t("frame.cliUnavailable.desc"),
+                  unavailableCtaLabel: t("frame.cliUnavailable.openDesktop"),
                   unavailableCtaHref: OPEN_DESKTOP_URL,
-                  unavailableSecondaryCtaLabel: "Download",
+                  unavailableSecondaryCtaLabel: t("frame.cliUnavailable.download"),
                   unavailableSecondaryCtaHref: DOWNLOAD_DESKTOP_URL,
                 }}
               />

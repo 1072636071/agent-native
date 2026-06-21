@@ -9,7 +9,7 @@ import {
   IconBrandJira,
   IconClipboardList,
   IconUsers,
-  IconCode,
+  IconCode as IconCodeIcon,
   IconContract,
   IconMessageCircle,
   IconSettings,
@@ -24,6 +24,7 @@ import {
   IconWorld,
   IconPhoto,
 } from "@tabler/icons-react";
+import { useI18n, LanguageSwitcher } from "@agent-native/i18n";
 import type { AppDefinition } from "@shared/app-registry";
 import { UpdateIndicator } from "./UpdateIndicator.js";
 
@@ -43,7 +44,7 @@ const ICON_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
   BrandJira: IconBrandJira,
   ClipboardList: IconClipboardList,
   Users: IconUsers,
-  Code: IconCode,
+  Code: IconCodeIcon,
   Contract: IconContract,
   MessageCircle: IconMessageCircle,
   ScreenShare: IconScreenShare,
@@ -76,6 +77,7 @@ export default function Sidebar({
   onCodeAgentsClick,
   onSettingsClick,
 }: SidebarProps) {
+  const { t } = useI18n();
   const pinnedBottomOrder = ["dispatch"];
   const pinnedBottom = pinnedBottomOrder
     .map((id) => apps.find((app) => app.id === id))
@@ -91,19 +93,22 @@ export default function Sidebar({
           className="win-btn win-btn--close"
           tabIndex={-1}
           onClick={() => window.electronAPI?.windowControls.close()}
-          title="Close"
+          title={t("window.close")}
+          aria-label={t("window.close")}
         />
         <button
           className="win-btn win-btn--minimize"
           tabIndex={-1}
           onClick={() => window.electronAPI?.windowControls.minimize()}
-          title="Minimize"
+          title={t("window.minimize")}
+          aria-label={t("window.minimize")}
         />
         <button
           className="win-btn win-btn--maximize"
           tabIndex={-1}
           onClick={() => window.electronAPI?.windowControls.maximize()}
-          title="Maximize"
+          title={t("window.maximize")}
+          aria-label={t("window.maximize")}
         />
       </div>
 
@@ -120,16 +125,17 @@ export default function Sidebar({
         {onAddAppClick && <SidebarAddButton onClick={onAddAppClick} />}
       </nav>
 
-      {/* Footer: update indicator (when relevant) + settings */}
+      {/* Footer: update indicator + language switcher + settings */}
       <div className="sidebar-footer">
         <UpdateIndicator />
+        <LanguageSwitcher />
         {onCodeAgentsClick && (
           <button
             className={`sidebar-item${isCodeAgentsActive ? " sidebar-item--active" : ""}`}
             tabIndex={-1}
             onClick={onCodeAgentsClick}
-            title="Agent-Native Code"
-            aria-label="Agent-Native Code"
+            title={t("sidebar.agentNativeCode")}
+            aria-label={t("sidebar.agentNativeCode")}
             aria-current={isCodeAgentsActive ? "page" : undefined}
           >
             <span className="icon-wrapper">
@@ -140,7 +146,7 @@ export default function Sidebar({
                 className="sidebar-agent-native-icon"
               />
             </span>
-            <span className="item-label">Code</span>
+            <span className="item-label">{t("sidebar.code")}</span>
           </button>
         )}
         {onSettingsClick && (
@@ -148,13 +154,13 @@ export default function Sidebar({
             className="sidebar-item"
             tabIndex={-1}
             onClick={onSettingsClick}
-            title="App Settings"
-            aria-label="Settings"
+            title={t("sidebar.settings")}
+            aria-label={t("sidebar.settings")}
           >
             <span className="icon-wrapper">
               <IconSettings size={18} strokeWidth={1.75} />
             </span>
-            <span className="item-label">Settings</span>
+            <span className="item-label">{t("sidebar.settings")}</span>
           </button>
         )}
       </div>
@@ -163,23 +169,22 @@ export default function Sidebar({
 }
 
 function SidebarAddButton({ onClick }: { onClick: () => void }) {
+  const { t } = useI18n();
   return (
     <button
       className="sidebar-item sidebar-item--add"
       tabIndex={-1}
       onClick={onClick}
-      title="Add an app"
-      aria-label="Add an app"
+      title={t("sidebar.addApp")}
+      aria-label={t("sidebar.addApp")}
     >
       <span className="icon-wrapper">
         <IconPlus size={18} strokeWidth={1.75} />
       </span>
-      <span className="item-label">Add</span>
+      <span className="item-label">{t("sidebar.add")}</span>
     </button>
   );
 }
-
-// ─── Individual tab item ──────────────────────────────────────────────────────
 
 interface SidebarItemProps {
   app: AppDefinition;

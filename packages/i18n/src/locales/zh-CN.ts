@@ -342,6 +342,19 @@ export const zhCN = {
   "codeAgents.toast.sessionRenamed": "会话已重命名",
   "codeAgents.toast.couldNotRename": "无法重命名会话",
 
+  // ── Code Agents 额外 ──
+  "codeAgents.provider.anthropic": "Anthropic",
+  "codeAgents.provider.openai": "OpenAI",
+  "codeAgents.provider.gemini": "Gemini",
+  "codeAgents.more": "更多",
+  "codeAgents.matches": "条匹配",
+  "codeAgents.recentChats": "最近的聊天",
+  "codeAgents.contextUsed": "已用 {pct}% 上下文（共 {total} tokens）",
+  "codeAgents.openIn": "打开",
+  "codeAgents.openGoalForSession": "在 {surfaceLabel} 中打开",
+  "codeAgents.startOrSelectSession": "输入 /{slashCommand} 开始或选择会话",
+  "codeAgents.reviewPendingAction": "审查待处理的操作。",
+
   // ── Frame 开发框架 ──
   "frame.loading": "加载中…",
   "frame.devMode": "开发模式",

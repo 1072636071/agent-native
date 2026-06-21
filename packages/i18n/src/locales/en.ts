@@ -347,6 +347,19 @@ export const en: Record<I18nKey, string> = {
   "codeAgents.toast.sessionRenamed": "Session renamed",
   "codeAgents.toast.couldNotRename": "Could not rename session",
 
+  // ── Code Agents extra ──
+  "codeAgents.provider.anthropic": "Anthropic",
+  "codeAgents.provider.openai": "OpenAI",
+  "codeAgents.provider.gemini": "Gemini",
+  "codeAgents.more": "More",
+  "codeAgents.matches": "matches",
+  "codeAgents.recentChats": "recent chats",
+  "codeAgents.contextUsed": "{pct}% ctx ({total} tokens)",
+  "codeAgents.openIn": "Open in",
+  "codeAgents.openGoalForSession": "Open in {surfaceLabel}",
+  "codeAgents.startOrSelectSession": "Type /{slashCommand} to start or select a session",
+  "codeAgents.reviewPendingAction": "Review the pending action.",
+
   // ── Frame ──
   "frame.loading": "Loading…",
   "frame.devMode": "Dev Mode",

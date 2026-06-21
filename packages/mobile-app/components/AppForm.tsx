@@ -123,16 +123,16 @@ export default function AppForm({
             autoCorrect={false}
           />
 
-          <Text style={styles.label}>Description</Text>
+          <Text style={styles.label}>{t("mobile.appForm.description")}</Text>
           <TextInput
             style={styles.input}
             value={description}
             onChangeText={setDescription}
-            placeholder="What does this app do?"
+            placeholder={t("mobile.appForm.descriptionPlaceholder")}
             placeholderTextColor="#555555"
           />
 
-          <Text style={styles.label}>Icon</Text>
+          <Text style={styles.label}>{t("mobile.appForm.icon")}</Text>
           <View style={styles.iconGrid}>
             {ICON_PRESETS.map(({ name: iconName, icon: featherIcon }) => (
               <TouchableOpacity
