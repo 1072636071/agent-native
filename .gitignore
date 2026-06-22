@@ -124,6 +124,9 @@ extract_canvas.bat
 # Arts IDE settings
 .arts/
 
+# JetBrains IDE settings
+.idea/
+
 # Temp files
 temp/
 pnpm_install_fix_summary.md

@@ -16,7 +16,7 @@ export type I18nMessages = Record<I18nKey, string>;
 type TemplateParams<S extends string> =
   S extends `${string}{${infer P}}${infer Rest}`
     ? Record<P, string | number> & TemplateParams<Rest>
-    : Record<string, never>;
+    : Record<string, string | number>;
 
 /** Narrow params type per key — empty object when no params exist */
 export type I18nParams<K extends I18nKey> =

@@ -871,6 +871,7 @@ function startApp(app: TemplateApp): void {
       cwd: ROOT,
       stdio: ["ignore", "pipe", "pipe"],
       detached: process.platform !== "win32",
+      shell: process.platform === "win32",
       env: devWatcherEnv({
         ...process.env,
         // Children write to a pipe (not a TTY), so vite/pnpm/chalk/picocolors

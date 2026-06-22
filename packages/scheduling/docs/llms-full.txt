@@ -87,6 +87,69 @@ expiry and mark credentials invalid if Zoom returns 401/403.
 
 
 ---
+## UI_UNIFICATION_zh.md
+
+# UI 统一 — booking-link / 事件类型编辑器
+
+从 0.1.x 开始，`@agent-native/scheduling` 包提供了一小组共享 React 组件，用于日历和调度界面，使应用可以在不重复逻辑的情况下保持视觉一致性。
+
+从 `@agent-native/scheduling/react/components` 导出：
+
+| 组件 | 用途 |
+| --- | --- |
+| `ConferencingSelector` | 2x2 网格"无会议 / Google Meet / Zoom / 自定义链接"；包含启动真实 OAuth 的"连接 Zoom"功能 |
+| `SlugEditor` | 内联可编辑的 URL 预览（`host/prefix/username/slug`），点击可编辑各段 |
+| `CustomFieldsEditor` | 添加/编辑/重排序/删除自定义预约表单字段，带预设（LinkedIn、Company、Phone、Website） |
+| `DurationPicker` | 多选药丸按钮（15 / 30 / 45 / 60 + 自定义）用于按事件类型的时长 |
+| `BookingLinkCreateDialog` | 创建新事件类型时提示输入标题/URL/时长/描述的模态框 |
+| `AvailabilityEditor` | 每周日程网格，带开关 + 开始/结束时间选择器；`summarizeAvailability(ws)` 辅助函数用于列表副标题 |
+
+现有的 `SlotPicker` 和 `TimezoneSelect` 继续与这些组件并存。
+
+## 消费者中需要的 Shadcn 原语
+
+此包中的每个组件都通过标准的 `@/components/ui/*` 别名导入 shadcn 原语（由消费者的打包器解析）。包在 `react/components/_shadcn-shims.d.ts` 中提供了类型垫片，使其可以独立编译。
+
+在导入任何共享组件之前，将这些添加到模板的 `app/components/ui/` 中：
+
+| 需要的组件 | 使用方 |
+| --- | --- |
+| `button` | ConferencingSelector, BookingLinkCreateDialog, DurationPicker |
+| `input` | ConferencingSelector, CustomFieldsEditor, DurationPicker, BookingLinkCreateDialog, AvailabilityEditor |
+| `label` | ConferencingSelector, CustomFieldsEditor, SlugEditor, BookingLinkCreateDialog, AvailabilityEditor |
+| `textarea` | CustomFieldsEditor, BookingLinkCreateDialog |
+| `switch` | CustomFieldsEditor, AvailabilityEditor |
+| `badge` | ConferencingSelector |
+| `dialog` | BookingLinkCreateDialog |
+
+图标来自 `@tabler/icons-react`（未打包；每个模板已依赖它）。
+
+## 什么移到了哪里
+
+| 旧位置（calendar 模板） | 新位置 |
+| --- | --- |
+| BookingLinksPage 中的 `ConferencingEditor` | `@agent-native/scheduling/react/components` 中的 `ConferencingSelector` |
+| BookingLinksPage 中的 `EditableBookingUrl` | 包中的 `SlugEditor` |
+| BookingLinksPage 中的 `CustomFieldsEditor` | 包中的 `CustomFieldsEditor` |
+
+| 旧位置（已移除的 scheduling 应用） | 新位置 |
+| --- | --- |
+| 事件类型编辑器中的 `DurationsEditor` | 包中的 `DurationPicker` |
+| `LocationEditor` + `AppsGrid`（两处） | 包中的 `ConferencingSelector`（Apps 标签页已移除 — 它是冗余的） |
+| `_index` 中的内联创建对话框 | 包中的 `BookingLinkCreateDialog` |
+
+## Zoom 变为真实 OAuth
+
+以前 calendar 模板的 Zoom 选项要求用户粘贴个人会议 URL。已移除的 scheduling 应用根本没有基于 OAuth 的 Zoom（只有 `zoom_video` "应用安装"占位符）。
+
+两者现在都通过提供商在 `VideoProvider` 上新增的可选 `startOAuth` / `completeOAuth` 方法使用真实的 Zoom OAuth。消费者：
+
+- **自定义调度界面** — 可以调用包的 `connect-video` action 处理 `zoom_video`，将回调路由到其应用，并通过 `completeVideoOAuth()` 存储 token。
+- **Calendar 模板** — 提供轻量级的 `server/lib/zoom.ts`，使用包的 `createZoomProvider` 但直接在 core 的 `oauth_tokens` 中存储 token，以 Zoom 用户 ID + 所有者邮箱为键。预约创建处理器在预约链接的会议类型为 `zoom` 时调用 `createZoomMeeting()`。
+
+两种流程都会在 Zoom 访问令牌距过期 60 秒内时自动刷新，并在 Zoom 返回 401/403 时将凭据标记为无效。
+
+---
 ## actions.md
 
 # Actions
@@ -156,6 +219,72 @@ owned by or shared with the current user, read/write actions throw.
 
 
 ---
+## actions_zh.md
+
+# Actions
+
+每个 action 都是一个 `defineAction` 模块，你可以重新导出到模板的 `actions/` 文件夹：
+
+```ts
+// actions/create-booking.ts
+export { default } from "@agent-native/scheduling/actions/create-booking";
+```
+
+action 脚手架可以帮你完成这些。完整列表：
+
+## 事件类型
+
+- list-event-types, get-event-type, create-event-type, update-event-type,
+  delete-event-type, duplicate-event-type, toggle-event-type-hidden,
+  reorder-event-types, set-event-type-location, add-private-link,
+  revoke-private-link
+
+## 可用性
+
+- list-schedules, create-schedule, update-schedule, delete-schedule,
+  set-default-schedule, add-date-override, remove-date-override,
+  get-availability, check-availability, find-available-slot
+
+## 预约
+
+- list-bookings, get-booking, create-booking, reschedule-booking,
+  cancel-booking, confirm-booking, mark-no-show, add-booking-attendee,
+  remove-booking-attendee, send-reschedule-link, add-booking-note,
+  export-bookings-csv
+
+## 集成
+
+- list-calendar-integrations, connect-calendar, disconnect-calendar,
+  list-selected-calendars, toggle-selected-calendar, set-destination-calendar,
+  refresh-busy-times, install-conferencing-app
+
+## 团队
+
+- create-team, invite-team-member, accept-team-invite, remove-team-member,
+  update-member-role, set-team-branding
+
+## 轮询 & 主持人
+
+- assign-round-robin-host, set-event-type-hosts,
+  set-host-availability-override, create-host-group
+
+## 设置
+
+- update-profile, set-appearance, set-default-conferencing-app
+
+## 工作流
+
+- list-workflows, create-workflow, update-workflow, delete-workflow,
+  toggle-workflow
+
+## 路由表单
+
+- list-routing-forms, create-routing-form, update-routing-form,
+  delete-routing-form, list-routing-form-responses
+
+所有 actions 遵循框架共享系统 — 如果资源不属于当前用户或未与当前用户共享，读/写 actions 会抛出异常。
+
+---
 ## eject.md
 
 # Ejecting `@agent-native/scheduling`
@@ -177,6 +306,25 @@ For full customization, you can move the package source into your own repo.
 Now you own the code and can modify freely. Upstream updates are available via
 `npm view @agent-native/scheduling versions` — you can selectively port changes.
 
+
+---
+## eject_zh.md
+
+# 弹出 `@agent-native/scheduling`
+
+如需完全自定义，你可以将包源码移到你自己的仓库中。
+
+**v0.2 计划：** `agent-native eject @agent-native/scheduling`。
+
+**当前（v0.1）** — 手动操作：
+
+1. `cp -r node_modules/@agent-native/scheduling/src packages/scheduling-local/src`
+2. 将 `packages/scheduling-local/` 添加到你的 workspaces。
+3. 在依赖中将 `"@agent-native/scheduling": "^0.1"` 替换为 `"@local/scheduling": "workspace:*"`（或类似）。
+4. 在你的仓库中进行查找替换，将 `@agent-native/scheduling` 改为 `@local/scheduling`。
+5. 安装：`pnpm install`。
+
+现在你拥有代码并可以自由修改。上游更新可通过 `npm view @agent-native/scheduling versions` 获取 — 你可以选择性地移植更改。
 
 ---
 ## llms.txt
@@ -346,6 +494,72 @@ is `builtin-video`, `zoom`, `google-meet`, or `teams`. Meeting URLs land in
 
 
 ---
+## providers_zh.md
+
+# 编写自定义提供商
+
+调度需要两种提供商：
+
+- **CalendarProvider** — 读取忙碌时段 + 写入事件。
+- **VideoProvider** — 在预约确认时创建会议室。
+
+内置：Google Calendar、Office 365、Zoom、内置视频（Daily.co）、Google Meet（搭载 Google Calendar）。
+
+## CalendarProvider
+
+```ts
+import { registerCalendarProvider } from "@agent-native/scheduling/server/providers";
+
+registerCalendarProvider({
+  kind: "my_calendar",
+  label: "My Calendar",
+  async startOAuth({ redirectUri, state }) {
+    /* return { authUrl } */
+  },
+  async completeOAuth({ code, credentialId, userEmail, redirectUri }) {
+    /* exchange code, persist tokens, return externalEmail + calendars */
+  },
+  async listCalendars({ credentialId }) {
+    /* ... */
+  },
+  async getBusy({ credentialId, calendarExternalIds, start, end }) {
+    /* ... */
+  },
+  async createEvent({
+    credentialId,
+    calendarExternalId,
+    booking,
+    includeConference,
+  }) {
+    /* ... */
+  },
+  async updateEvent({ credentialId, externalId, booking }) {
+    /* ... */
+  },
+  async deleteEvent({ credentialId, externalId }) {
+    /* ... */
+  },
+});
+```
+
+所有方法接收一个 `credentialId` — 使用它通过你的 token 存储查找 OAuth token。包的 `setSchedulingContext()` 不触及 token；消费者通常使用 core 的 `oauth_tokens` 并传入 `getAccessToken(credentialId)` 回调。
+
+## VideoProvider
+
+```ts
+registerVideoProvider({
+  kind: "my_video",
+  label: "My Video",
+  async createMeeting({ credentialId, booking }) {
+    return { meetingUrl, meetingId, meetingPassword? };
+  },
+  async deleteMeeting?({ credentialId, meetingId }) { /* ... */ },
+});
+```
+
+视频提供商在预约的地点为 `builtin-video`、`zoom`、`google-meet` 或 `teams` 时由预约服务调用。会议 URL 写入 `booking_references`。
+
+---
 ## schema.md
 
 # Schema reference
@@ -437,7 +651,76 @@ Use `share-resource` / `set-resource-visibility` framework actions.
 
 
 ---
-## skills/availability/SKILL.md
+## schema_zh.md
+
+# Schema 参考
+
+所有表使用 `@agent-native/core/db/schema` 中的方言无关辅助函数，并与 `ownableColumns()` + `createSharesTable()` 组合以实现框架级共享。
+
+## event_types
+
+主要可预约资源。时长、地点选项、自定义字段、缓冲、限制、周期（滚动/范围/无限制）、调度类型（个人/集体/轮询/托管）、可选团队分配、哈希链接支持。
+
+## event_type_hosts
+
+事件类型和用户之间的关联表，用于集体/轮询。每个主持人有 `isFixed`、`weight`、`priority`、可选的按主持人 `scheduleId` 覆盖。
+
+## hashed_links
+
+私有预约链接：`/d/:hash/:slug`。可选 `expiresAt` 和 `isSingleUse`。
+
+## event_type_slug_redirects
+
+重命名历史，使旧 URL 继续工作。
+
+## schedules / schedule_availability / date_overrides
+
+命名的可用性预设。`schedules` 是头部（名称、时区、isDefault）。`schedule_availability` 行是每天一个每周时段。`date_overrides` 替换特定日期的每周规则（空 = 完全阻止）。
+
+## travel_schedules / out_of_office_entries
+
+按用户的差旅时区覆盖；阻止预约并可选重定向的休假窗口。
+
+## bookings / booking_attendees / booking_references / booking_seats /
+
+## booking_notes
+
+预约是物化的约会。参会者每个预约 N 个。引用是外部 ID（Google 事件 ID、Zoom 会议 ID）。座位是有座位事件的预约令牌。备注仅主持人可见。
+
+## teams / team_members
+
+团队对用户分组。`team_members.role` ∈ owner|admin|member。
+
+## scheduling_credentials / selected_calendars / destination_calendars
+
+`scheduling_credentials` 是 OAuth token 上的视图（带显示元数据和 `invalid` 标志）。已选日历用于读取忙碌时间。目标日历是写入新事件的地方。
+
+## calendar_cache
+
+忙碌时段的短 TTL 缓存。在预约写入时失效。
+
+## workflows / workflow_steps / scheduled_reminders
+
+基于触发器的自动化。`workflows` 是规则；`workflow_steps` 是有序操作；`scheduled_reminders` 是等待触发的物化发送（由循环作业排空）。
+
+## webhooks / webhook_deliveries / api_keys
+
+面向开发者的界面：带 HMAC 签名负载的传出 webhook，以及用于编程访问的 API 密钥。
+
+## routing_forms / routing_form_responses
+
+ChiliPiper 风格的路由表单。字段 + 规则 → 事件类型、外部 URL 或自定义消息。
+
+## verified_emails / verified_numbers
+
+工作流使用的已验证发件人地址/号码。
+
+## 共享表
+
+对于每个可拥有资源：`event_type_shares`、`schedule_shares`、`team_shares`、`workflow_shares`、`routing_form_shares`、`booking_shares`。使用 `share-resource` / `set-resource-visibility` 框架 actions。
+
+---
+## skills\availability\SKILL.md
 
 ---
 name: availability
@@ -486,7 +769,50 @@ redirect to another team member.
 
 
 ---
-## skills/booker/SKILL.md
+## skills\availability\SKILL_zh.md
+
+---
+name: availability
+description: 日程、每周规则、日期覆盖、差旅日程和休假条目如何组合来确定某人的可预约时间。
+---
+
+# 可用性
+
+## 日程
+
+一组命名的规则（如"工作时间"）。每个用户有 ≥1 个日程，并标记一个为 `isDefault`。事件类型使用用户的默认日程或引用特定日程。
+
+时区设置在日程上，而不是用户上 — 这让你可以为同一个人设置"欧洲时间"日程和"美国时间"日程。
+
+## 每周可用性
+
+`schedule_availability` 中的行：(day 0-6, startTime "HH:MM", endTime "HH:MM")。每天可以有多个时段 — 例如周一 9-12 和 1-5。
+
+## 日期覆盖
+
+`date_overrides` 中的行：(date "YYYY-MM-DD", intervals JSON)。
+- `intervals: []` → 当天完全阻止。
+- `intervals: [{start, end}]` → 该日期仅这些时间可用。
+
+## 差旅日程
+
+`travel_schedules` 在日期范围内覆盖用户的默认时区。
+
+## 休假
+
+`out_of_office_entries` 在一个范围内阻止预约，可选重定向到另一个团队成员。
+
+## 常见任务
+
+| 用户请求 | 操作 |
+|---|---|
+| "我下周五没空" | `add-date-override --scheduleId <id> --date 2026-04-10 --intervals []` |
+| "我工作日 12-1 点午休" | `update-schedule --weeklyAvailability [...9-12, 13-17...]` |
+| "创建晚间日程" | `create-schedule --name Evenings --weeklyAvailability [...]` |
+| "下周要去东京" | 插入一条 `travel_schedules` 行（尚无专用 action） |
+
+---
+## skills\booker\SKILL.md
 
 ---
 name: booker
@@ -542,7 +868,57 @@ slides in as full-screen sheet.
 
 
 ---
-## skills/bookings/SKILL.md
+## skills\booker\SKILL_zh.md
+
+---
+name: booker
+description: 公共预约流程 — 状态机、动画和 URL/应用状态同步。
+---
+
+# Booker
+
+## 阶段
+
+1. **pick-date** — 月网格显示有可用性的日期
+2. **pick-slot** — 所选日期的可用时段
+3. **fill-form** — 参会者表单（姓名、邮箱、自定义字段）
+4. **success** — 确认页，带添加到日历按钮
+
+加上 **reschedule** 模式 — 从现有预约 uid 预填充。
+
+## 动画
+
+使用 motion（`motion/react`）的 `AnimatePresence` 和 `fadeInLeft` 变体。外部容器在各阶段间动画化其宽度：窄（仅日历）→ 较宽（日历 + 时段）→ 最宽（表单）。
+
+## 时区 + 12/24 小时制
+
+- 挂载时检测浏览器时区；让用户通过下拉菜单覆盖。
+- 持久化选择到 localStorage 键 `scheduling.timezone`。
+- 12/24 小时制切换靠近时段列；持久化到用户设置。
+
+## URL + 应用状态同步
+
+所选日期、时段、时区和时长会镜像到 URL 查询参数和 `application_state.booker-state`，因此：
+- 页面刷新保留选择。
+- 代理可以读取用户当前的选择。
+
+## 复制链接功能
+
+每个事件类型行都有一个"复制链接"按钮。点击时，写入剪贴板并使用 Sonner 显示 toast "已复制！"。在移动端 Safari 上也能工作。
+
+## 无障碍
+
+- 月网格是 ARIA `grid` + `gridcell`，支持方向键导航。
+- 时段按钮可通过键盘聚焦，带 `aria-pressed`。
+- 模态关闭时焦点返回到触发器。
+- Toast 内容通过 `aria-live=polite` 朗读。
+
+## 移动端
+
+`< 768px`：垂直堆叠。日历全宽，时段列表在下方，表单以全屏抽屉滑入。
+
+---
+## skills\bookings\SKILL.md
 
 ---
 name: bookings
@@ -590,7 +966,45 @@ confirmation-email attachments and "Add to calendar" buttons.
 
 
 ---
-## skills/embeds/SKILL.md
+## skills\bookings\SKILL_zh.md
+
+---
+name: bookings
+description: 预约生命周期 — 待确认、已确认、已重新安排、已取消 — 以及参会者、引用、未出席和提醒。
+---
+
+# 预约
+
+## 生命周期
+
+- **pending** — 需确认的事件类型从这里开始
+- **confirmed** — 正常状态
+- **rescheduled** — 重新安排后的旧预约（新预约为 confirmed；`from_reschedule` 链接它们）
+- **cancelled** — 任一方取消
+- **rejected** — 待确认被拒绝
+
+## 重新安排 vs 取消+重新预约
+
+`reschedule-booking` action 创建一个新预约，通过 `fromReschedule` 链接回旧预约。iCalUID 在重新安排链中保持不变（RFC 5545），`iCalSequence` 递增。
+
+## 未出席
+
+`mark-no-show` 在参会者上设置 `noShow: true`。轮询校准使用此信息来惩罚参会者经常未出席的主持人。
+
+## 取消 / 重新安排令牌
+
+每个预约都有 `cancelToken` 和 `rescheduleToken`，用于发送给参会者的公共魔法链接。这些让他们无需登录即可管理预约。
+
+## 引用
+
+外部系统 ID：Google Calendar 事件 ID、Zoom 会议 ID、Daily.co 房间名。存储在 `booking_references` 中，在取消/重新安排时用于将更改传播回源系统。
+
+## ICS
+
+`/booking/:uid.ics` 返回 RFC 5545 日历文件。用于确认邮件附件和"添加到日历"按钮。
+
+---
+## skills\embeds\SKILL.md
 
 ---
 name: embeds
@@ -644,7 +1058,57 @@ The iframe posts messages to the parent on lifecycle events:
 
 
 ---
-## skills/event-types/SKILL.md
+## skills\embeds\SKILL_zh.md
+
+---
+name: embeds
+description: 内联、弹窗和浮动按钮嵌入 — 代码片段生成和主题化。
+---
+
+# 嵌入
+
+## 模式
+
+- **inline** — 嵌入页面中的 iframe
+- **popup** — 触发器打开带 iframe 的模态覆盖层
+- **element-click / floating-button** — 页面任意位置的固定定位触发器
+
+## URL
+
+嵌入页面：`/:user/:slug/embed` — 相同的 Booker，无边框，通过查询参数支持主题。
+
+## 代码片段
+
+```html
+<script src="https://<host>/embed.js" async></script>
+<div id="cal-inline-embed"></div>
+<script>
+  Cal("init", { origin: "https://<host>" });
+  Cal("inline", {
+    elementOrSelector: "#cal-inline-embed",
+    calLink: "my-user/intro",
+    config: { theme: "light" }
+  });
+</script>
+```
+
+## 主题化
+
+嵌入 URL 上的查询参数：
+- `theme=light|dark`
+- `primaryColor=<hex>`
+- `locale=en|es|...`
+- `timeZone=America/Los_Angeles`
+
+这些仅对嵌入会话覆盖事件类型的默认值。
+
+## 消息传递
+
+iframe 在生命周期事件时向父级发送消息：
+`__cal.init`、`__cal.booking-successful`、`__cal.booking-cancelled`、`__cal.booking-rescheduled`。
+
+---
+## skills\event-types\SKILL.md
 
 ---
 name: event-types
@@ -689,7 +1153,47 @@ optionally with `expiresAt` and `isSingleUse`.
 
 
 ---
-## skills/integrations/SKILL.md
+## skills\event-types\SKILL_zh.md
+
+---
+name: event-types
+description: 事件类型的工作方式 — 字段、调度类型、编辑器标签页和完整的可配置选项集。
+---
+
+# 事件类型
+
+## 编辑器标签页
+- **设置** — 标题、slug、时长、描述、默认地点
+- **可用性** — 选择日程或按事件类型覆盖
+- **限制** — 缓冲、最短提前通知、预约窗口（滚动/范围）、上限（每天/每周/每月/每年）、时段间隔
+- **高级** — 事件名称模板、锁定时区、需要确认、禁用来宾、重定向 URL、私有哈希链接、座位
+- **应用** — 连接按事件的地点类型（Zoom、Meet 等）
+- **工作流** — 附加在预约生命周期事件上运行的工作流
+
+## 调度类型
+
+| 类型 | 含义 |
+|---|---|
+| `personal` | 由用户拥有，仅他们主持 |
+| `collective` | 团队事件；所有选定的主持人必须有空 |
+| `round-robin` | 团队事件；按轮换分配给一位主持人 |
+| `managed` | 父事件推送到成员的子事件类型 |
+
+## 地点类型
+
+`builtin-video`、`zoom`、`google-meet`、`teams`、`phone`、`in-person`、`custom-link`、`attendee-phone`、`organizer-phone`、`attendee-choice`。
+
+## 自定义字段
+
+文本、文本域、数字、邮箱、电话、下拉选择、多选、布尔、单选。
+存储在事件类型上；响应存储在预约上。
+
+## 哈希链接
+
+私有预约 URL，位于 `/d/:hash/:slug`。通过 `add-private-link` 创建，可选 `expiresAt` 和 `isSingleUse`。
+
+---
+## skills\integrations\SKILL.md
 
 ---
 name: integrations
@@ -746,7 +1250,59 @@ See `docs/providers.md` for the full interface.
 
 
 ---
-## skills/routing-forms/SKILL.md
+## skills\integrations\SKILL_zh.md
+
+---
+name: integrations
+description: 日历 + 视频提供商集成 — Google Calendar、Office 365、Zoom、内置视频、Google Meet — 以及如何编写新的集成。
+---
+
+# 集成
+
+## 日历提供商
+
+- **google_calendar** — OAuth；读取 freeBusy + 写入事件；可选通过 `includeConference=true` 创建 Google Meet 会议。
+- **office365_calendar** — Microsoft Graph；读取 freeBusy + 写入事件。
+- **caldav**（计划中） — 通用 CalDAV，用于 Apple iCloud、Fastmail 等。
+
+## 视频提供商
+
+- **builtin_video** — 基于 Daily.co；零 OAuth；服务器到服务器 API 密钥。
+- **zoom_video** — OAuth；通过 Zoom REST API 创建会议。
+- **google_meet** — 搭载 Google Calendar 凭据。
+- **teams_video**（计划中） — Microsoft Teams。
+
+## 凭据生命周期
+
+1. 用户点击"连接" → `connect-calendar` 返回 `authUrl` + `state`
+2. 重定向到提供商 → 授权 → 提供商重定向到我们的回调
+3. 服务器交换 code → 写入 `scheduling_credentials` 行 + core 的 `oauth_tokens` 条目
+4. 我们获取日历列表，让用户选择"已选"和"目标"
+5. Token 过期 → 静默刷新；失败时设置 `invalid: true` 并显示重新连接横幅
+
+## 忙碌时间聚合
+
+`aggregateBusy({userEmail, rangeStart, rangeEnd})` 合并：
+- 用户主持的已确认预约
+- 通过提供商从每个 `selected_calendars` 条目获取的外部忙碌时间
+
+缓存在 `calendar_cache` 中（短 TTL，默认 5 分钟）。在该主持人的任何预约写入时失效。
+
+## 编写新提供商
+
+完整接口见 `docs/providers.md`。
+
+## 常见任务
+
+| 用户 | 操作 |
+|---|---|
+| "连接 Google Calendar" | `connect-calendar --kind google_calendar --redirectUri ...` → 重定向到返回的 `authUrl` |
+| "停止检查我的假期日历" | 对该 externalId 执行 `toggle-selected-calendar --include false` |
+| "新预约默认使用 Zoom" | `set-default-conferencing-app --credentialId <zoom-cred>` |
+| "刷新日历缓存" | `refresh-busy-times` |
+
+---
+## skills\routing-forms\SKILL.md
 
 ---
 name: routing-forms
@@ -790,7 +1346,49 @@ description: ChiliPiper-style pre-booking forms that route prospects to the righ
 
 
 ---
-## skills/scheduling-basics/SKILL.md
+## skills\routing-forms\SKILL_zh.md
+
+---
+name: routing-forms
+description: ChiliPiper 风格的预约前表单，根据回答将潜在客户路由到正确的事件类型。
+---
+
+# 路由表单
+
+## 结构
+
+- **字段** — 文本、邮箱、电话、数字、下拉选择、多选
+- **规则** — `{conditions, action}` 的有序列表
+- **回退** — 没有规则匹配时采取的操作
+
+## 规则条件
+
+`conditions: [{fieldId, op, value}, …]` — 所有条件以 AND 连接。操作符：
+- `equals`、`not-equals`、`contains`、`starts-with`、`in`（值为数组）
+
+## 规则操作
+
+- `{kind: "event-type", eventTypeId, teamId?}` → 重定向到 Booker
+- `{kind: "external-url", url}` → 重定向到外部站点
+- `{kind: "custom-message", message}` → 渲染消息，无预约
+
+## 公共 URL
+
+`/forms/:formId` 渲染表单。提交时：
+1. 按顺序遍历规则；第一个匹配的生效。
+2. 如果没有匹配，使用 `fallback`。
+3. 在 `routing_form_responses` 中记录响应，附带 `matchedRuleId`。
+4. 如果操作是 `event-type`，重定向到 Booker，并从表单答案预填充 `name` / `email` / 自定义字段值。
+
+## 常见任务
+
+| 用户 | 操作 |
+|---|---|
+| "将企业潜在客户路由到 Bob" | `create-routing-form`，添加匹配公司规模的规则 → Bob 的事件类型 |
+| "查看提交记录" | `list-routing-form-responses --formId <id>` |
+
+---
+## skills\scheduling-basics\SKILL.md
 
 ---
 name: scheduling-basics
@@ -846,7 +1444,54 @@ The mental model:
 
 
 ---
-## skills/slot-engine/SKILL.md
+## skills\scheduling-basics\SKILL_zh.md
+
+---
+name: scheduling-basics
+description: 调度包的核心概念 — 事件类型、日程、预约、主持人、团队及其组合方式。
+---
+
+# 调度基础
+
+心智模型：
+
+- **事件类型** — "可预约事物"的定义（30 分钟介绍通话、45 分钟演示）。位于 `/:user/:slug` 或 `/team/:teamSlug/:slug`。
+- **日程** — 一组命名的可用性规则（"工作时间"、"晚间"）。每周时段加上特定日期覆盖。每个用户有一个默认日程；事件类型可以选择任意一个。
+- **预约** — 物化的约会。有参会者、对外部系统的引用（Google Calendar 事件、Zoom 会议），以及在重新安排时保持稳定的 iCalUID。
+- **主持人** — 被分配到事件类型的用户。主持人有权重和优先级用于轮询。
+- **团队** — 可以共同主持事件类型的用户组。
+- **地点** — 会议举行的地点。视频（内置、Zoom、Meet、Teams）、电话、线下或自定义链接。
+
+## 工作流和路由表单
+
+- **工作流** — 触发器 + 有序步骤。"活动前 1 小时给参会者发邮件。"
+- **路由表单** — 预约前表单，根据回答路由到正确的事件类型。类似 ChiliPiper。
+
+## 公共 URL
+
+- `/:user` — 带事件类型列表的用户资料页
+- `/:user/:slug` — 个人事件类型的 Booker
+- `/:user/:slug/embed` — 无边框，用于 iframe 嵌入
+- `/team/:teamSlug` — 团队资料页
+- `/team/:teamSlug/:slug` — 团队事件类型的 Booker（轮询或集体）
+- `/d/:hash/:slug` — 私有哈希链接 Booker
+- `/booking/:uid` — 预约详情 / 管理
+- `/reschedule/:uid` — 重新安排 Booker
+- `/forms/:formId` — 公共路由表单
+
+## 常见任务
+
+| 用户请求 | 操作 |
+|---|---|
+| "创建一个 30 分钟的介绍会议" | `create-event-type --title "Intro" --slug intro --length 30` |
+| "我明天有什么空闲时间？" | `check-availability --slug <slug> --from ... --to ...` |
+| "取消我和 Alex 下午 3 点的预约" | `list-bookings --status upcoming`，然后 `cancel-booking --uid ...` |
+| "阻止下周五的预约" | `add-date-override --scheduleId <id> --date 2026-04-10 --intervals []` |
+| "连接 Google Calendar" | `connect-calendar --kind google_calendar --redirectUri ...` |
+| "创建一个在 Alice 和 Bob 之间轮换的团队事件" | `create-event-type --schedulingType round-robin --teamId ...`，然后 `set-event-type-hosts` |
+
+---
+## skills\slot-engine\SKILL.md
 
 ---
 name: slot-engine
@@ -903,7 +1548,56 @@ If a slot is unexpectedly present:
 
 
 ---
-## skills/team-scheduling/SKILL.md
+## skills\slot-engine\SKILL_zh.md
+
+---
+name: slot-engine
+description: 纯函数 `computeAvailableSlots` — 输入、输出、不变量和调试指南。
+---
+
+# 时段引擎
+
+`import { computeAvailableSlots } from "@agent-native/scheduling/core"`
+
+## 输入
+- 事件类型配置（时长、缓冲、最短提前通知、周期、限制、时段间隔）
+- 日程（时区 + 每周可用性 + 日期覆盖）
+- 忙碌时段（UTC，从外部日历 + 现有预约聚合）
+- 按桶的预约计数（日/周/月/年）用于限制执行
+- 要计算的时间范围
+- 可选的每时段座位数 + 已占座位映射
+- 查看者时区（用于限制分桶，如果与日程不同）
+
+## 输出
+- `Slot { start: ISO, end: ISO, available: boolean, seatsRemaining?, hostEmail? }` 数组
+
+## 不变量
+
+该函数按顺序保证：
+
+1. 没有时段落在过去（`now + minimumBookingNotice` 是下限）。
+2. 没有时段与忙碌时段重叠（应用了缓冲）。
+3. 没有时段落在该天日程的可用时段之外。
+4. 没有时段超过预约限制。
+5. 没有时段落在事件的周期之外（滚动/范围）。
+6. DST 安全：我们在做任何区间算术之前，使用日程的时区转换为 UTC。
+
+## 调试
+
+如果时段意外缺失：
+1. 检查日程的每周可用性，查看日程时区（不是 UTC）中该星期几的情况（周末可能跨日期线偏移）。
+2. 检查该本地日期的日期覆盖（空区间 = 完全阻止）。
+3. 检查合并后的忙碌时段是否有重叠，*包括*前/后缓冲扩展。
+4. 检查预约限制：单个现有预约可能关闭一整天。
+5. 检查周期上限：滚动周期限制未来时段的显示范围。
+
+如果时段意外存在：
+1. 检查 `now` 是否正确传入（默认为 `new Date()`）。
+2. 检查提供商的忙碌时段是否为 UTC。
+3. 确认时段间隔符合预期（默认 = 时长）。
+
+---
+## skills\team-scheduling\SKILL.md
 
 ---
 name: team-scheduling
@@ -962,7 +1656,55 @@ window. Bookings can redirect to the OOO's `redirectUserEmail`.
 
 
 ---
-## skills/workflows/SKILL.md
+## skills\team-scheduling\SKILL_zh.md
+
+---
+name: team-scheduling
+description: 团队事件类型、轮询分配、集体预约、主持人权重和未出席校准。
+---
+
+# 团队调度
+
+## 调度类型
+
+- **集体** — 所有选定的团队成员必须有空；预约将所有人列为组织者。
+- **轮询** — 每次预约按轮询策略选择一个团队成员。
+- **托管** — 父事件类型推送到成员级子类型（高级；v1 中为存根）。
+
+## 轮询策略
+
+| 策略 | 方式 |
+|---|---|
+| `lowest-recent-bookings` | （默认）过去 30 天预约最少的主持人获胜；按优先级、然后权重、然后邮箱打破平局 |
+| `weighted` | 加权随机选择；给定相同种子时是确定性的 |
+| `calibrated` | 带未出席惩罚的加权（未出席率高的主持人获得更少分配） |
+
+## 主持人
+
+`event_type_hosts` 中的行：`{userEmail, isFixed, weight, priority, scheduleId?}`。固定主持人始终参加（类似轮询集合中的集体模式）。权重缩放相对份额。优先级（越低 = 越高）打破平局。
+
+## 主持人日程覆盖
+
+通常每个主持人的默认日程用于其时段。可以通过 `set-host-availability-override` 实现按事件类型按主持人的覆盖。
+
+## 休假
+
+休假主持人会在休假窗口期间自动从轮询中排除。预约可以重定向到休假者的 `redirectUserEmail`。
+
+## 主持人组
+
+`event_type_host_groups` 允许你将主持人分组 — 适用于"每组内集体，组间轮询"的场景。
+
+## 常见任务
+
+| 用户 | 操作 |
+|---|---|
+| "创建一个在 Alice / Bob / Carol 之间轮换的销售演示" | `create-event-type --schedulingType round-robin --teamId ...`，然后 `set-event-type-hosts` |
+| "将 Dave 添加为固定主持人" | `set-event-type-hosts`，Dave 设为 `isFixed: true` |
+| "Alice 休假时停止路由给她" | 为 Alice 的时间范围插入一条 `out_of_office_entries` 行 |
+
+---
+## skills\workflows\SKILL.md
 
 ---
 name: workflows
@@ -1019,3 +1761,59 @@ polling.
 | "Email attendees 24h before the meeting" | `create-workflow --trigger before-event --steps '[{action: email-attendee, offsetMinutes: 1440}]'` |
 | "Text me when someone books" | `create-workflow --trigger new-booking --steps '[{action: sms-host, ...}]'` |
 | "Stop all reminders on an event type" | `toggle-workflow` to disable |
+
+
+---
+## skills\workflows\SKILL_zh.md
+
+---
+name: workflows
+description: 基于触发器的自动化 — 提醒、跟进、webhook — 贯穿预约生命周期。
+---
+
+# 工作流
+
+## 触发器
+
+- `new-booking` — 预约创建时触发
+- `before-event` — `startTime` 之前偏移分钟数
+- `after-event` — `endTime` 之后偏移分钟数
+- `reschedule` — 预约被重新安排
+- `cancellation` — 预约被取消
+- `no-show` — 主持人将参会者标记为未出席
+
+## 步骤
+
+| 操作 | 发送 |
+|---|---|
+| `email-host` | 发送邮件给组织者 |
+| `email-attendee` | 发送邮件给参会者 |
+| `email-address` | 发送邮件到固定地址（如 ops@example.com） |
+| `sms-attendee` | 发送短信到参会者手机（需要参会者 `phone` 自定义字段） |
+| `sms-host` | 发送短信给主持人 |
+| `sms-number` | 发送短信到固定号码 |
+| `webhook` | HTTP POST 到某个 URL |
+
+步骤的 `offsetMinutes` 相对于触发时间。对于 `before-event`，使用正值（内部会应用减号）。
+
+## 模板变量
+
+在邮件主题/正文和短信正文中：
+- `{eventName}` — 事件类型标题
+- `{attendeeName}`、`{attendeeEmail}` — 第一位参会者
+- `{hostName}`、`{hostEmail}` — 组织者
+- `{startTime}`、`{endTime}` — 以主持人时区格式化
+- `{location}` — 会议 URL 或地址
+- `{cancelUrl}`、`{rescheduleUrl}` — 公共魔法链接
+
+## 触发
+
+当预约触发一个触发器时，hook 调度器会在 `scheduled_reminders` 中物化行。循环作业处理到期的行并触发实际的邮件/短信/webhook。框架端的循环作业处理轮询。
+
+## 常见任务
+
+| 用户 | 操作 |
+|---|---|
+| "会议前 24 小时给参会者发邮件" | `create-workflow --trigger before-event --steps '[{action: email-attendee, offsetMinutes: 1440}]'` |
+| "有人预约时给我发短信" | `create-workflow --trigger new-booking --steps '[{action: sms-host, ...}]'` |
+| "停止某个事件类型的所有提醒" | `toggle-workflow` 禁用 |

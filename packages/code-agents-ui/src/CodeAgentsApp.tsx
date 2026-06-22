@@ -1968,7 +1968,7 @@ function CodeAgentComposer({
   );
 }
 
-function modelOptionsToComposerGroups(models: CodeAgentModelOption[], t?: (key: string) => string): Array<{
+function modelOptionsToComposerGroups(models: CodeAgentModelOption[], t?: (...args: any[]) => string): Array<{
   engine: string;
   label: string;
   models: string[];
@@ -2004,7 +2004,7 @@ function modelOptionsToComposerGroups(models: CodeAgentModelOption[], t?: (key: 
   return [...groups.values()];
 }
 
-function providerLabelForModel(option: CodeAgentModelOption, t?: (key: string) => string): string {
+function providerLabelForModel(option: CodeAgentModelOption, t?: (...args: any[]) => string): string {
   const model = option.model.toLowerCase();
   if (option.engine === "auto" || model === "auto") return option.engineLabel;
   if (model.startsWith("claude-")) return t ? t('codeAgents.provider.anthropic') : "Anthropic";
@@ -2043,7 +2043,7 @@ function buildCodeAgentSlashCommands(
   return commands;
 }
 
-function getProviderGate(metadata: CodeAgentHostMetadata | null, t?: (key: string) => string): {
+function getProviderGate(metadata: CodeAgentHostMetadata | null, t?: (...args: any[]) => string): {
   blocked: boolean;
   description: string;
 } {
@@ -2540,7 +2540,7 @@ function getSearchResultMeta(run: CodeAgentRun): string {
     .join(" · ");
 }
 
-function getRunStatusText(run: CodeAgentRun, t?: (key: string) => string): string {
+function getRunStatusText(run: CodeAgentRun, t?: (...args: any[]) => string): string {
   if (run.status === "completed" || run.phase === "complete") return t ? t('codeAgents.status.done') : "Done";
   if (run.phase === "missing-credentials") return t ? t('codeAgents.status.needsProvider') : "Needs provider";
   if (hasPendingApproval(run)) return t ? t('codeAgents.status.approvalNeeded') : "Approval needed";
@@ -2550,7 +2550,7 @@ function getRunStatusText(run: CodeAgentRun, t?: (key: string) => string): strin
   return run.phase ?? run.status;
 }
 
-function getSessionMeta(run: CodeAgentRun, sourceLabel: string | null, t?: (key: string) => string): string {
+function getSessionMeta(run: CodeAgentRun, sourceLabel: string | null, t?: (...args: any[]) => string): string {
   return [sourceLabel, getRunStatusText(run, t), formatRelativeTime(run.updatedAt)]
     .filter(Boolean)
     .join(" · ");
@@ -2569,7 +2569,7 @@ function runControlButtons({
   onRerun?: () => void;
   onOpenWorkbench: () => void;
   onOpenTerminal?: () => void;
-  t?: (key: string) => string;
+  t?: (...args: any[]) => string;
 }): Array<{
   key: string;
   label: string;
@@ -2922,7 +2922,7 @@ function MobileRailItem({
 function mobileConnectorCopy(
   status: CodeAgentRemoteConnectorStatus | null,
   error: string | null,
-  t: (key: string) => string,
+  t: (...args: any[]) => string,
 ): {
   description: string;
   tone: "connected" | "pending" | "idle" | "attention";
@@ -2994,7 +2994,7 @@ function mobileDeepLinkForRelay(
 function connectorStatusTitle(
   status: CodeAgentRemoteConnectorStatus | null,
   error: string | null,
-  t: (key: string) => string,
+  t: (...args: any[]) => string,
 ): string {
   if (error || status?.state === "error") return t('codeAgents.mobile.setupNeedsAttention');
   if (!status) return t('codeAgents.mobile.checkingSetup');
@@ -3831,7 +3831,7 @@ function hasPendingApproval(run: CodeAgentRun): boolean {
 
 function getPendingApproval(
   run: CodeAgentRun,
-  t?: (key: string) => string,
+  t?: (...args: any[]) => string,
 ): { reason: string; command?: string } | null {
   const value = run.metadata?.pendingApproval;
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -3895,7 +3895,7 @@ function getRunSubtitle(run: CodeAgentRun): string {
 function getRunDetails(
   run: CodeAgentRun,
   goal: CodeAgentGoalDefinition,
-  t?: (key: string) => string,
+  t?: (...args: any[]) => string,
 ): CodeAgentRunDetail[] {
   const sourceDetail = getRunSourceDetail(run);
   const details =
