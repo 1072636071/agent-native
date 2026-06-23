@@ -17,6 +17,7 @@ import { identitySsoLoginButtonHtml } from "./identity-sso-store.js";
 import {
   resolveBuiltInAuthMarketing,
   type AuthMarketingContent,
+  type AuthMarketingLanguage,
 } from "./auth-marketing.js";
 import { AUTH_REDIRECT_QUERY_PARAM } from "../shared/auth-redirect-url.js";
 import {
@@ -81,6 +82,11 @@ export interface OnboardingHtmlOptions {
   requestPath?: string;
   requestOrigin?: string;
   /**
+   * Preferred language for built-in marketing content.
+   * When not set, defaults to English.
+   */
+  language?: AuthMarketingLanguage;
+  /**
    * Optional preflight copy shown before redirecting through Google sign-in.
    * Use this when a hosted app needs to warn about provider-specific consent
    * screens while leaving self-hosted deployments untouched.
@@ -101,6 +107,8 @@ export interface OnboardingHtmlOptions {
 }
 
 export function getOnboardingHtml(opts: OnboardingHtmlOptions = {}): string {
+  const isZh = opts.language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   const showGoogle = hasGoogleOAuth();
   const googleOnly = !!opts.googleOnly;
   // In a Google-only app, Google is the sole sign-in method, so always render
@@ -123,6 +131,7 @@ export function getOnboardingHtml(opts: OnboardingHtmlOptions = {}): string {
     resolveBuiltInAuthMarketing({
       requestHost: opts.requestHost,
       requestPath: opts.requestPath,
+      language: opts.language,
     });
   const hasMarketing = !!marketing;
   const runLocalCommand = marketing?.runLocalCommand?.trim();
@@ -586,11 +595,11 @@ ${
     : "";
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${isZh ? "zh" : "en"}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>${hasMarketing ? esc(marketing!.appName) + " — Sign in" : "Welcome"}</title>
+<title>${hasMarketing ? esc(marketing!.appName) + (isZh ? " — 登录" : " — Sign in") : t("欢迎", "Welcome")}</title>
 <link rel="icon" type="image/svg+xml" href="${withAppBasePath("/favicon.svg")}">
 <link rel="apple-touch-icon" href="${withAppBasePath("/icon-180.svg")}">
 ${
@@ -998,12 +1007,12 @@ ${marketingStyles}
 <body${hasMarketing ? ' class="has-marketing"' : ""}>
 ${marketingPanelHtml}
 <div class="card">
-  <h1 id="heading">${googleOnly ? "Sign in" : "Welcome"}</h1>
-  <p class="subtitle" id="subtitle">${googleOnly ? "Use your workspace Google account to continue" : "Create an account to get started"}</p>
+  <h1 id="heading">${googleOnly ? t("登录", "Sign in") : t("欢迎", "Welcome")}</h1>
+  <p class="subtitle" id="subtitle">${googleOnly ? t("使用您的 workspace Google 账户继续", "Use your workspace Google account to continue") : t("创建一个账户开始使用", "Create an account to get started")}</p>
   <p
     class="upgrade-note"
     id="upgrade-note"
-    data-upgrade-copy="Continue signing in to attach this app to your account and migrate local data."
+    data-upgrade-copy="${esc(t("继续登录以将此应用绑定到您的账户并迁移本地数据。", "Continue signing in to attach this app to your account and migrate local data."))}"
   ></p>
 ${identitySsoHtml}
 ${
@@ -1012,13 +1021,13 @@ ${
   <div class="google-signin" id="google-signin">
   <button class="btn-google" id="google-btn" onclick="signInWithGoogle()"${googleSignInNotice ? ' aria-haspopup="dialog" aria-expanded="false" aria-controls="google-preflight"' : ""}>
     <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-    Sign in with Google
+    ${t("使用 Google 登录", "Sign in with Google")}
   </button>
   <p class="google-error" id="google-err"></p>
   <p class="google-debug" id="google-debug"></p>
 ${googleNoticeHtml}
   </div>
-${googleOnly ? "" : `\n  <div class="divider" id="auth-divider">or</div>\n`}
+${googleOnly ? "" : `\n  <div class="divider" id="auth-divider">${t("或", "or")}</div>\n`}
 `
     : ""
 }
@@ -1026,65 +1035,65 @@ ${
   googleOnly
     ? ""
     : `  <div class="tabs">
-    <button class="tab" data-tab="signup">Create account</button>
-    <button class="tab" data-tab="login">Sign in</button>
+    <button class="tab" data-tab="signup">${t("创建账户", "Create account")}</button>
+    <button class="tab" data-tab="login">${t("登录", "Sign in")}</button>
   </div>
 
     <form id="signup-form" class="form">
-      <label for="s-email">Email</label>
+      <label for="s-email">${t("邮箱", "Email")}</label>
       <input id="s-email" type="email" autocomplete="email" autofocus placeholder="you@example.com" required />
-    <label for="s-pass">Password</label>
-    <input id="s-pass" type="password" autocomplete="new-password" placeholder="At least 8 characters" required minlength="8" />
-    <label for="s-pass2">Confirm password</label>
-    <input id="s-pass2" type="password" autocomplete="new-password" placeholder="Confirm password" required minlength="8" />
-      <button type="submit">Create account</button>
+    <label for="s-pass">${t("密码", "Password")}</label>
+    <input id="s-pass" type="password" autocomplete="new-password" placeholder="${t("至少 8 个字符", "At least 8 characters")}" required minlength="8" />
+    <label for="s-pass2">${t("确认密码", "Confirm password")}</label>
+    <input id="s-pass2" type="password" autocomplete="new-password" placeholder="${t("确认密码", "Confirm password")}" required minlength="8" />
+      <button type="submit">${t("创建账户", "Create account")}</button>
       <p class="msg" id="s-msg"></p>
     </form>
 
     <div id="verification-step" class="form verification-step" aria-live="polite">
-      <div class="step-progress" aria-label="Signup progress">
-        <div class="progress-step complete"><span>1</span><strong>Account</strong></div>
-        <div class="progress-step current"><span>2</span><strong>Verify</strong></div>
-        <div class="progress-step"><span>3</span><strong>Start</strong></div>
+      <div class="step-progress" aria-label="${t("注册进度", "Signup progress")}">
+        <div class="progress-step complete"><span>1</span><strong>${t("账户", "Account")}</strong></div>
+        <div class="progress-step current"><span>2</span><strong>${t("验证", "Verify")}</strong></div>
+        <div class="progress-step"><span>3</span><strong>${t("开始", "Start")}</strong></div>
       </div>
       <div class="verification-panel">
-        <p class="verification-kicker">Verification email sent</p>
-        <p class="verification-copy">We sent a secure link to <strong id="verify-email"></strong>. Click it, return here, and this app will finish signing you in automatically.</p>
-        <p class="verification-note">You can keep this tab open. If it has not refreshed after you come back, use Continue.</p>
+        <p class="verification-kicker">${t("验证邮件已发送", "Verification email sent")}</p>
+        <p class="verification-copy">${t("我们发送了一个安全链接到 ", "We sent a secure link to ")}<strong id="verify-email"></strong>${t("。点击链接后返回此页面，应用将自动完成登录。", ". Click it, return here, and this app will finish signing you in automatically.")}</p>
+        <p class="verification-note">${t("您可以保持此标签页打开。如果返回后页面未自动刷新，请点击继续。", "You can keep this tab open. If it has not refreshed after you come back, use Continue.")}</p>
       </div>
-      <button type="button" class="btn-primary" id="verify-continue">Continue</button>
+      <button type="button" class="btn-primary" id="verify-continue">${t("继续", "Continue")}</button>
       <div class="inline-actions">
-        <button type="button" class="link-button" id="resend-verification">Resend email</button>
-        <button type="button" class="link-button" id="back-to-signup">Back</button>
+        <button type="button" class="link-button" id="resend-verification">${t("重新发送", "Resend email")}</button>
+        <button type="button" class="link-button" id="back-to-signup">${t("返回", "Back")}</button>
       </div>
       <p class="msg" id="verify-msg"></p>
     </div>
 
     <form id="login-form" class="form">
-    <label for="l-email">Email</label>
+    <label for="l-email">${t("邮箱", "Email")}</label>
     <input id="l-email" type="email" autocomplete="email" placeholder="you@example.com" required />
-    <label for="l-pass">Password</label>
-    <input id="l-pass" type="password" autocomplete="current-password" placeholder="Enter password" required />
-    <button type="submit">Sign in</button>
+    <label for="l-pass">${t("密码", "Password")}</label>
+    <input id="l-pass" type="password" autocomplete="current-password" placeholder="${t("输入密码", "Enter password")}" required />
+    <button type="submit">${t("登录", "Sign in")}</button>
     <p class="msg error" id="l-msg"></p>
     <p style="margin-top:0.75rem;font-size:0.75rem;text-align:right">
-      <a href="#" id="forgot-link" style="color:#888;text-decoration:underline;text-underline-offset:2px">Forgot password?</a>
+      <a href="#" id="forgot-link" style="color:#888;text-decoration:underline;text-underline-offset:2px">${t("忘记密码？", "Forgot password?")}</a>
     </p>
   </form>
 
   <form id="forgot-form" class="form">
-    <label for="f-email">Email</label>
+    <label for="f-email">${t("邮箱", "Email")}</label>
     <input id="f-email" type="email" autocomplete="email" placeholder="you@example.com" required />
-    <button type="submit">Send reset link</button>
+    <button type="submit">${t("发送重置链接", "Send reset link")}</button>
     <p class="msg" id="f-msg"></p>
     <p style="margin-top:0.75rem;font-size:0.75rem;text-align:center">
-      <a href="#" id="back-to-login" style="color:#888;text-decoration:underline;text-underline-offset:2px">Back to sign in</a>
+      <a href="#" id="back-to-login" style="color:#888;text-decoration:underline;text-underline-offset:2px">${t("返回登录", "Back to sign in")}</a>
     </p>
   </form>`
 }
 </div>
 <p class="local-note" id="local-note">
-  Your account is stored in this app's own DB (<strong>${getConnectionLabel()}</strong>), not a third-party service.
+  ${t("您的账户存储在此应用自己的数据库中（", "Your account is stored in this app's own DB (")}<strong>${getConnectionLabel()}</strong>${t("），而非第三方服务。", "), not a third-party service.")}
 </p>${marketingCloseHtml}
 <script>
   function __anBasePath() {
@@ -1523,7 +1532,7 @@ ${identitySsoScript}
     if (!shouldShow) return;
     var n = document.getElementById('upgrade-note');
     if (!n) return;
-    n.textContent = n.getAttribute('data-upgrade-copy') || 'Continue signing in to migrate local data.';
+    n.textContent = n.getAttribute('data-upgrade-copy') || '${t("继续登录以迁移本地数据。", "Continue signing in to migrate local data.")}';
     n.classList.add('show');
   })();
 ${
@@ -1532,8 +1541,8 @@ ${
     : `  var TAB_STORAGE_KEY = 'an.onboarding.tab';
     var tabs = document.querySelectorAll('.tab');
     var forms = document.querySelectorAll('.form');
-    var subtitles = { signup: 'Create an account to get started', login: 'Sign in to your account' };
-    var headings = { signup: 'Welcome', login: 'Welcome back' };
+    var subtitles = { signup: '${t("创建一个账户开始使用", "Create an account to get started")}', login: '${t("登录您的账户", "Sign in to your account")}' };
+    var headings = { signup: '${t("欢迎", "Welcome")}', login: '${t("欢迎回来", "Welcome back")}' };
     var pendingSignupEmail = '';
     var pendingSignupPassword = '';
     var verificationCheckInFlight = false;
@@ -1568,9 +1577,9 @@ ${
       var emailNode = document.getElementById('verify-email');
       if (emailNode) emailNode.textContent = pendingSignupEmail;
       var heading = document.getElementById('heading');
-      if (heading) heading.textContent = 'Check your email';
+      if (heading) heading.textContent = '${t("检查您的邮箱", "Check your email")}';
       var sub = document.getElementById('subtitle');
-      if (sub) sub.textContent = 'Finish creating your account';
+      if (sub) sub.textContent = '${t("完成创建您的账户", "Finish creating your account")}';
       var msg = document.getElementById('verify-msg');
       if (msg) {
         msg.classList.remove('show', 'error', 'success');
@@ -1606,7 +1615,7 @@ ${
       var msg = document.getElementById('l-msg');
       if (loginEmail && email) loginEmail.value = email;
       if (msg) {
-        msg.textContent = message || 'Sign in to continue.';
+        msg.textContent = message || '${t("请登录以继续。", "Sign in to continue.")}';
         msg.classList.remove('error');
         msg.classList.add('show', 'success');
       }
@@ -1628,7 +1637,7 @@ ${
         return { ok: true };
       }
       var data = await res.json().catch(function() { return {}; });
-      var error = (data && (data.error || data.message)) || 'Could not finish sign-in automatically.';
+      var error = (data && (data.error || data.message)) || '${t("无法自动完成登录。", "Could not finish sign-in automatically.")}';
       return {
         ok: false,
         error: error,
@@ -1643,10 +1652,10 @@ ${
       var continueBtn = document.getElementById('verify-continue');
       if (continueBtn && !opts.silent) {
         continueBtn.disabled = true;
-        continueBtn.textContent = 'Checking...';
+        continueBtn.textContent = '${t("检查中…", "Checking…")}';
       }
       if (msg && !opts.silent) {
-        msg.textContent = 'Checking your verification...';
+        msg.textContent = '${t("正在检查验证状态…", "Checking your verification…")}';
         msg.classList.remove('error');
         msg.classList.add('show', 'success');
       }
@@ -1663,24 +1672,24 @@ ${
         if (loginResult.ok) return;
         if (loginResult.needsManualSignIn) {
           if (!opts.silent) {
-            movePendingSignupToLogin(fallbackText || 'Enter your password after verifying your email.');
+            movePendingSignupToLogin(fallbackText || '${t("验证邮箱后输入您的密码。", "Enter your password after verifying your email.")}');
           }
           return;
         }
         if (loginResult.error && !loginResult.isWaitingForVerification) {
           if (!opts.silent) {
-            movePendingSignupToLogin('We could not finish sign-in automatically. Sign in to continue.');
+            movePendingSignupToLogin('${t("无法自动完成登录，请登录以继续。", "We could not finish sign-in automatically. Sign in to continue.")}');
           }
           return;
         }
         if (msg && !opts.silent) {
-          msg.textContent = fallbackText || 'Still waiting on verification. Click the link in your email, then try Continue again.';
+          msg.textContent = fallbackText || '${t("仍在等待验证。点击邮件中的链接，然后再次尝试继续。", "Still waiting on verification. Click the link in your email, then try Continue again.")}';
           msg.classList.remove('success');
           msg.classList.add('show', 'error');
         }
       } catch (err) {
         if (msg && !opts.silent) {
-          msg.textContent = 'Could not check verification. Please try again.';
+          msg.textContent = '${t("无法检查验证状态，请重试。", "Could not check verification. Please try again.")}';
           msg.classList.remove('success');
           msg.classList.add('show', 'error');
         }
@@ -1688,7 +1697,7 @@ ${
         verificationCheckInFlight = false;
         if (continueBtn && !opts.silent) {
           continueBtn.disabled = false;
-          continueBtn.textContent = 'Continue';
+          continueBtn.textContent = '${t("继续", "Continue")}';
         }
       }
     }
@@ -1704,7 +1713,7 @@ ${
       var original = btn ? btn.textContent : '';
       if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Sending...';
+        btn.textContent = '${t("发送中…", "Sending…")}';
       }
       if (msg) msg.classList.remove('show', 'error', 'success');
       try {
@@ -1715,10 +1724,10 @@ ${
         });
         if (res.ok) {
           if (msg) {
-            msg.textContent = 'Sent a fresh verification link.';
+            msg.textContent = '${t("已发送新的验证链接。", "Sent a fresh verification link.")}';
             msg.classList.add('show', 'success');
           }
-          if (btn) btn.textContent = 'Sent';
+          if (btn) btn.textContent = '${t("已发送", "Sent")}';
           setTimeout(function() {
             if (btn) {
               btn.disabled = false;
@@ -1729,7 +1738,7 @@ ${
         }
         var data = await res.json().catch(function() { return {}; });
         if (msg) {
-          msg.textContent = (data && (data.message || data.error)) || 'Could not resend the verification email.';
+          msg.textContent = (data && (data.message || data.error)) || '${t("无法重新发送验证邮件。", "Could not resend the verification email.")}';
           msg.classList.add('show', 'error');
         }
         if (btn) {
@@ -1738,7 +1747,7 @@ ${
         }
       } catch (err) {
         if (msg) {
-          msg.textContent = 'Network error. Please try again.';
+          msg.textContent = '${t("网络错误，请重试。", "Network error. Please try again.")}';
           msg.classList.add('show', 'error');
         }
         if (btn) {
@@ -1772,7 +1781,7 @@ ${
         if (new URLSearchParams(location.search).has('verified')) {
           var msg = document.getElementById('l-msg');
           if (msg) {
-            msg.textContent = 'Email verified. Finishing sign-in...';
+            msg.textContent = '${t("邮箱已验证——正在完成登录…", "Email verified. Finishing sign-in...")}';
             msg.classList.remove('error');
             msg.classList.add('show', 'success');
           }
@@ -1793,13 +1802,13 @@ ${
     var pass = document.getElementById('s-pass').value;
     var pass2 = document.getElementById('s-pass2').value;
     if (pass !== pass2) {
-      msg.textContent = 'Passwords do not match';
+      msg.textContent = '${t("两次输入的密码不一致", "Passwords do not match")}';
       msg.classList.add('show', 'error');
       return;
     }
     var originalLabel = btn.textContent;
     btn.disabled = true;
-    btn.textContent = 'Creating account…';
+    btn.textContent = '${t("正在创建账户…", "Creating account…")}';
     try {
       var email = document.getElementById('s-email').value;
       var res = await fetch(__anPath('/_agent-native/auth/register'), {
@@ -1821,7 +1830,7 @@ ${
           body: JSON.stringify({ email: email, password: pass }),
         });
         if (loginRes.ok) {
-          msg.textContent = 'Account created — signing you in…';
+          msg.textContent = '${t("账户已创建——正在登录…", "Account created — signing you in…")}';
           msg.classList.add('show', 'success');
           __anRedirectToSignedInApp();
           return;
@@ -1831,12 +1840,12 @@ ${
           showVerificationStep(email, pass);
           return;
         }
-      msg.textContent = data.error || 'Registration failed';
+      msg.textContent = data.error || '${t("注册失败", "Registration failed")}';
       msg.classList.add('show', 'error');
       btn.disabled = false;
       btn.textContent = originalLabel;
     } catch (err) {
-      msg.textContent = 'Network error — please try again';
+      msg.textContent = '${t("网络错误——请重试", "Network error — please try again")}';
       msg.classList.add('show', 'error');
       btn.disabled = false;
       btn.textContent = originalLabel;
@@ -1872,9 +1881,9 @@ ${
     document.getElementById('login-form').classList.remove('active');
     document.getElementById('forgot-form').classList.add('active');
     var sub = document.getElementById('subtitle');
-    if (sub) sub.textContent = 'Reset your password';
+    if (sub) sub.textContent = '${t("重置您的密码", "Reset your password")}';
     var heading = document.getElementById('heading');
-    if (heading) heading.textContent = 'Reset password';
+    if (heading) heading.textContent = '${t("重置密码", "Reset password")}';
     var fEmail = document.getElementById('f-email');
     var lEmail = document.getElementById('l-email');
     if (lEmail && lEmail.value) fEmail.value = lEmail.value;
@@ -1898,7 +1907,7 @@ ${
     msg.classList.remove('show', 'error', 'success');
     var original = btn.textContent;
     btn.disabled = true;
-    btn.textContent = 'Sending…';
+    btn.textContent = '${t("发送中…", "Sending…")}';
     try {
       var email = document.getElementById('f-email').value;
       var res = await fetch(__anPath('/_agent-native/auth/ba/request-password-reset'), {
@@ -1907,18 +1916,18 @@ ${
         body: JSON.stringify({ email: email }),
       });
       if (res.ok) {
-        msg.textContent = 'If that email exists, a reset link is on its way.';
+        msg.textContent = '${t("如果该邮箱存在，重置链接将会发送。", "If that email exists, a reset link is on its way.")}';
         msg.classList.add('show', 'success');
-        btn.textContent = 'Sent';
+        btn.textContent = '${t("已发送", "Sent")}';
         return;
       }
       var data = await res.json().catch(function() { return {}; });
-      msg.textContent = (data && (data.message || data.error)) || 'Could not send reset email.';
+      msg.textContent = (data && (data.message || data.error)) || '${t("无法发送重置邮件。", "Could not send reset email.")}';
       msg.classList.add('show', 'error');
       btn.disabled = false;
       btn.textContent = original;
     } catch (err) {
-      msg.textContent = 'Network error — please try again';
+      msg.textContent = '${t("网络错误——请重试", "Network error — please try again")}';
       msg.classList.add('show', 'error');
       btn.disabled = false;
       btn.textContent = original;
@@ -1934,7 +1943,7 @@ ${
       msg.classList.add('error');
     var originalLabel = btn.textContent;
     btn.disabled = true;
-    btn.textContent = 'Signing in…';
+    btn.textContent = '${t("正在登录…", "Signing in…")}';
     try {
       var res = await fetch(__anPath('/_agent-native/auth/login'), {
         method: 'POST',
@@ -1949,12 +1958,12 @@ ${
         return;
       }
       var data = await res.json().catch(function() { return {}; });
-      msg.textContent = data.error || 'Invalid email or password';
+      msg.textContent = data.error || '${t("邮箱或密码错误", "Invalid email or password")}';
       msg.classList.add('show');
       btn.disabled = false;
       btn.textContent = originalLabel;
     } catch (err) {
-      msg.textContent = 'Network error — please try again';
+      msg.textContent = '${t("网络错误——请重试", "Network error — please try again")}';
       msg.classList.add('show');
       btn.disabled = false;
       btn.textContent = originalLabel;
@@ -1998,12 +2007,12 @@ ${
       if (data.url) {
         __anOpenOAuthUrl(data.url);
       } else {
-        err.textContent = data.message || 'Google OAuth is not configured.';
+        err.textContent = data.message || '${t("Google OAuth 未配置。", "Google OAuth is not configured.")}';
         err.classList.add('show');
         btn.disabled = false;
       }
     } catch (e) {
-      err.textContent = 'Failed to connect. Please try again.';
+      err.textContent = '${t("连接失败，请重试。", "Failed to connect. Please try again.")}';
       err.classList.add('show');
       btn.disabled = false;
     }
@@ -2127,13 +2136,15 @@ export const ONBOARDING_HTML = getOnboardingHtml();
  * their reset email. Posts `{ newPassword, token }` to Better Auth's
  * `/reset-password` endpoint, then redirects to the login page.
  */
-export function getResetPasswordHtml(): string {
+export function getResetPasswordHtml(language?: "en" | "zh"): string {
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${isZh ? "zh" : "en"}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Reset password</title>
+<title>${t("重置密码", "Reset password")}</title>
 <link rel="icon" type="image/svg+xml" href="${withAppBasePath("/favicon.svg")}">
 <link rel="apple-touch-icon" href="${withAppBasePath("/icon-180.svg")}">
 <style>
@@ -2159,17 +2170,17 @@ export function getResetPasswordHtml(): string {
 </head>
 <body>
 <div class="card">
-  <h1>Choose a new password</h1>
-  <p class="subtitle">Set a new password for your account.</p>
+  <h1>${t("设置新密码", "Choose a new password")}</h1>
+  <p class="subtitle">${t("为你的账户设置一个新密码。", "Set a new password for your account.")}</p>
   <form id="reset-form">
-    <label for="p1">New password</label>
-    <input id="p1" type="password" autocomplete="new-password" autofocus placeholder="At least 8 characters" required minlength="8" />
-    <label for="p2">Confirm password</label>
-    <input id="p2" type="password" autocomplete="new-password" placeholder="Confirm password" required minlength="8" />
-    <button type="submit">Save new password</button>
+    <label for="p1">${t("新密码", "New password")}</label>
+    <input id="p1" type="password" autocomplete="new-password" autofocus placeholder="${t("至少 8 个字符", "At least 8 characters")}" required minlength="8" />
+    <label for="p2">${t("确认密码", "Confirm password")}</label>
+    <input id="p2" type="password" autocomplete="new-password" placeholder="${t("再次输入密码", "Confirm password")}" required minlength="8" />
+    <button type="submit">${t("保存新密码", "Save new password")}</button>
     <p class="msg" id="msg"></p>
   </form>
-  <a class="back" id="back-link" href="/">Back to sign in</a>
+  <a class="back" id="back-link" href="/">${t("返回登录", "Back to sign in")}</a>
 </div>
 <script>
   (function() {
@@ -2186,7 +2197,7 @@ export function getResetPasswordHtml(): string {
     var token = params.get('token') || '';
     var msg = document.getElementById('msg');
     if (!token) {
-      msg.textContent = 'Missing or invalid reset token. Request a new reset link.';
+      msg.textContent = '${t("缺少或无效的重置令牌。请重新申请重置链接。", "Missing or invalid reset token. Request a new reset link.")}';
       msg.classList.add('show', 'error');
       document.getElementById('reset-form').style.display = 'none';
       return;
@@ -2198,13 +2209,13 @@ export function getResetPasswordHtml(): string {
       var p2 = document.getElementById('p2').value;
       msg.classList.remove('show', 'error', 'success');
       if (p1 !== p2) {
-        msg.textContent = 'Passwords do not match';
+        msg.textContent = '${t("两次输入的密码不一致", "Passwords do not match")}';
         msg.classList.add('show', 'error');
         return;
       }
       var original = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'Saving…';
+      btn.textContent = '${t("保存中…", "Saving…")}';
       try {
         var res = await fetch(basePath + '/_agent-native/auth/ba/reset-password', {
           method: 'POST',
@@ -2212,18 +2223,18 @@ export function getResetPasswordHtml(): string {
           body: JSON.stringify({ newPassword: p1, token: token }),
         });
         if (res.ok) {
-          msg.textContent = 'Password updated — redirecting to sign in…';
+          msg.textContent = '${t("密码已更新——正在跳转到登录页面…", "Password updated — redirecting to sign in…")}';
           msg.classList.add('show', 'success');
           setTimeout(function() { window.location.href = homeHref; }, 1200);
           return;
         }
         var data = await res.json().catch(function() { return {}; });
-        msg.textContent = (data && (data.message || data.error)) || 'Reset failed. The link may have expired — request a new one.';
+        msg.textContent = (data && (data.message || data.error)) || '${t("重置失败。链接可能已过期——请重新申请。", "Reset failed. The link may have expired — request a new one.")}';
         msg.classList.add('show', 'error');
         btn.disabled = false;
         btn.textContent = original;
       } catch (err) {
-        msg.textContent = 'Network error — please try again';
+        msg.textContent = '${t("网络错误——请重试", "Network error — please try again")}';
         msg.classList.add('show', 'error');
         btn.disabled = false;
         btn.textContent = original;

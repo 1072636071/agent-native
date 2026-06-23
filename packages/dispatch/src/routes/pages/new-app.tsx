@@ -1,4 +1,5 @@
 import { NewWorkspaceAppFlow } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { DispatchShell } from "@/components/dispatch-shell";
 
 export function meta() {
@@ -6,10 +7,11 @@ export function meta() {
 }
 
 export default function NewAppRoute() {
+  const { t } = useI18n();
   return (
     <DispatchShell
-      title="New App"
-      description="Create a workspace app from a prompt and apply the workspace vault policy."
+      title={t("dispatch.newApp.title")}
+      description={t("dispatch.newApp.description")}
     >
       <NewWorkspaceAppFlow sourceApp="dispatch" className="px-0 py-0" />
     </DispatchShell>

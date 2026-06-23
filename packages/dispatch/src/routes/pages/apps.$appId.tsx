@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconArrowLeft,
   IconArrowUpRight,
@@ -20,6 +21,7 @@ export function meta() {
 }
 
 export default function WorkspaceAppRoute() {
+  const { t } = useI18n();
   const { appId } = useParams();
   const { data: apps = [], isLoading } = useActionQuery(
     "list-workspace-apps",
@@ -42,14 +44,14 @@ export default function WorkspaceAppRoute() {
 
   return (
     <DispatchShell
-      title={app?.name || "Workspace App"}
-      description="Open a deployed app or check the status of an app being created."
+      title={app?.name || t("dispatch.workspaceApp.title")}
+      description={t("dispatch.workspaceApp.description")}
     >
       <div className="max-w-2xl rounded-lg border bg-card p-5">
         <Button asChild size="sm" variant="ghost" className="-ml-2 mb-4">
           <Link to="/apps">
             <IconArrowLeft size={15} className="mr-1.5" />
-            Apps
+            {t("dispatch.workspaceApp.appsLink")}
           </Link>
         </Button>
 
@@ -62,10 +64,10 @@ export default function WorkspaceAppRoute() {
         ) : !app ? (
           <div className="space-y-3">
             <h2 className="text-base font-semibold text-foreground">
-              App not found
+              {t("dispatch.workspaceApp.appNotFound")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              This route is not in the workspace app list yet.
+              {t("dispatch.workspaceApp.routeNotInList")}
             </p>
           </div>
         ) : app.status === "pending" ? (
@@ -79,11 +81,11 @@ export default function WorkspaceAppRoute() {
                 className="gap-1 border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
               >
                 <IconClockHour4 size={12} />
-                Building
+                {t("dispatch.workspaceApp.building")}
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
-              This app is being created. It will be available at{" "}
+              {t("dispatch.workspaceApp.appBeingCreated")}{" "}
               <span className="font-mono text-foreground">{app.path}</span>{" "}
               after its branch is merged and the workspace deploy finishes.
             </p>
@@ -95,7 +97,7 @@ export default function WorkspaceAppRoute() {
             {app.builderUrl ? (
               <Button asChild>
                 <a href={app.builderUrl} target="_blank" rel="noreferrer">
-                  Open Builder branch
+                  {t("dispatch.workspaceApp.openBuilderBranch")}
                   <IconArrowUpRight size={15} className="ml-1.5" />
                 </a>
               </Button>
@@ -104,16 +106,16 @@ export default function WorkspaceAppRoute() {
         ) : (
           <div className="space-y-3">
             <h2 className="text-base font-semibold text-foreground">
-              Opening {app.name}
+              {t("dispatch.workspaceApp.opening", { name: app.name })}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Redirecting to{" "}
+              {t("dispatch.workspaceApp.redirectingTo")}{" "}
               <span className="font-mono text-foreground">{app.path}</span>.
             </p>
             {href ? (
               <Button asChild>
                 <a href={href}>
-                  Open app
+                  {t("dispatch.workspaceApp.openApp")}
                   <IconArrowUpRight size={15} className="ml-1.5" />
                 </a>
               </Button>

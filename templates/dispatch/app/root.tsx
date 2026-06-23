@@ -19,6 +19,7 @@ import {
   useDbSync,
   appPath,
 } from "@agent-native/core/client";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import { useQueryClient } from "@tanstack/react-query";
 import { IconSun, IconMoon } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
@@ -40,9 +41,10 @@ export const links: LinksFunction = () => [
 
 const THEME_INIT_SCRIPT = getThemeInitScript();
 
-export function Layout({ children }: { children: React.ReactNode }) {
+function Document({ children }: { children: React.ReactNode }) {
+  const { lang } = useI18n();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -72,6 +74,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  );
+}
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nProvider>
+      <Document>{children}</Document>
+    </I18nProvider>
   );
 }
 
@@ -147,6 +157,7 @@ function useThreadDeepLink() {
 }
 
 function ThemeToggleItem() {
+  const { t } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   return (
@@ -155,22 +166,25 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle theme
+      {t("dispatch.command.toggleTheme")}
     </CommandMenu.Item>
   );
 }
 
 function AppContent() {
+  const { t } = useI18n();
   const [cmdkOpen, setCmdkOpen] = useState(false);
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
   return (
     <>
       <DbSyncSetup />
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Actions">
-          <CommandMenu.Item onSelect={() => {}}>Search</CommandMenu.Item>
+        <CommandMenu.Group heading={t("dispatch.command.actions")}>
+          <CommandMenu.Item onSelect={() => {}}>
+            {t("dispatch.command.search")}
+          </CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("dispatch.command.appearance")}>
           <ThemeToggleItem />
         </CommandMenu.Group>
       </CommandMenu>

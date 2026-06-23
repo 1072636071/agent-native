@@ -1206,9 +1206,24 @@ function createGateway(): http.Server {
 
 function killPort(port: number): void {
   try {
-    const pids = execSync(`lsof -ti :${port}`, { encoding: "utf8" }).trim();
-    if (pids) {
-      execSync(`kill -9 ${pids.split("\n").join(" ")}`, { stdio: "ignore" });
+    if (process.platform === "win32") {
+      const output = execSync(`netstat -ano`, { encoding: "utf8" });
+      const lines = output.split(/\r?\n/);
+      const pids = new Set<string>();
+      for (const line of lines) {
+        const match = line.match(/^\s*TCP\s+\S+:${port}\s+\S+\s+LISTENING\s+(\d+)/);
+        if (match) pids.add(match[1]);
+      }
+      if (pids.size > 0) {
+        for (const pid of pids) {
+          execSync(`taskkill /PID ${pid} /F`, { stdio: "ignore" });
+        }
+      }
+    } else {
+      const pids = execSync(`lsof -ti :${port}`, { encoding: "utf8" }).trim();
+      if (pids) {
+        execSync(`kill -9 ${pids.split("\n").join(" ")}`, { stdio: "ignore" });
+      }
     }
   } catch {
     // Port not in use.

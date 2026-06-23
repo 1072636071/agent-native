@@ -25,6 +25,7 @@ import {
   MCP_EMBED_CORS_ALLOW_HEADERS,
 } from "../shared/mcp-embed-headers.js";
 import { withCollapsedAgentSidebarParam } from "../shared/agent-sidebar-url.js";
+import { parseAcceptLanguage } from "./i18n.js";
 
 function withConfiguredBasePath(path: string): string {
   const base = getConfiguredAppBasePath();
@@ -126,15 +127,17 @@ function textResponse(
   });
 }
 
-function expiredEmbedSessionResponse(event: H3Event): Response {
+function expiredEmbedSessionResponse(event: H3Event, language?: "en" | "zh"): Response {
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   setEmbedStartResponseHeaders(event);
   return new Response(
     `<!doctype html>
-<html lang="en">
+<html lang="${isZh ? "zh" : "en"}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Embedded app session expired</title>
+  <title>${t("嵌入应用会话已过期", "Embedded app session expired")}</title>
   <style>
     :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: Canvas; color: CanvasText; }
     * { box-sizing: border-box; }
@@ -146,8 +149,8 @@ function expiredEmbedSessionResponse(event: H3Event): Response {
 </head>
 <body>
   <main>
-    <h1>Embedded app session expired</h1>
-    <p>This chat preview is refreshing. If it does not reload, ask the chat to open the app again.</p>
+    <h1>${t("嵌入应用会话已过期", "Embedded app session expired")}</h1>
+    <p>${t("此聊天预览正在刷新。如果未重新加载，请让聊天再次打开应用。", "This chat preview is refreshing. If it does not reload, ask the chat to open the app again.")}</p>
   </main>
   <script>
     try {
@@ -249,7 +252,7 @@ export function createEmbedStartRouteHandler(
       expectedOrgId: existingSession?.orgId ?? null,
     });
     if (!consumed) {
-      return expiredEmbedSessionResponse(event);
+      return expiredEmbedSessionResponse(event, parseAcceptLanguage(getHeader(event, "accept-language")));
     }
 
     const target = normalizeEmbedTargetPath(consumed.targetPath);

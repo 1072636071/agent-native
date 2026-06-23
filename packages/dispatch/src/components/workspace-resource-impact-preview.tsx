@@ -1,4 +1,5 @@
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatResourceTimestamp } from "./workspace-resource-effective-stack";
@@ -14,8 +15,13 @@ function isApprovalRequest(result: any): boolean {
 export function workspaceResourceMutationMessage(
   result: any,
   fallback: string,
+  t?: (...args: any[]) => string,
 ): string {
-  return isApprovalRequest(result) ? "Approval requested" : fallback;
+  return isApprovalRequest(result)
+    ? t
+      ? t("dispatch.resourceImpact.approvalRequested")
+      : "Approval requested"
+    : fallback;
 }
 
 export function ImpactPreview({
@@ -31,6 +37,7 @@ export function ImpactPreview({
   scope?: "all" | "selected";
   enabled?: boolean;
 }) {
+  const { t } = useI18n();
   const { data: impact, isLoading } = useActionQuery(
     "preview-workspace-resource-change",
     {
@@ -64,29 +71,33 @@ export function ImpactPreview({
     <div className="rounded-lg border bg-muted/30 p-3 text-xs">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={affectsAllApps ? "secondary" : "outline"}>
-          {affectsAllApps ? "All apps impact" : "Selected only"}
+          {affectsAllApps
+            ? t("dispatch.resourceImpact.allAppsImpact")
+            : t("dispatch.resourceImpact.selectedOnly")}
         </Badge>
         {willRequestApproval ? (
           <Badge
             variant="outline"
             className="border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
           >
-            Approval required
+            {t("dispatch.resourceImpact.approvalRequired")}
           </Badge>
         ) : null}
         {overrides.count > 0 ? (
           <Badge variant="outline">
-            {overrides.count} override{overrides.count === 1 ? "" : "s"}
+            {t("dispatch.resourceImpact.moreOverrides", {
+              count: overrides.count,
+            })}
           </Badge>
         ) : null}
       </div>
       <p className="mt-2 leading-relaxed text-muted-foreground">
         {affectsAllApps
-          ? `This change applies to every workspace app${typeof appCount === "number" ? ` (${appCount} discovered)` : ""}.`
-          : "This change only applies to explicitly granted apps."}{" "}
+          ? t("dispatch.resourceImpact.allAppsDescription", { count: appCount })
+          : t("dispatch.resourceImpact.selectedAppsDescription")}{" "}
         {willRequestApproval
-          ? "It will be queued for approval before it takes effect."
-          : "It will take effect immediately when saved."}
+          ? t("dispatch.resourceImpact.willBeQueued")
+          : t("dispatch.resourceImpact.takesEffectImmediately")}
       </p>
       {overrides.count > 0 ? (
         <div className="mt-2 space-y-1">
@@ -105,8 +116,10 @@ export function ImpactPreview({
           ))}
           {overrides.count > 4 ? (
             <div className="text-muted-foreground">
-              +{overrides.count - 4} more override
-              {overrides.count - 4 === 1 ? "" : "s"}
+              +
+              {t("dispatch.resourceImpact.moreOverrides", {
+                count: overrides.count - 4,
+              })}
             </div>
           ) : null}
         </div>

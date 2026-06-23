@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { IconExternalLink, IconTrash } from "@tabler/icons-react";
 import { agentNativePath } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 
 export interface ConnectedAgent {
   id: string;
@@ -37,32 +38,35 @@ function slugifyAgentName(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-function validateAgentForm(name: string, url: string): AgentFormErrors {
+function validateAgentForm(
+  name: string,
+  url: string,
+  t: (...args: any[]) => string,
+): AgentFormErrors {
   const errors: AgentFormErrors = {};
   const trimmedName = name.trim();
   const trimmedUrl = url.trim();
 
   if (!trimmedName) {
-    errors.name = "Agent name is required.";
+    errors.name = t("dispatch.agentsPanel.nameRequired");
   } else if (!slugifyAgentName(trimmedName)) {
-    errors.name = "Agent name must include at least one letter or number.";
+    errors.name = t("dispatch.agentsPanel.nameNeedsLetter");
   }
 
   if (!trimmedUrl) {
-    errors.url = "Agent endpoint URL is required.";
+    errors.url = t("dispatch.agentsPanel.urlRequired");
   } else {
     try {
       const parsed = new URL(trimmedUrl);
       if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-        errors.url = "Use an http:// or https:// endpoint URL.";
+        errors.url = t("dispatch.agentsPanel.urlMustBeHttp");
       } else if (!parsed.hostname) {
-        errors.url = "Enter a complete endpoint URL with a host.";
+        errors.url = t("dispatch.agentsPanel.urlNeedsHost");
       } else if (parsed.username || parsed.password) {
-        errors.url = "Do not include credentials in the endpoint URL.";
+        errors.url = t("dispatch.agentsPanel.urlNoCredentials");
       }
     } catch {
-      errors.url =
-        "Enter a valid endpoint URL, such as https://app.example.com.";
+      errors.url = t("dispatch.agentsPanel.urlInvalid");
     }
   }
 
@@ -80,6 +84,7 @@ export function AgentsPanel({
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const { t } = useI18n();
   const [errors, setErrors] = useState<AgentFormErrors>({});
   const nameRef = useRef<HTMLInputElement>(null);
 
@@ -93,7 +98,7 @@ export function AgentsPanel({
     event?.preventDefault();
     const trimmedName = name.trim();
     const trimmedUrl = url.trim();
-    const nextErrors = validateAgentForm(trimmedName, trimmedUrl);
+    const nextErrors = validateAgentForm(trimmedName, trimmedUrl, t);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       return;
@@ -132,7 +137,7 @@ export function AgentsPanel({
         nameRef.current?.focus();
       } else {
         setErrors({
-          form: `Could not add agent. Request failed with ${res.status}.`,
+          form: t("dispatch.agentsPanel.addFailed", { status: res.status }),
         });
       }
     } catch (error) {
@@ -140,7 +145,7 @@ export function AgentsPanel({
         form:
           error instanceof Error
             ? error.message
-            : "Could not add agent. Please try again.",
+            : t("dispatch.agentsPanel.addFailedGeneric"),
       });
     } finally {
       setSaving(false);
@@ -164,7 +169,7 @@ export function AgentsPanel({
         <div className="space-y-4">
           <div>
             <div className="text-sm font-medium text-foreground">
-              Available by default
+              {t("dispatch.agentsPanel.availableByDefault")}
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {builtinAgents.map((agent) => (
@@ -181,7 +186,7 @@ export function AgentsPanel({
               ))}
               {builtinAgents.length === 0 && (
                 <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-                  No default agents detected.
+                  {t("dispatch.agentsPanel.noDefaultAgents")}
                 </div>
               )}
             </div>
@@ -189,7 +194,7 @@ export function AgentsPanel({
 
           <div>
             <div className="text-sm font-medium text-foreground">
-              Added in this workspace
+              {t("dispatch.agentsPanel.addedInWorkspace")}
             </div>
             <div className="mt-2 space-y-2">
               {workspaceAgents.map((agent) => (
@@ -256,18 +261,24 @@ export function AgentsPanel({
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Remove this agent?</AlertDialogTitle>
+                        <AlertDialogTitle>
+                          {t("dispatch.agentsPanel.removeThisAgent")}
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                          “{agent.name}” will be removed from the workspace. Any
-                          jobs or chats that delegate to it will stop working.
+                          "{agent.name}"{" "}
+                          {t("dispatch.agentsPanel.removeAgentDescription", {
+                            name: agent.name,
+                          })}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>
+                          {t("dispatch.agentsPanel.cancel")}
+                        </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleDelete(agent.resourceId)}
                         >
-                          Remove
+                          {t("dispatch.agentsPanel.remove")}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -276,7 +287,7 @@ export function AgentsPanel({
               ))}
               {workspaceAgents.length === 0 && customAgents.length === 0 && (
                 <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-                  No extra agents added yet.
+                  {t("dispatch.agentsPanel.noExtraAgents")}
                 </div>
               )}
             </div>
@@ -285,10 +296,10 @@ export function AgentsPanel({
 
         <div className="rounded-xl border bg-muted/20 p-4">
           <div className="text-sm font-medium text-foreground">
-            Add external agent
+            {t("dispatch.agentsPanel.addExternalAgent")}
           </div>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            Add another A2A-compatible app by saving its agent endpoint here.
+            {t("dispatch.agentsPanel.addExternalAgentDescription")}
           </p>
           <form className="mt-4 space-y-3" onSubmit={handleAdd} noValidate>
             <div className="space-y-1.5">
@@ -299,7 +310,7 @@ export function AgentsPanel({
                   setName(event.target.value);
                   setErrors((current) => ({ ...current, name: undefined }));
                 }}
-                placeholder="Name"
+                placeholder={t("dispatch.agentsPanel.namePlaceholder")}
                 aria-invalid={Boolean(errors.name)}
                 aria-describedby={
                   errors.name ? "external-agent-name-error" : undefined
@@ -321,7 +332,7 @@ export function AgentsPanel({
                   setUrl(event.target.value);
                   setErrors((current) => ({ ...current, url: undefined }));
                 }}
-                placeholder="https://app.example.com"
+                placeholder={t("dispatch.agentsPanel.urlPlaceholder")}
                 aria-invalid={Boolean(errors.url)}
                 aria-describedby={
                   errors.url ? "external-agent-url-error" : undefined
@@ -339,7 +350,7 @@ export function AgentsPanel({
             <Input
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              placeholder="Description (optional)"
+              placeholder={t("dispatch.agentsPanel.descriptionOptional")}
             />
             {errors.form ? (
               <p className="text-xs font-medium text-destructive">
@@ -347,7 +358,9 @@ export function AgentsPanel({
               </p>
             ) : null}
             <Button type="submit" className="w-full" disabled={saving}>
-              {saving ? "Saving..." : "Add agent"}
+              {saving
+                ? t("dispatch.agentsPanel.saving")
+                : t("dispatch.agentsPanel.addAgent")}
             </Button>
           </form>
         </div>

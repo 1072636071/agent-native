@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconCheck,
   IconChevronRight,
@@ -102,6 +103,7 @@ function ConnectDialog({
   onOpenChange: (next: boolean) => void;
   accessMode: "all-apps" | "manual";
 }) {
+  const { t } = useI18n();
   const [value, setValue] = useState("");
   const qc = useQueryClient();
 
@@ -116,7 +118,7 @@ function ConnectDialog({
   async function handleSave() {
     const trimmed = value.trim();
     if (!trimmed) {
-      toast.error("Enter a value to save");
+      toast.error(t("dispatch.integrations.enterValueToSave"));
       return;
     }
     try {
@@ -164,7 +166,9 @@ function ConnectDialog({
       onOpenChange(false);
       reset();
     } catch (err: any) {
-      toast.error(err?.message ?? "Failed to save credential");
+      toast.error(
+        err?.message ?? t("dispatch.integrations.failedToSaveCredential"),
+      );
     }
   }
 
@@ -218,7 +222,9 @@ function ConnectDialog({
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={pending || !value.trim()}>
-            {pending ? "Saving…" : "Connect"}
+            {pending
+              ? t("dispatch.integrations.saving")
+              : t("dispatch.integrations.connect")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -318,6 +324,7 @@ function PerAppDetailRow({ app }: { app: CatalogApp }) {
 }
 
 export default function ConnectionsRoute() {
+  const { t } = useI18n();
   const { data: catalog, isLoading } = useActionQuery(
     "list-integrations-catalog",
     {},
@@ -361,8 +368,8 @@ export default function ConnectionsRoute() {
 
   return (
     <DispatchShell
-      title="Connections"
-      description="Connect services once. Apps that need them pick up the key automatically."
+      title={t("dispatch.integrations.title")}
+      description={t("dispatch.integrations.description")}
     >
       {isLoading && services.length === 0 && (
         <div className="rounded-2xl border border-dashed px-6 py-12 text-center text-sm text-muted-foreground">

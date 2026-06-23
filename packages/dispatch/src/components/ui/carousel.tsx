@@ -3,6 +3,7 @@ import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -196,6 +197,7 @@ const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
+  const { t } = useI18n();
   const { orientation, scrollPrev, canScrollPrev } = useCarousel();
 
   return (
@@ -215,7 +217,7 @@ const CarouselPrevious = React.forwardRef<
       {...props}
     >
       <IconArrowLeft className="h-4 w-4" />
-      <span className="sr-only">Previous slide</span>
+      <span className="sr-only">{t("dispatch.ui.previousSlide")}</span>
     </Button>
   );
 });
@@ -225,6 +227,7 @@ const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
+  const { t } = useI18n();
   const { orientation, scrollNext, canScrollNext } = useCarousel();
 
   return (
@@ -244,7 +247,7 @@ const CarouselNext = React.forwardRef<
       {...props}
     >
       <IconArrowRight className="h-4 w-4" />
-      <span className="sr-only">Next slide</span>
+      <span className="sr-only">{t("dispatch.ui.nextSlide")}</span>
     </Button>
   );
 });

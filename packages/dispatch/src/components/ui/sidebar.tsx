@@ -2,6 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import { IconLayoutSidebar } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -186,6 +187,7 @@ const Sidebar = React.forwardRef<
     },
     ref,
   ) => {
+    const { t } = useI18n();
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
     if (collapsible === "none") {
@@ -217,9 +219,11 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
-            <SheetTitle className="sr-only">Sidebar</SheetTitle>
+            <SheetTitle className="sr-only">
+              {t("dispatch.sidebar.sidebar")}
+            </SheetTitle>
             <SheetDescription className="sr-only">
-              Mobile sidebar navigation
+              {t("dispatch.sidebar.mobileSidebarNavigation")}
             </SheetDescription>
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
@@ -278,6 +282,7 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
+  const { t } = useI18n();
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -294,7 +299,7 @@ const SidebarTrigger = React.forwardRef<
       {...props}
     >
       <IconLayoutSidebar />
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">{t("dispatch.sidebar.toggleSidebar")}</span>
     </Button>
   );
 });
@@ -304,6 +309,7 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
+  const { t } = useI18n();
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -312,7 +318,7 @@ const SidebarRail = React.forwardRef<
         <button
           ref={ref}
           data-sidebar="rail"
-          aria-label="Toggle Sidebar"
+          aria-label={t("dispatch.sidebar.toggleSidebar")}
           tabIndex={-1}
           onClick={toggleSidebar}
           className={cn(
@@ -327,7 +333,7 @@ const SidebarRail = React.forwardRef<
           {...props}
         />
       </TooltipTrigger>
-      <TooltipContent>Toggle Sidebar</TooltipContent>
+      <TooltipContent>{t("dispatch.sidebar.toggleSidebar")}</TooltipContent>
     </Tooltip>
   );
 });

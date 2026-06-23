@@ -1,0 +1,106 @@
+[95m[calendar][0m Error: Failed to load url file:///E:/work/sp/agent-native/packages/scheduling/dist/server/providers/index.js (resolved id: E:/work/sp/agent-native/packages/scheduling/dist/server/providers/index.js). Does the file exist?
+[95m[calendar][0m     at loadAndTransform (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/chunks/node.js:24635:31) {
+[95m[calendar][0m   code: [32m'ERR_LOAD_URL'[39m,
+[95m[calendar][0m   runnerError: Error: RunnerError
+[95m[calendar][0m       at reviveInvokeError (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:547:64)
+[95m[calendar][0m       at Object.invoke (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:620:11)
+[95m[calendar][0m       at ModuleRunner.getModuleInformation (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:1199:7)
+[95m[calendar][0m       at request (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:1216:83)
+[95m[calendar][0m       at E:/work/sp/agent-native/templates/calendar/server/lib/zoom.ts:22:1
+[95m[calendar][0m       at ESModulesEvaluator.runInlinedModule (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:1006:3)
+[95m[calendar][0m       at ModuleRunner.directRequest (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:1259:59)
+[95m[calendar][0m       at ModuleRunner.cachedRequest (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:1166:73)
+[95m[calendar][0m       at E:/work/sp/agent-native/templates/calendar/server/lib/event-video-conferencing.ts:3:1
+[95m[calendar][0m       at ESModulesEvaluator.runInlinedModule (file:///E:/work/sp/agent-native/node_modules/[4m.pnpm[24m/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/[4mvite[24m/dist/node/module-runner.js:1006:3)
+[95m[calendar][0m }
+[95m[calendar][0m Timed out waiting 30s for /calendar to return an HTTP response on 127.0.0.1:8082.; retrying in 1s
+[95m[calendar][0m [31merror when starting dev server:
+[95m[calendar][0m Error: Port 8082 is already in use
+[95m[calendar][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[95m[calendar][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[95m[calendar][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[95m[calendar][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[95m[calendar][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[95m[calendar][0m exited with code 1; retrying in 2s
+[95m[calendar][0m [31merror when starting dev server:
+[95m[calendar][0m Error: Port 8082 is already in use
+[95m[calendar][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[95m[calendar][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[95m[calendar][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[95m[calendar][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[95m[calendar][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[95m[calendar][0m exited with code 1; retrying in 4s
+[95m[calendar][0m [31merror when starting dev server:
+[95m[calendar][0m Error: Port 8082 is already in use
+[95m[calendar][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[95m[calendar][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[95m[calendar][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[95m[calendar][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[95m[calendar][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[95m[calendar][0m exited with code 1; retrying in 8s
+[95m[calendar][0m [31merror when starting dev server:
+[95m[calendar][0m Error: Port 8082 is already in use
+[95m[calendar][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[95m[calendar][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[95m[calendar][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[95m[calendar][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[95m[calendar][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[95m[calendar][0m exited with code 1; retrying in 10s
+[96m[clips][0m Timed out waiting 30s for /clips to return an HTTP response on 127.0.0.1:8094.; retrying in 1s
+[96m[clips][0m [31merror when starting dev server:
+[96m[clips][0m Error: Port 8094 is already in use
+[96m[clips][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[96m[clips][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[96m[clips][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[96m[clips][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[96m[clips][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[96m[clips][0m exited with code 1; retrying in 2s
+[95m[calendar][0m [31merror when starting dev server:
+[95m[calendar][0m Error: Port 8082 is already in use
+[95m[calendar][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[95m[calendar][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[95m[calendar][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[95m[calendar][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[95m[calendar][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[95m[calendar][0m exited with code 1; retrying in 10s
+[96m[clips][0m [31merror when starting dev server:
+[96m[clips][0m Error: Port 8094 is already in use
+[96m[clips][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[96m[clips][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[96m[clips][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[96m[clips][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[96m[clips][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[96m[clips][0m exited with code 1; retrying in 4s
+[92m[content][0m Timed out waiting 30s for /content to return an HTTP response on 127.0.0.1:8083.; retrying in 1s
+[92m[content][0m [31merror when starting dev server:
+[92m[content][0m Error: Port 8083 is already in use
+[92m[content][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[92m[content][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[92m[content][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[92m[content][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[92m[content][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[92m[content][0m exited with code 1; retrying in 2s
+[96m[clips][0m [31merror when starting dev server:
+[96m[clips][0m Error: Port 8094 is already in use
+[96m[clips][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[96m[clips][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[96m[clips][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[96m[clips][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[96m[clips][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[96m[clips][0m exited with code 1; retrying in 8s
+[92m[content][0m [31merror when starting dev server:
+[92m[content][0m Error: Port 8083 is already in use
+[92m[content][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[92m[content][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[92m[content][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[92m[content][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[92m[content][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[92m[content][0m exited with code 1; retrying in 4s
+[95m[calendar][0m [31merror when starting dev server:
+[95m[calendar][0m Error: Port 8082 is already in use
+[95m[calendar][0m     at httpServerStart (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:10721:10)
+[95m[calendar][0m     at processTicksAndRejections (node:internal/process/task_queues:103:5)
+[95m[calendar][0m     at startServer (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26503:30)
+[95m[calendar][0m     at Object.listen (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/chunks/node.js:26320:4)
+[95m[calendar][0m     at CAC.<anonymous> (file:///E:/work/sp/agent-native/node_modules/.pnpm/vite@8.0.16_@types+node@24._f53006522b65bace51e18b92bc9af60f/node_modules/vite/dist/node/cli.js:721:3)[39m
+[95m[calendar][0m exited with code 1; retrying in 10s

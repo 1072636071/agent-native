@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import { toast } from "sonner";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconChevronDown,
   IconChevronRight,
@@ -71,6 +72,7 @@ export function meta() {
 }
 
 function AddSecretDialog() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [credentialKey, setCredentialKey] = useState("");
   const [name, setName] = useState("");
@@ -80,7 +82,7 @@ function AddSecretDialog() {
 
   const create = useActionMutation("create-vault-secret", {
     onSuccess: () => {
-      toast.success("Secret created");
+      toast.success(t("dispatch.vault.secretCreated"));
       setOpen(false);
       setCredentialKey("");
       setName("");
@@ -180,6 +182,7 @@ function AddSecretDialog() {
 }
 
 function EditSecretDialog({ secret }: { secret: any }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [credentialKey, setCredentialKey] = useState(
     secret.credentialKey || "",
@@ -192,7 +195,7 @@ function EditSecretDialog({ secret }: { secret: any }) {
 
   const update = useActionMutation("update-vault-secret", {
     onSuccess: () => {
-      toast.success("Secret updated");
+      toast.success(t("dispatch.vault.secretUpdated"));
       setOpen(false);
       setShowValue(false);
     },
@@ -461,15 +464,16 @@ function SecretRow({
   grants: any[];
   accessMode: VaultAccessMode;
 }) {
+  const { t } = useI18n();
   const [expanded, setExpanded] = useState(false);
   const [showValue, setShowValue] = useState(false);
 
   const deleteSecret = useActionMutation("delete-vault-secret", {
-    onSuccess: () => toast.success("Secret deleted"),
+    onSuccess: () => toast.success(t("dispatch.vault.secretDeleted")),
     onError: (err) => toast.error(String(err)),
   });
   const revokeGrant = useActionMutation("revoke-vault-grant", {
-    onSuccess: () => toast.success("Grant revoked"),
+    onSuccess: () => toast.success(t("dispatch.vault.grantRevoked")),
     onError: (err) => toast.error(String(err)),
   });
   const syncToApp = useActionMutation("sync-vault-to-app", {
@@ -639,17 +643,18 @@ function SecretRow({
 }
 
 function RequestRow({ request }: { request: any }) {
+  const { t } = useI18n();
   const [secretValue, setSecretValue] = useState("");
 
   const approve = useActionMutation("approve-vault-request", {
     onSuccess: () => {
-      toast.success("Request approved");
+      toast.success(t("dispatch.vault.requestApproved"));
       setSecretValue("");
     },
     onError: (err) => toast.error(String(err)),
   });
   const deny = useActionMutation("deny-vault-request", {
-    onSuccess: () => toast.success("Request denied"),
+    onSuccess: () => toast.success(t("dispatch.vault.requestDenied")),
     onError: (err) => toast.error(String(err)),
   });
 
@@ -730,6 +735,7 @@ function RequestRow({ request }: { request: any }) {
 }
 
 export default function VaultRoute() {
+  const { t } = useI18n();
   const { data: secrets, isLoading: secretsLoading } = useActionQuery(
     "list-vault-secrets",
     {},
@@ -759,8 +765,8 @@ export default function VaultRoute() {
 
   return (
     <DispatchShell
-      title="Vault"
-      description="Centralized secret management for your workspace. Store credentials once and sync them to apps."
+      title={t("dispatch.vault.title")}
+      description={t("dispatch.vault.description")}
     >
       <Tabs defaultValue="secrets">
         <TabsList>

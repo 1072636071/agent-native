@@ -987,6 +987,7 @@ function safeOriginFromUrl(value: string | null | undefined): string | null {
 export function createBuilderBrowserCallbackPage(
   previewUrl: string,
   opts: { parentOrigin?: string } = {},
+  language?: "en" | "zh",
 ): string {
   const escapedUrl = JSON.stringify(previewUrl);
   const parentOrigin =
@@ -996,12 +997,14 @@ export function createBuilderBrowserCallbackPage(
   // BroadcastChannel path on the success page still works for same-origin
   // openers in that case).
   const escapedTargetOrigin = JSON.stringify(parentOrigin ?? "*");
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   return `<!doctype html>
-<html lang="en">
+<html lang="${isZh ? "zh" : "en"}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Builder connected</title>
+    <title>${t("构建器已连接", "Builder connected")}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -1013,9 +1016,9 @@ export function createBuilderBrowserCallbackPage(
       <span class="icon icon-success" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </span>
-      <h1>Builder connected</h1>
-      <p>Browser access is now available to your app.</p>
-      <p class="muted">You can close this tab and return to the workspace.</p>
+      <h1>${t("构建器已连接", "Builder connected")}</h1>
+      <p>${t("浏览器访问现在可用于你的应用。", "Browser access is now available to your app.")}</p>
+      <p class="muted">${t("你可以关闭此标签页并返回工作区。", "You can close this tab and return to the workspace.")}</p>
       <a class="btn" href=${escapedUrl}>Open the workspace</a>
     </main>
     <script>
@@ -1081,22 +1084,25 @@ export function createBuilderBrowserCallbackErrorPage(
     closeHint?: string;
     parentOrigin?: string;
   } = {},
+  language?: "en" | "zh",
 ): string {
   const escapedMessage = JSON.stringify(message);
   const parentOrigin = safeOriginFromUrl(opts.parentOrigin);
   const escapedTargetOrigin = JSON.stringify(parentOrigin ?? "*");
-  const title = opts.title ?? "Couldn't save Builder connection";
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
+  const title = opts.title ?? (isZh ? "无法保存构建器连接" : "Couldn't save Builder connection");
   const body =
     opts.body ??
-    "Builder authorized your account but the server couldn't persist the credentials.";
+    (isZh ? "构建器已授权你的账户，但服务器无法保存凭据。" : "Builder authorized your account but the server couldn't persist the credentials.");
   const closeHint =
-    opts.closeHint ?? "You can close this tab and try again from settings.";
+    opts.closeHint ?? (isZh ? "你可以关闭此标签页并从设置中重试。" : "You can close this tab and try again from settings.");
   return `<!doctype html>
-<html lang="en">
+<html lang="${isZh ? "zh" : "en"}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Builder connect failed</title>
+    <title>${t("构建器连接失败", "Builder connect failed")}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />

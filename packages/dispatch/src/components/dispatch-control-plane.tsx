@@ -34,6 +34,7 @@ import {
   type IconProps,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
+import { useI18n, type I18nKey } from "@agent-native/i18n";
 import { CreateAppPopover } from "@/components/create-app-popover";
 import { DispatchShell } from "@/components/dispatch-shell";
 import { WorkspaceAppCard } from "@/components/workspace-app-card";
@@ -111,12 +112,6 @@ const ZERO_TASK_QUEUE_STATS: TaskQueueStats = {
   recent_failures: [],
 };
 
-const PROMPT_SUGGESTIONS = [
-  "Summarize the current workspace health",
-  "Create an app for onboarding requests",
-  "Check which agents can help with analytics",
-];
-
 const AUTOMATIONS_QUERY_KEY = [
   "dispatch-control-plane",
   "automations",
@@ -179,8 +174,8 @@ function threadUpdatedAt(thread: ChatThreadSummary): number {
       : 0;
 }
 
-function threadTitle(thread: ChatThreadSummary): string {
-  return thread.title || thread.preview || "New chat";
+function threadTitle(thread: ChatThreadSummary, fallback: string): string {
+  return thread.title || thread.preview || fallback;
 }
 
 function automationTarget(item: AutomationItem): string {
@@ -331,8 +326,17 @@ function useTaskQueueStats() {
 }
 
 function CommandPanel() {
+  const { t } = useI18n();
   const { selectedModel } = useChatModels();
   const navigate = useNavigate();
+  const suggestions = useMemo(
+    () => [
+      t("dispatch.command.suggestionHealth"),
+      t("dispatch.command.suggestionOnboardingApp"),
+      t("dispatch.command.suggestionAnalyticsAgents"),
+    ],
+    [t],
+  );
 
   function send(message: string) {
     const trimmed = message.trim();
@@ -360,22 +364,22 @@ function CommandPanel() {
         <div className="flex items-center gap-2">
           <IconBroadcast size={16} className="text-muted-foreground" />
           <h2 className="text-sm font-semibold text-foreground">
-            Ask Dispatch
+            {t("dispatch.controlPlane.askDispatch")}
           </h2>
         </div>
         <Button variant="outline" size="sm" asChild>
           <Link to="/chat">
-            Open chat
+            {t("dispatch.controlPlane.openChat")}
             <IconArrowUpRight size={14} />
           </Link>
         </Button>
       </div>
       <PromptComposer
-        placeholder="Route work, inspect status, or create an app..."
+        placeholder={t("dispatch.controlPlane.routeWorkPlaceholder")}
         onSubmit={(text) => send(text)}
       />
       <div className="mt-3 flex flex-wrap gap-2">
-        {PROMPT_SUGGESTIONS.map((suggestion) => (
+        {suggestions.map((suggestion) => (
           <button
             key={suggestion}
             type="button"
@@ -464,6 +468,7 @@ function ControlPlaneMetrics({
   threads: ChatThreadSummary[];
   taskQueue: TaskQueueStats;
 }) {
+  const { t } = useI18n();
   const activeApps = apps.filter((app) => !app.isDispatch && !app.archived);
   const pendingApps = activeApps.filter((app) => app.status === "pending");
   const enabledAutomations = automations.filter((item) => item.enabled);
@@ -476,16 +481,20 @@ function ControlPlaneMetrics({
   return (
     <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
       <MetricCard
-        label="Chats"
+        label={t("dispatch.controlPlane.chats")}
         value={formatNumber(threads.length)}
-        detail={`${threads.filter((thread) => thread.messageCount > 0).length} with messages`}
+        detail={t("dispatch.controlPlane.metricChatsDetail", {
+          count: threads.filter((thread) => thread.messageCount > 0).length,
+        })}
         icon={IconMessages}
         to="/chat"
       />
       <MetricCard
-        label="Runs"
+        label={t("dispatch.controlPlane.runs")}
         value={formatNumber(activeRuns)}
-        detail={`${formatNumber(taskQueue.pending)} queued`}
+        detail={t("dispatch.controlPlane.metricRunsDetail", {
+          count: formatNumber(taskQueue.pending),
+        })}
         icon={IconPlayerPlay}
         tone={
           taskQueue.failed_last_hour > 0
@@ -496,32 +505,42 @@ function ControlPlaneMetrics({
         }
       />
       <MetricCard
-        label="Apps"
+        label={t("dispatch.controlPlane.apps")}
         value={formatNumber(activeApps.length)}
-        detail={`${formatNumber(pendingApps.length)} building`}
+        detail={t("dispatch.controlPlane.metricAppsDetail", {
+          count: formatNumber(pendingApps.length),
+        })}
         icon={IconStack3}
         to="/apps"
         tone={pendingApps.length > 0 ? "warning" : "default"}
       />
       <MetricCard
-        label="Agents"
+        label={t("dispatch.controlPlane.agents")}
         value={formatNumber(agents.length)}
-        detail={`${formatNumber(agents.filter((agent) => agent.source === "custom").length)} custom`}
+        detail={t("dispatch.controlPlane.metricAgentsDetail", {
+          count: formatNumber(
+            agents.filter((agent) => agent.source === "custom").length,
+          ),
+        })}
         icon={IconRobot}
         to="/agents"
       />
       <MetricCard
-        label="Automations"
+        label={t("dispatch.controlPlane.automations")}
         value={formatNumber(enabledAutomations.length)}
-        detail={`${formatNumber(automationErrors.length)} need attention`}
+        detail={t("dispatch.controlPlane.metricAutomationsDetail", {
+          count: formatNumber(automationErrors.length),
+        })}
         icon={IconSettingsAutomation}
         tone={automationErrors.length > 0 ? "danger" : "success"}
       />
       <MetricCard
-        label="Approvals"
+        label={t("dispatch.controlPlane.approvals")}
         value={formatNumber(pendingApprovals)}
         detail={
-          overview?.settings?.enabled ? "review mode" : "immediate changes"
+          overview?.settings?.enabled
+            ? t("dispatch.controlPlane.metricApprovalsDetailReview")
+            : t("dispatch.controlPlane.metricApprovalsDetailImmediate")
         }
         icon={IconShieldCheck}
         to="/approvals"
@@ -563,6 +582,8 @@ function SectionHeader({
 }
 
 function RecentChatsPanel() {
+  const { t } = useI18n();
+  const newChatLabel = t("dispatch.controlPlane.startADispatchChat");
   const navigate = useNavigate();
   const { threads, activeThreadId, createThread, switchThread } =
     useChatThreads(undefined, undefined, undefined, { autoCreate: false });
@@ -612,8 +633,8 @@ function RecentChatsPanel() {
     <section className="rounded-lg border bg-card p-4">
       <SectionHeader
         icon={IconMessages}
-        title="Chats"
-        detail={`${visibleThreads.length} recent`}
+        title={t("dispatch.controlPlane.chats")}
+        detail={`${visibleThreads.length} ${t("dispatch.controlPlane.recent")}`}
         action={
           <Button
             variant="outline"
@@ -622,7 +643,7 @@ function RecentChatsPanel() {
             disabled={creating}
           >
             <IconPlus size={14} />
-            New
+            {t("dispatch.controlPlane.new")}
           </Button>
         }
       />
@@ -637,10 +658,13 @@ function RecentChatsPanel() {
             >
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium text-foreground">
-                  {threadTitle(thread)}
+                  {threadTitle(thread, newChatLabel)}
                 </span>
                 <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                  {thread.preview || `${thread.messageCount} messages`}
+                  {thread.preview ||
+                    t("dispatch.controlPlane.messages", {
+                      count: thread.messageCount,
+                    })}
                 </span>
               </span>
               <span className="text-[11px] text-muted-foreground">
@@ -654,7 +678,7 @@ function RecentChatsPanel() {
             onClick={handleNewChat}
             className="block w-full px-3 py-8 text-center text-sm text-muted-foreground transition hover:bg-muted/40"
           >
-            Start a Dispatch chat
+            {newChatLabel}
           </button>
         )}
       </div>
@@ -663,6 +687,7 @@ function RecentChatsPanel() {
 }
 
 function RunsPanel({ taskQueue }: { taskQueue: TaskQueueStats }) {
+  const { t } = useI18n();
   const hasFailure = taskQueue.failed_last_hour > 0;
   const hasBacklog =
     taskQueue.pending > 5 || taskQueue.oldest_pending_age_seconds > 300;
@@ -671,11 +696,15 @@ function RunsPanel({ taskQueue }: { taskQueue: TaskQueueStats }) {
     <section className="rounded-lg border bg-card p-4">
       <SectionHeader
         icon={IconPlayerPlay}
-        title="Runs"
+        title={t("dispatch.controlPlane.runs")}
         detail={
           hasFailure
-            ? `${taskQueue.failed_last_hour} failed in the last hour`
-            : `${taskQueue.processing} processing`
+            ? t("dispatch.controlPlane.runsDetailFailed", {
+                count: taskQueue.failed_last_hour,
+              })
+            : t("dispatch.controlPlane.runsDetailProcessing", {
+                count: taskQueue.processing,
+              })
         }
         action={
           <RunsTray
@@ -687,11 +716,20 @@ function RunsPanel({ taskQueue }: { taskQueue: TaskQueueStats }) {
         }
       />
       <div className="mt-3 grid grid-cols-4 gap-2">
-        <QueueCell label="Queued" value={taskQueue.pending} />
-        <QueueCell label="Active" value={taskQueue.processing} />
-        <QueueCell label="Done 1h" value={taskQueue.completed_last_hour} />
         <QueueCell
-          label="Failed 1h"
+          label={t("dispatch.controlPlane.queued")}
+          value={taskQueue.pending}
+        />
+        <QueueCell
+          label={t("dispatch.controlPlane.active")}
+          value={taskQueue.processing}
+        />
+        <QueueCell
+          label={t("dispatch.controlPlane.done1h")}
+          value={taskQueue.completed_last_hour}
+        />
+        <QueueCell
+          label={t("dispatch.controlPlane.failed1h")}
           value={taskQueue.failed_last_hour}
           danger={hasFailure}
         />
@@ -706,7 +744,8 @@ function RunsPanel({ taskQueue }: { taskQueue: TaskQueueStats }) {
               : "bg-muted/20 text-muted-foreground",
         )}
       >
-        Oldest queued: {formatAgeSeconds(taskQueue.oldest_pending_age_seconds)}
+        {t("dispatch.controlPlane.oldestQueued")}{" "}
+        {formatAgeSeconds(taskQueue.oldest_pending_age_seconds)}
       </div>
       {taskQueue.recent_failures.length > 0 ? (
         <div className="mt-3 divide-y rounded-md border">
@@ -717,11 +756,13 @@ function RunsPanel({ taskQueue }: { taskQueue: TaskQueueStats }) {
                   {failure.platform}
                 </span>
                 <span className="text-muted-foreground">
-                  {failure.attempts} attempts
+                  {t("dispatch.controlPlane.attempts", {
+                    count: failure.attempts,
+                  })}
                 </span>
               </div>
               <div className="mt-1 truncate text-xs text-muted-foreground">
-                {failure.error || "(no error message)"}
+                {failure.error || t("dispatch.controlPlane.noErrorMessage")}
               </div>
             </div>
           ))}
@@ -762,21 +803,25 @@ function AppsPanel({
   apps: WorkspaceAppSummary[];
   isLoading: boolean;
 }) {
+  const { t } = useI18n();
   const visibleApps = apps
     .filter((app) => !app.isDispatch && !app.archived)
     .slice(0, 4);
   const showSkeletons = isLoading && visibleApps.length === 0;
+  const activeCount = apps.filter(
+    (app) => !app.isDispatch && !app.archived,
+  ).length;
 
   return (
     <section className="space-y-3">
       <SectionHeader
         icon={IconStack3}
-        title="Projects and apps"
-        detail={`${apps.filter((app) => !app.isDispatch && !app.archived).length} active`}
+        title={t("dispatch.controlPlane.projectsAndApps")}
+        detail={t("dispatch.controlPlane.activeCount", { count: activeCount })}
         action={
           <Button variant="outline" size="sm" asChild>
             <Link to="/apps">
-              View all
+              {t("dispatch.controlPlane.viewAll")}
               <IconArrowUpRight size={14} />
             </Link>
           </Button>
@@ -812,6 +857,7 @@ function AutomationsPanel({
   automations: AutomationItem[];
   isLoading: boolean;
 }) {
+  const { t } = useI18n();
   const toggleAutomation = useToggleAutomation();
   const ordered = useMemo(
     () =>
@@ -845,12 +891,15 @@ function AutomationsPanel({
     <section className="rounded-lg border bg-card p-4">
       <SectionHeader
         icon={IconSettingsAutomation}
-        title="Automations"
-        detail={`${enabled} enabled · ${errors} errors`}
+        title={t("dispatch.controlPlane.automations")}
+        detail={t("dispatch.controlPlane.automationsDetail", {
+          enabled,
+          errors,
+        })}
         action={
           <Button variant="outline" size="sm" asChild>
             <Link to="/chat">
-              Create
+              {t("dispatch.controlPlane.create")}
               <IconArrowUpRight size={14} />
             </Link>
           </Button>
@@ -887,10 +936,12 @@ function AutomationsPanel({
                   </div>
                   <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
                     <span title={dateTimeTitle(item.lastRun)}>
-                      Last {automationLastRun(item)}
+                      {t("dispatch.controlPlane.last")}{" "}
+                      {automationLastRun(item)}
                     </span>
                     <span title={dateTimeTitle(item.nextRun)}>
-                      Next {automationNextRun(item)}
+                      {t("dispatch.controlPlane.next")}{" "}
+                      {automationNextRun(item)}
                     </span>
                   </div>
                   {item.lastError ? (
@@ -911,7 +962,7 @@ function AutomationsPanel({
                   <Switch
                     checked={!!item.enabled}
                     disabled={!canUpdate || isToggling}
-                    aria-label={`${item.enabled ? "Disable" : "Enable"} automation ${item.name}`}
+                    aria-label={`${item.enabled ? t("dispatch.controlPlane.disable") : t("dispatch.controlPlane.enable")} ${t("dispatch.controlPlane.automation")} ${item.name}`}
                     onCheckedChange={(checked) => handleToggle(item, checked)}
                   />
                 </div>
@@ -920,7 +971,7 @@ function AutomationsPanel({
           })
         ) : (
           <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-            No automations yet
+            {t("dispatch.controlPlane.noAutomationsYet")}
           </div>
         )}
       </div>
@@ -929,6 +980,7 @@ function AutomationsPanel({
 }
 
 function AgentsPanelSummary({ agents }: { agents: ConnectedAgent[] }) {
+  const { t } = useI18n();
   const builtin = agents.filter((agent) => agent.source === "builtin");
   const extra = agents.filter((agent) => agent.source !== "builtin");
 
@@ -936,12 +988,15 @@ function AgentsPanelSummary({ agents }: { agents: ConnectedAgent[] }) {
     <section className="rounded-lg border bg-card p-4">
       <SectionHeader
         icon={IconPlugConnected}
-        title="Agents"
-        detail={`${builtin.length} built in · ${extra.length} added`}
+        title={t("dispatch.controlPlane.agents")}
+        detail={t("dispatch.controlPlane.agentsDetail", {
+          builtin: builtin.length,
+          extra: extra.length,
+        })}
         action={
           <Button variant="outline" size="sm" asChild>
             <Link to="/agents">
-              Manage
+              {t("dispatch.controlPlane.manage")}
               <IconArrowUpRight size={14} />
             </Link>
           </Button>
@@ -962,7 +1017,7 @@ function AgentsPanelSummary({ agents }: { agents: ConnectedAgent[] }) {
         ))}
         {agents.length === 0 ? (
           <div className="w-full rounded-md border border-dashed px-3 py-6 text-center text-sm text-muted-foreground">
-            No agents detected
+            {t("dispatch.controlPlane.noAgentsDetected")}
           </div>
         ) : null}
       </div>
@@ -977,6 +1032,7 @@ function ApprovalsAndAuditPanel({
   overview?: DispatchOverview;
   isLoading: boolean;
 }) {
+  const { t } = useI18n();
   const approvals = overview?.recentApprovals ?? [];
   const audit = overview?.recentAudit ?? [];
 
@@ -984,12 +1040,15 @@ function ApprovalsAndAuditPanel({
     <section className="rounded-lg border bg-card p-4">
       <SectionHeader
         icon={IconActivity}
-        title="Activity"
-        detail={`${approvals.length} approvals · ${audit.length} audit rows`}
+        title={t("dispatch.controlPlane.activity")}
+        detail={t("dispatch.controlPlane.activityDetail", {
+          approvals: approvals.length,
+          audit: audit.length,
+        })}
         action={
           <Button variant="outline" size="sm" asChild>
             <Link to="/audit">
-              Audit
+              {t("dispatch.controlPlane.audit")}
               <IconArrowUpRight size={14} />
             </Link>
           </Button>
@@ -999,10 +1058,10 @@ function ApprovalsAndAuditPanel({
         <div className="rounded-md border">
           <div className="flex items-center justify-between gap-3 border-b px-3 py-2">
             <div className="text-xs font-medium uppercase text-muted-foreground">
-              Approvals
+              {t("dispatch.controlPlane.approvals")}
             </div>
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/approvals">Open</Link>
+              <Link to="/approvals">{t("dispatch.controlPlane.open")}</Link>
             </Button>
           </div>
           <div className="divide-y">
@@ -1029,7 +1088,7 @@ function ApprovalsAndAuditPanel({
               ))
             ) : (
               <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                No approval requests
+                {t("dispatch.controlPlane.noApprovalRequests")}
               </div>
             )}
           </div>
@@ -1037,7 +1096,7 @@ function ApprovalsAndAuditPanel({
 
         <div className="rounded-md border">
           <div className="border-b px-3 py-2 text-xs font-medium uppercase text-muted-foreground">
-            Recent audit
+            {t("dispatch.controlPlane.recentAudit")}
           </div>
           <div className="divide-y">
             {isLoading && audit.length === 0 ? (
@@ -1060,7 +1119,7 @@ function ApprovalsAndAuditPanel({
               ))
             ) : (
               <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                No audit entries
+                {t("dispatch.controlPlane.noAuditEntries")}
               </div>
             )}
           </div>
@@ -1081,34 +1140,41 @@ function ReadinessPanel({
   agents: ConnectedAgent[];
   automations: AutomationItem[];
 }) {
+  const { t } = useI18n();
   const rows = [
     {
-      label: "Vault",
+      label: t("dispatch.controlPlane.vault"),
       detail:
         (overview?.vault?.secretCount ?? 0) > 0
-          ? `${overview?.vault?.secretCount ?? 0} secrets`
-          : "no secrets",
+          ? t("dispatch.controlPlane.secrets", {
+              count: overview?.vault?.secretCount ?? 0,
+            })
+          : t("dispatch.controlPlane.noSecrets"),
       ok: (overview?.vault?.secretCount ?? 0) > 0,
       to: "/vault",
       icon: IconShieldCheck,
     },
     {
-      label: "Apps",
-      detail: `${apps.filter((app) => !app.isDispatch && !app.archived).length} active`,
+      label: t("dispatch.controlPlane.apps"),
+      detail: t("dispatch.controlPlane.activeCount", {
+        count: apps.filter((app) => !app.isDispatch && !app.archived).length,
+      }),
       ok: apps.some((app) => !app.isDispatch && !app.archived),
       to: "/apps",
       icon: IconRocket,
     },
     {
-      label: "Agents",
-      detail: `${agents.length} available`,
+      label: t("dispatch.controlPlane.agents"),
+      detail: t("dispatch.controlPlane.available", { count: agents.length }),
       ok: agents.length > 0,
       to: "/agents",
       icon: IconRobot,
     },
     {
-      label: "Automations",
-      detail: `${automations.filter((item) => item.enabled).length} enabled`,
+      label: t("dispatch.controlPlane.automations"),
+      detail: t("dispatch.controlPlane.enabledCount", {
+        count: automations.filter((item) => item.enabled).length,
+      }),
       ok: automations.every(
         (item) => !item.enabled || item.lastStatus !== "error",
       ),
@@ -1116,8 +1182,10 @@ function ReadinessPanel({
       icon: IconBolt,
     },
     {
-      label: "Team",
-      detail: `${overview?.counts?.linkedIdentities ?? 0} linked identities`,
+      label: t("dispatch.common.team"),
+      detail: t("dispatch.controlPlane.linkedIdentities", {
+        count: overview?.counts?.linkedIdentities ?? 0,
+      }),
       ok: (overview?.counts?.linkedIdentities ?? 0) > 0,
       to: "/team",
       icon: IconUsersGroup,
@@ -1126,7 +1194,10 @@ function ReadinessPanel({
 
   return (
     <section className="rounded-lg border bg-card p-4">
-      <SectionHeader icon={IconListCheck} title="Readiness" />
+      <SectionHeader
+        icon={IconListCheck}
+        title={t("dispatch.controlPlane.readiness")}
+      />
       <div className="mt-3 divide-y rounded-md border">
         {rows.map((row) => {
           const Icon = row.icon;
@@ -1164,6 +1235,7 @@ function ReadinessPanel({
 }
 
 export function DispatchControlPlane() {
+  const { t } = useI18n();
   const { data: overviewData, isLoading: overviewLoading } =
     useActionQuery<DispatchOverview>("list-dispatch-overview", {});
   const { data: connectedAgents = [] } = useActionQuery<ConnectedAgent[]>(
@@ -1202,17 +1274,19 @@ export function DispatchControlPlane() {
 
   return (
     <DispatchShell
-      title="Control plane"
-      description="Dispatch is the workspace shell for chats, runs, apps, agents, automations, approvals, and resources."
+      title={t("dispatch.controlPlane.title")}
+      description={t("dispatch.controlPlane.description")}
     >
       <div className="space-y-6">
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
           <CommandPanel />
           <div className="grid gap-3 sm:grid-cols-2">
             <MetricCard
-              label="Vault"
+              label={t("dispatch.controlPlane.vault")}
               value={formatNumber(overview?.vault?.secretCount ?? 0)}
-              detail={`${formatNumber(overview?.vault?.activeGrantCount ?? 0)} active grants`}
+              detail={t("dispatch.controlPlane.activeGrants", {
+                count: formatNumber(overview?.vault?.activeGrantCount ?? 0),
+              })}
               icon={IconShieldCheck}
               to="/vault"
               tone={
@@ -1220,9 +1294,9 @@ export function DispatchControlPlane() {
               }
             />
             <MetricCard
-              label="Resources"
+              label={t("dispatch.controlPlane.resources")}
               value={formatNumber(overview?.counts?.destinations ?? 0)}
-              detail="destinations"
+              detail={t("dispatch.controlPlane.destinations")}
               icon={IconArrowUpRight}
               to="/destinations"
             />
@@ -1267,10 +1341,10 @@ export function DispatchControlPlane() {
               <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
                 <div className="flex items-center gap-2 font-medium">
                   <IconAlertTriangle size={16} />
-                  Integration failures detected
+                  {t("dispatch.controlPlane.integrationFailuresDetected")}
                 </div>
                 <div className="mt-1 text-xs">
-                  Check credentials, destinations, and recent queue errors.
+                  {t("dispatch.controlPlane.checkCredentialsDestinations")}
                 </div>
               </div>
             ) : null}

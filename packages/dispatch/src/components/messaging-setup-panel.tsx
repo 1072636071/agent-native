@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { agentNativePath } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 
 interface EnvStatus {
   key: string;
@@ -190,9 +191,10 @@ function StatusPill({
  *  not exposed. For now we just render a "Saved — re-enter to change"
  *  placeholder; a future endpoint can return the actual value. */
 function PublicValueReveal({ envKey: _envKey }: { envKey: string }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-md border bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
-      Saved. Re-enter below to change.
+      {t("dispatch.messagingSetup.savedReEnter")}
     </div>
   );
 }
@@ -204,16 +206,33 @@ function ConnectionStatus({
   configured: boolean;
   enabled: boolean;
 }) {
+  const { t } = useI18n();
   if (enabled) {
-    return <StatusPill tone="success" label="Connected" />;
+    return (
+      <StatusPill
+        tone="success"
+        label={t("dispatch.messagingSetup.connected")}
+      />
+    );
   }
   if (configured) {
-    return <StatusPill tone="warning" label="Configured, not enabled" />;
+    return (
+      <StatusPill
+        tone="warning"
+        label={t("dispatch.messagingSetup.configuredNotEnabled")}
+      />
+    );
   }
-  return <StatusPill tone="neutral" label="Not configured" />;
+  return (
+    <StatusPill
+      tone="neutral"
+      label={t("dispatch.messagingSetup.notConfigured")}
+    />
+  );
 }
 
 export function MessagingSetupPanel() {
+  const { t } = useI18n();
   const [statuses, setStatuses] = useState<IntegrationStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [envStatuses, setEnvStatuses] = useState<EnvStatus[]>([]);
@@ -299,7 +318,7 @@ export function MessagingSetupPanel() {
       .filter((item) => item.value);
 
     if (vars.length === 0) {
-      toast.error("Add the required credentials first.");
+      toast.error(t("dispatch.messagingSetup.addRequiredCredentialsFirst"));
       return;
     }
 
@@ -313,10 +332,14 @@ export function MessagingSetupPanel() {
 
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));
-        throw new Error(payload.error || "Failed to save credentials");
+        throw new Error(
+          payload.error || t("dispatch.messagingSetup.credentialsSaveFailed"),
+        );
       }
 
-      toast.success(`${platform.label} credentials saved`);
+      toast.success(
+        `${platform.label} ${t("dispatch.messagingSetup.credentialsSaved")}`,
+      );
       setEnvValues((current) => {
         const next = { ...current };
         for (const key of keys) delete next[key];
@@ -326,7 +349,9 @@ export function MessagingSetupPanel() {
       await refreshStatuses();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to save credentials",
+        error instanceof Error
+          ? error.message
+          : t("dispatch.messagingSetup.credentialsSaveFailed"),
       );
     } finally {
       setSavingKeysFor(null);
@@ -354,13 +379,15 @@ export function MessagingSetupPanel() {
       }
       toast.success(
         enabled
-          ? `${platform.label} disconnected`
-          : `${platform.label} connected`,
+          ? `${platform.label} ${t("dispatch.messagingSetup.disconnected")}`
+          : `${platform.label} ${t("dispatch.messagingSetup.connectedToast")}`,
       );
       await refreshStatuses();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to update integration",
+        error instanceof Error
+          ? error.message
+          : t("dispatch.messagingSetup.credentialsSaveFailed"),
       );
     } finally {
       setTogglingPlatform(null);
@@ -382,15 +409,15 @@ export function MessagingSetupPanel() {
       }
       toast.success(
         platform.id === "telegram"
-          ? "Telegram webhook registered"
-          : `${platform.label} setup complete`,
+          ? t("dispatch.messagingSetup.webhookUrlCopied")
+          : `${platform.label} ${t("dispatch.messagingSetup.setupComplete")}`,
       );
       await refreshStatuses();
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : `Failed to set up ${platform.label}`,
+          : t("dispatch.messagingSetup.credentialsSaveFailed"),
       );
     } finally {
       setSetupPlatform(null);
@@ -400,7 +427,7 @@ export function MessagingSetupPanel() {
   const copyWebhook = async (webhookUrl: string) => {
     await navigator.clipboard.writeText(webhookUrl);
     setCopiedWebhook(webhookUrl);
-    toast.success("Webhook URL copied");
+    toast.success(t("dispatch.messagingSetup.webhookUrlCopied"));
     setTimeout(() => setCopiedWebhook(null), 1500);
   };
 
@@ -456,7 +483,7 @@ export function MessagingSetupPanel() {
                     className="h-7 px-2 text-xs text-muted-foreground"
                   >
                     <a href={platform.docsUrl} target="_blank" rel="noreferrer">
-                      Docs
+                      {t("dispatch.messagingSetup.docs")}
                       <IconExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
@@ -483,7 +510,7 @@ export function MessagingSetupPanel() {
               <Collapsible className="mt-5">
                 <CollapsibleTrigger className="group flex w-full cursor-pointer items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground">
                   <IconChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]:rotate-90" />
-                  <span>Setup steps</span>
+                  <span>{t("dispatch.messagingSetup.setupSteps")}</span>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <div className="mt-2 rounded-xl border bg-muted/20 p-4">
@@ -504,11 +531,11 @@ export function MessagingSetupPanel() {
               <div className="mt-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <div className="text-sm font-medium text-foreground">
-                    Credentials
+                    {t("dispatch.messagingSetup.credentials")}
                   </div>
                   {envLoading ? (
                     <span className="text-xs text-muted-foreground">
-                      Checking...
+                      {t("dispatch.messagingSetup.checking")}
                     </span>
                   ) : null}
                 </div>
@@ -530,7 +557,7 @@ export function MessagingSetupPanel() {
                               {label}
                               {!envKey.required ? (
                                 <span className="ml-1 text-muted-foreground">
-                                  (optional)
+                                  {t("dispatch.messagingSetup.optional")}
                                 </span>
                               ) : null}
                             </label>
@@ -539,11 +566,18 @@ export function MessagingSetupPanel() {
                             ) : null}
                           </div>
                           {isConfigured ? (
-                            <StatusPill tone="success" label="Saved" />
+                            <StatusPill
+                              tone="success"
+                              label={t("dispatch.messagingSetup.saved")}
+                            />
                           ) : (
                             <StatusPill
                               tone="neutral"
-                              label={envKey.required ? "Missing" : "Not set"}
+                              label={
+                                envKey.required
+                                  ? t("dispatch.messagingSetup.missing")
+                                  : t("dispatch.messagingSetup.notSet")
+                              }
                             />
                           )}
                         </div>
@@ -562,7 +596,9 @@ export function MessagingSetupPanel() {
                             placeholder={
                               isPublicValue
                                 ? "agent@yourcompany.com"
-                                : `Enter ${label}`
+                                : t("dispatch.messagingSetup.enterLabel", {
+                                    label,
+                                  })
                             }
                             autoComplete="off"
                           />
@@ -585,10 +621,10 @@ export function MessagingSetupPanel() {
                     {savingKeysFor === platform.id ? (
                       <>
                         <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
+                        {t("dispatch.messagingSetup.saving")}
                       </>
                     ) : (
-                      "Save credentials"
+                      t("dispatch.messagingSetup.saveCredentials")
                     )}
                   </Button>
                 ) : null}
@@ -597,7 +633,7 @@ export function MessagingSetupPanel() {
               {status?.webhookUrl ? (
                 <div className="mt-4 space-y-2">
                   <div className="text-sm font-medium text-foreground">
-                    Webhook URL
+                    {t("dispatch.messagingSetup.webhookUrl")}
                   </div>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 truncate rounded-md border bg-muted/30 px-3 py-2 text-xs text-foreground">
@@ -629,10 +665,10 @@ export function MessagingSetupPanel() {
                     {setupPlatform === platform.id ? (
                       <>
                         <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Setting up...
+                        {t("dispatch.messagingSetup.settingUp")}
                       </>
                     ) : (
-                      "Set up webhook"
+                      t("dispatch.messagingSetup.setUpWebhook")
                     )}
                   </Button>
                 ) : null}
@@ -640,11 +676,15 @@ export function MessagingSetupPanel() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span tabIndex={0}>
-                        <Button disabled>Enable</Button>
+                        <Button disabled>
+                          {t("dispatch.messagingSetup.enable")}
+                        </Button>
                       </span>
                     </TooltipTrigger>
                     <TooltipContent>
-                      Save the required credentials first.
+                      {t(
+                        "dispatch.messagingSetup.saveRequiredCredentialsFirst",
+                      )}
                     </TooltipContent>
                   </Tooltip>
                 ) : (
@@ -655,12 +695,12 @@ export function MessagingSetupPanel() {
                     {togglingPlatform === platform.id ? (
                       <>
                         <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
+                        {t("dispatch.messagingSetup.saving")}
                       </>
                     ) : enabled ? (
-                      "Disable"
+                      t("dispatch.messagingSetup.disable")
                     ) : (
-                      "Enable"
+                      t("dispatch.messagingSetup.enable")
                     )}
                   </Button>
                 )}
@@ -672,7 +712,7 @@ export function MessagingSetupPanel() {
 
       {loading ? (
         <div className="rounded-2xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-          Loading messaging status...
+          {t("dispatch.messagingSetup.loadingMessagingStatus")}
         </div>
       ) : null}
     </div>

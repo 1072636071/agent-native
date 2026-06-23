@@ -1,3 +1,4 @@
+import { useI18n } from "@agent-native/i18n";
 import { TeamPage } from "@agent-native/core/client/org";
 import { DispatchShell } from "@/components/dispatch-shell";
 
@@ -6,14 +7,15 @@ export function meta() {
 }
 
 export default function TeamRoute() {
+  const { t } = useI18n();
   return (
     <TeamPage
-      title="Team"
-      createOrgDescription="Set up a team to share dispatch destinations and approvals with your colleagues."
+      title={t("dispatch.team.title")}
+      createOrgDescription={t("dispatch.team.createOrgDescription")}
       layout={(children) => (
         <DispatchShell
-          title="Team"
-          description="Workspace membership and approval ownership."
+          title={t("dispatch.team.title")}
+          description={t("dispatch.team.description")}
         >
           {children}
         </DispatchShell>

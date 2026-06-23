@@ -43,7 +43,7 @@
  */
 
 import type { H3Event } from "h3";
-import { getMethod } from "h3";
+import { getMethod, getHeader } from "h3";
 import * as jose from "jose";
 import { createHash } from "node:crypto";
 import {
@@ -53,6 +53,7 @@ import {
 import { getSession, safeReturnPath, isExpectedAuthFailure } from "./auth.js";
 import { createOAuthSession, getOrigin } from "./google-oauth.js";
 import { getAppName } from "./app-name.js";
+import { parseAcceptLanguage } from "./i18n.js";
 import {
   createSsoState,
   consumeSsoState,
@@ -131,16 +132,18 @@ function redirect(event: H3Event, location: string): Response {
  * connect pages). Used when the federated round-trip fails so the user gets
  * an actionable message instead of a raw 4xx. `message` is plain text.
  */
-function errorPage(message: string, loginPath: string): Response {
+function errorPage(message: string, loginPath: string, language?: "en" | "zh"): Response {
   const safe = message
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
   const safeHref = loginPath.replace(/"/g, "&quot;");
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   return html(
     `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">` +
       `<meta name="viewport" content="width=device-width, initial-scale=1">` +
-      `<title>Sign-in failed</title>` +
+      `<title>` + t("登录失败", "Sign-in failed") + `</title>` +
       `<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;` +
       `background:#09090b;color:#f4f4f5;display:flex;align-items:center;` +
       `justify-content:center;min-height:100vh;margin:0;padding:1rem}` +
@@ -149,8 +152,8 @@ function errorPage(message: string, loginPath: string): Response {
       `h1{font-size:1.15rem;margin:0 0 .5rem}p{color:#a1a1aa;font-size:.9rem;margin:0 0 1.25rem}` +
       `a{color:#f4f4f5;font-weight:600;text-decoration:none;border:1px solid ` +
       `rgba(255,255,255,0.18);border-radius:8px;padding:.6rem 1.1rem;display:inline-block}</style>` +
-      `</head><body><div class="card"><h1>Could not sign you in</h1>` +
-      `<p>${safe}</p><a href="${safeHref}">Back to sign in</a></div></body></html>`,
+      `</head><body><div class="card"><h1>` + t("无法登录", "Could not sign you in") + `</h1>` +
+      `<p>${safe}</p><a href="${safeHref}">` + t("返回登录", "Back to sign in") + `</a></div></body></html>`,
     400,
   );
 }
@@ -361,6 +364,7 @@ export async function handleIdentitySso(
   );
   const origin = getOrigin(event);
   const loginPath = "/_agent-native/sign-in";
+  const lang = parseAcceptLanguage(getHeader(event, "accept-language"));
 
   // ---- GET /login → 302 to the hub authorize endpoint ------------------
   if (sub === "/login") {
@@ -391,11 +395,13 @@ export async function handleIdentitySso(
         return errorPage(
           "Too many sign-in attempts. Please wait a moment and try again.",
           loginPath,
+          lang,
         );
       }
       return errorPage(
         "Could not start federated sign-in. Please try again.",
         loginPath,
+        lang,
       );
     }
 
@@ -425,7 +431,7 @@ export async function handleIdentitySso(
         u.searchParams.get("token") || u.searchParams.get("id_token") || "";
       stateParam = u.searchParams.get("state") || "";
     } catch {
-      return errorPage("Malformed sign-in response.", loginPath);
+      return errorPage("Malformed sign-in response.", loginPath, lang);
     }
 
     // CSRF: the state must be one we minted, unexpired, and never consumed.
@@ -436,6 +442,7 @@ export async function handleIdentitySso(
       return errorPage(
         "Your sign-in session expired or was already used. Please try again.",
         loginPath,
+        lang,
       );
     }
 
@@ -447,6 +454,7 @@ export async function handleIdentitySso(
       return errorPage(
         "We could not verify the sign-in response. Please try again.",
         loginPath,
+        lang,
       );
     }
 
@@ -456,6 +464,7 @@ export async function handleIdentitySso(
       return errorPage(
         "This sign-in link was already used. Please try again.",
         loginPath,
+        lang,
       );
     }
 
@@ -470,6 +479,7 @@ export async function handleIdentitySso(
       return errorPage(
         "Could not finish linking your account. Please try again.",
         loginPath,
+        lang,
       );
     }
 
@@ -484,6 +494,7 @@ export async function handleIdentitySso(
       return errorPage(
         "Signed in, but could not start your session. Please try again.",
         loginPath,
+        lang,
       );
     }
 

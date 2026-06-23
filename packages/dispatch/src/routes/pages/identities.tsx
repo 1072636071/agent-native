@@ -1,5 +1,6 @@
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import { toast } from "sonner";
+import { useI18n } from "@agent-native/i18n";
 import { DispatchShell } from "@/components/dispatch-shell";
 import { Button } from "@/components/ui/button";
 
@@ -8,33 +9,34 @@ export function meta() {
 }
 
 export default function IdentitiesRoute() {
+  const { t } = useI18n();
   const { data } = useActionQuery("list-linked-identities", {});
   const createToken = useActionMutation("create-link-token", {
-    onSuccess: () => toast.success("Link token created"),
+    onSuccess: () => toast.success(t("dispatch.identities.linkTokenCreated")),
   });
 
   return (
     <DispatchShell
-      title="Identities"
-      description="Link external senders to workspace users."
+      title={t("dispatch.identities.title")}
+      description={t("dispatch.identities.description")}
     >
       <div className="grid gap-4 xl:grid-cols-2">
         <section className="rounded-2xl border bg-card p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold text-foreground">
-              Active links
+              {t("dispatch.identities.activeLinks")}
             </h2>
             <div className="flex shrink-0 gap-2">
               <Button
                 variant="outline"
                 onClick={() => createToken.mutate({ platform: "slack" })}
               >
-                New Slack token
+                {t("dispatch.identities.newSlackToken")}
               </Button>
               <Button
                 onClick={() => createToken.mutate({ platform: "telegram" })}
               >
-                New Telegram token
+                {t("dispatch.identities.newTelegramToken")}
               </Button>
             </div>
           </div>
@@ -54,15 +56,18 @@ export default function IdentitiesRoute() {
             ))}
             {(data?.links?.length || 0) === 0 && (
               <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-muted-foreground">
-                No linked identities yet. Generate a token and ask the user to
-                send <code>/link TOKEN</code> from Slack or Telegram.
+                {t("dispatch.identities.noLinkedIdentitiesYet")}{" "}
+                <code>/link TOKEN</code>{" "}
+                {t("dispatch.identities.fromSlackOrTelegram")}
               </div>
             )}
           </div>
         </section>
 
         <section className="rounded-2xl border bg-card p-5">
-          <h2 className="text-lg font-semibold text-foreground">Link tokens</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            {t("dispatch.identities.linkTokens")}
+          </h2>
           <div className="mt-4 space-y-3">
             {(data?.tokens || []).map((token: any) => (
               <div key={token.id} className="rounded-xl border px-4 py-3">
@@ -70,7 +75,7 @@ export default function IdentitiesRoute() {
                   /link {token.token}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {token.platform} · expires{" "}
+                  {token.platform} · {t("dispatch.identities.expires")}{" "}
                   {new Date(token.expiresAt).toLocaleString()}
                   {token.claimedAt
                     ? ` · claimed by ${token.claimedByExternalUserName || token.claimedByExternalUserId}`
@@ -80,7 +85,7 @@ export default function IdentitiesRoute() {
             ))}
             {(data?.tokens?.length || 0) === 0 && (
               <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-muted-foreground">
-                No active link tokens.
+                {t("dispatch.identities.noActiveLinkTokens")}
               </div>
             )}
           </div>

@@ -73,6 +73,7 @@ import {
   signBuilderConnectToken,
   type BuilderConnectTrackingParams,
 } from "./builder-browser.js";
+import { parseAcceptLanguage } from "./i18n.js";
 import {
   getState,
   putState,
@@ -176,6 +177,10 @@ function parseBuilderCallbackBoolean(
 ): boolean | null {
   if (value == null || value === "") return null;
   return /^(1|true)$/i.test(value);
+}
+
+function resolveSsrLanguage(event: H3Event): "en" | "zh" | undefined {
+  return parseAcceptLanguage(getHeader(event, "accept-language"));
 }
 
 const PROVIDER_ENV_VAR_KEYS = new Set(
@@ -382,7 +387,7 @@ export async function resolveBuilderOwnerContextForRequest(
 }
 
 /**
- * Resolves the page-level legacy `/tools` → `/extensions` redirect target.
+ * Resolves the page-level legacy `/tools` 鈫?`/extensions` redirect target.
  *
  * Returns the absolute path (with optional query string) to redirect to,
  * or `null` if the request should fall through to the SPA / next handler.
@@ -436,7 +441,7 @@ export interface CoreRoutesPluginOptions {
    * Disable the /_agent-native/mcp/connect routes (browser Connect page +
    * CLI device-code flow that mints per-user, revocable MCP tokens) and the
    * standard remote-MCP OAuth endpoints under /_agent-native/mcp/oauth.
-   * Enabled by default — the routes are session-gated where they approve user
+   * Enabled by default 鈥?the routes are session-gated where they approve user
    * access; token endpoints are protected by single-use codes / refresh
    * tokens.
    */
@@ -447,7 +452,7 @@ export interface CoreRoutesPluginOptions {
   mcpConnectServerName?: string;
   /** Human app name shown on the MCP connect page. */
   mcpConnectAppName?: string;
-  /** Per-template override mapping deep-link params → client SPA path.
+  /** Per-template override mapping deep-link params 鈫?client SPA path.
    *  See `createOpenRouteHandler`. */
   resolveOpenPath?: import("./open-route.js").OpenRouteOptions["resolveOpenPath"];
   /** Env key configuration. Enables env-status and env-vars routes. */
@@ -467,19 +472,19 @@ export interface CoreRoutesPluginOptions {
  * with template-specific routes.
  *
  * Routes:
- *   GET    /_agent-native/poll                          — polling endpoint for change detection
- *   GET    /_agent-native/events (or custom)            — SSE endpoint for real-time sync
- *   GET    /_agent-native/ping                          — health check
- *   GET    /_agent-native/env-status                    — env key configuration status (when envKeys provided)
- *   POST   /_agent-native/env-vars                      — save env vars to .env (when envKeys provided)
- *   GET    /_agent-native/application-state/:key        — read application state
- *   PUT    /_agent-native/application-state/:key        — write application state
- *   DELETE /_agent-native/application-state/:key        — delete application state
- *   GET    /_agent-native/application-state/compose     — list compose drafts
- *   DELETE /_agent-native/application-state/compose     — delete all compose drafts
- *   GET    /_agent-native/application-state/compose/:id — get compose draft
- *   PUT    /_agent-native/application-state/compose/:id — upsert compose draft
- *   DELETE /_agent-native/application-state/compose/:id — delete compose draft
+ *   GET    /_agent-native/poll                          鈥?polling endpoint for change detection
+ *   GET    /_agent-native/events (or custom)            鈥?SSE endpoint for real-time sync
+ *   GET    /_agent-native/ping                          鈥?health check
+ *   GET    /_agent-native/env-status                    鈥?env key configuration status (when envKeys provided)
+ *   POST   /_agent-native/env-vars                      鈥?save env vars to .env (when envKeys provided)
+ *   GET    /_agent-native/application-state/:key        鈥?read application state
+ *   PUT    /_agent-native/application-state/:key        鈥?write application state
+ *   DELETE /_agent-native/application-state/:key        鈥?delete application state
+ *   GET    /_agent-native/application-state/compose     鈥?list compose drafts
+ *   DELETE /_agent-native/application-state/compose     鈥?delete all compose drafts
+ *   GET    /_agent-native/application-state/compose/:id 鈥?get compose draft
+ *   PUT    /_agent-native/application-state/compose/:id 鈥?upsert compose draft
+ *   DELETE /_agent-native/application-state/compose/:id 鈥?delete compose draft
  */
 export function createCoreRoutesPlugin(
   options: CoreRoutesPluginOptions = {},
@@ -501,14 +506,14 @@ export function createCoreRoutesPlugin(
       await awaitBootstrap(nitroApp);
 
       // Restore env vars from the settings table. On serverless, .env
-      // writes don't persist across invocations — the DB is the durable
+      // writes don't persist across invocations 鈥?the DB is the durable
       // store. Only set keys that are currently empty so explicit env
       // vars (Netlify dashboard, process-level) always win.
       //
       // GATED: only rehydrate into `process.env` on local-dev SQLite (or
       // with the explicit single-tenant opt-in). On a shared-DB hosted
       // multi-tenant deploy the `persisted-env-vars` row is deployment-wide
-      // global state — pushing user-supplied values into `process.env` from
+      // global state 鈥?pushing user-supplied values into `process.env` from
       // it would let any one tenant's writes (or a stale dev seed) leak
       // into every other tenant's process. The opt-out scrub of legacy
       // BUILDER_* values still runs unconditionally so existing rows on
@@ -543,13 +548,13 @@ export function createCoreRoutesPlugin(
                 `[core] Removed ${scrubbed} legacy BUILDER_* key(s) from persisted-env-vars (cross-tenant leak fix).`,
               );
             } catch {
-              // Couldn't rewrite the row — the skip-on-rehydrate above
+              // Couldn't rewrite the row 鈥?the skip-on-rehydrate above
               // is the load-bearing protection. We'll try again next boot.
             }
           }
         }
       } catch {
-        // DB not ready yet — skip
+        // DB not ready yet 鈥?skip
       }
 
       // Honor Builder disconnect. Nitro's dev env-runner preserves
@@ -569,7 +574,7 @@ export function createCoreRoutesPlugin(
           }
         }
       } catch {
-        // DB not ready — skip; the disconnect flag will be enforced on the
+        // DB not ready 鈥?skip; the disconnect flag will be enforced on the
         // next plugin boot once the settings table is reachable.
       }
 
@@ -591,12 +596,12 @@ export function createCoreRoutesPlugin(
           createObservabilityHandler(),
         );
       } catch {
-        // Observability module not available — skip
+        // Observability module not available 鈥?skip
       }
 
       const P = FRAMEWORK_ROUTE_PREFIX;
 
-      // Security response headers — emitted on every framework response.
+      // Security response headers 鈥?emitted on every framework response.
       // Mounted before route handlers so 4xx/5xx error pages also carry the
       // headers. Routes that need to tighten a specific header override via
       // setResponseHeader.
@@ -644,7 +649,7 @@ export function createCoreRoutesPlugin(
               Boolean(readRequestHeader("authorization")));
 
           // Decide whether this origin is allowed. We never fall back to the
-          // first allowlist entry — that previously echoed `Access-Control-
+          // first allowlist entry 鈥?that previously echoed `Access-Control-
           // Allow-Origin: <unrelated-allowed-origin>` for disallowed callers,
           // which is permissive enough that some clients followed through.
           const allowedOrigin = mcpEmbedCorsRequest
@@ -658,7 +663,7 @@ export function createCoreRoutesPlugin(
           // Reject preflights from disallowed cross-origin callers BEFORE
           // returning 204. Previously the OPTIONS short-circuit returned 204
           // with no ACAO header, which the browser then treats as a CORS
-          // failure — but also short-circuited any further checks. Now we
+          // failure 鈥?but also short-circuited any further checks. Now we
           // explicitly 403 disallowed cross-origin preflights.
           if (method === "OPTIONS") {
             if (origin && !allowedOrigin) {
@@ -732,7 +737,7 @@ export function createCoreRoutesPlugin(
       const { createCsrfMiddleware } = await import("./csrf.js");
       getH3App(nitroApp).use(createCsrfMiddleware(P));
 
-      // Agent discovery primitive — shared by headless CLI/A2A surfaces and
+      // Agent discovery primitive 鈥?shared by headless CLI/A2A surfaces and
       // UI shells that need to show connected peer apps without depending on
       // the chat route namespace.
       getH3App(nitroApp).use(
@@ -751,7 +756,7 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // Demo-mode status — read by the client fetch interceptor and the
+      // Demo-mode status 鈥?read by the client fetch interceptor and the
       // Demo mode settings toggle. `forced` reflects the DEMO_MODE env (a
       // hosted demo deployment); `enabled` ORs that with the per-user
       // application_state toggle. No request-context dependency: the env case
@@ -915,7 +920,7 @@ export function createCoreRoutesPlugin(
               const orgCtx = await getOrgContext(event);
               orgId = orgCtx.orgId ?? null;
             } catch {
-              /* org module not present in this template — keep userEmail-only */
+              /* org module not present in this template 鈥?keep userEmail-only */
             }
           }
 
@@ -964,7 +969,7 @@ export function createCoreRoutesPlugin(
                   }
                 }
               } catch {
-                // settings store unavailable — fall through
+                // settings store unavailable 鈥?fall through
               }
 
               // Read request-scoped Builder credentials first; deploy env is only
@@ -1010,7 +1015,7 @@ export function createCoreRoutesPlugin(
                 }
                 if (creds.privateKey && creds.publicKey) {
                   // Best-effort: surface the real space name(s) from Builder's
-                  // Admin API. Stay NON-BLOCKING — return whatever is cached now
+                  // Admin API. Stay NON-BLOCKING 鈥?return whatever is cached now
                   // and refresh in the background for the next poll. Falls back
                   // to orgName until the cache warms.
                   let spaces: Array<{ id: string; name: string }> | undefined;
@@ -1027,7 +1032,7 @@ export function createCoreRoutesPlugin(
                       void listBuilderSpaces(privateKey).catch(() => {});
                     }
                   } catch {
-                    // Admin API helper unavailable — leave spaces undefined.
+                    // Admin API helper unavailable 鈥?leave spaces undefined.
                   }
                   return withConnectToken({
                     ...requestStatus,
@@ -1058,7 +1063,7 @@ export function createCoreRoutesPlugin(
                   });
                 }
               } catch {
-                // Secrets table not ready — fall through to env status
+                // Secrets table not ready 鈥?fall through to env status
               }
 
               // Honor legacy disconnect flag for existing deployments.
@@ -1083,7 +1088,7 @@ export function createCoreRoutesPlugin(
               } catch {
                 // DB not reachable
               }
-              // No env, no per-user creds → not configured. Both authenticated
+              // No env, no per-user creds 鈫?not configured. Both authenticated
               // and unauthenticated callers see "not connected" so they can
               // run through the OAuth flow.
               return withConnectToken({
@@ -1113,9 +1118,9 @@ export function createCoreRoutesPlugin(
 
       // Decide whether a /builder/connect navigation originated from this
       // app's own UI (allowed) or from a foreign origin (cross-site CSRF
-      // attempt — rejected). Sec-Fetch-Site is the modern signal:
-      //   - "same-origin": user clicked Connect from our own pages — allow
-      //   - "none": typed in URL bar / bookmark / browser extension — allow
+      // attempt 鈥?rejected). Sec-Fetch-Site is the modern signal:
+      //   - "same-origin": user clicked Connect from our own pages 鈥?allow
+      //   - "none": typed in URL bar / bookmark / browser extension 鈥?allow
       //   - "same-site" / "cross-site" / missing-but-with-foreign-Origin
       //     all map to reject.
       // For older browsers without Sec-Fetch-* we fall back to Origin and
@@ -1138,7 +1143,7 @@ export function createCoreRoutesPlugin(
             return false;
           }
         }
-        // No Sec-Fetch-Site, no Origin, no Referer — pre-2020 browser
+        // No Sec-Fetch-Site, no Origin, no Referer 鈥?pre-2020 browser
         // making a top-level navigation. Allow; cookies are still
         // session-bound so the worst case degrades to the prior behavior.
         return true;
@@ -1150,18 +1155,18 @@ export function createCoreRoutesPlugin(
       // happens when an await sits before window.open.
       //
       // CSRF protection here is layered because session cookies are
-      // SameSite=None;Secure (so the editor iframe can ride along) — that
+      // SameSite=None;Secure (so the editor iframe can ride along) 鈥?that
       // means a session cookie alone does NOT prevent cross-origin
       // window.open from initiating a connect flow on the victim's behalf:
-      //   1. Signed connect token from /builder/status — proves the opener
+      //   1. Signed connect token from /builder/status 鈥?proves the opener
       //      could read same-origin JSON, which cross-site attackers cannot.
       //      This covers local/embedded browsers that conservatively label a
       //      legitimate popup navigation as same-site/cross-site.
-      //   2. Sec-Fetch-Site header fallback — modern browsers stamp every
+      //   2. Sec-Fetch-Site header fallback 鈥?modern browsers stamp every
       //      request with the navigation context. We allow `same-origin` or
       //      `none` (typed/bookmark/extension); cross-site / same-site without
       //      a valid connect token are rejected.
-      //   3. Pending row keyed by session email + bound nonce — the callback
+      //   3. Pending row keyed by session email + bound nonce 鈥?the callback
       //      requires both a valid session and a one-time row that this
       //      handler wrote during the same flow. Without the same-origin
       //      gate or connect token above, an attacker could prime the row from
@@ -1243,16 +1248,16 @@ export function createCoreRoutesPlugin(
               closeHint:
                 "Close this popup, refresh the app, and try Connect account again.",
               parentOrigin: getBuilderBrowserOriginForEvent(event),
-            });
+            }, resolveSsrLanguage(event));
           }
 
-          // Clear any prior failure row from a previous attempt — otherwise
+          // Clear any prior failure row from a previous attempt 鈥?otherwise
           // useBuilderStatus polling sees the stale error and aborts the
           // new attempt before it can complete.
           try {
             await deleteSetting(`builder-connect-error:${ownerEmail}`);
           } catch {
-            // No prior error row — fine
+            // No prior error row 鈥?fine
           }
 
           // Store a short-lived pending row. If the DB is unavailable we
@@ -1276,7 +1281,7 @@ export function createCoreRoutesPlugin(
               },
             );
             const msg =
-              "Could not initiate Builder connect — storage unavailable. Try again.";
+              "Could not initiate Builder connect 鈥?storage unavailable. Try again.";
             console.error(
               "[builder] Could not store pending-connect state:",
               (err as Error)?.message ?? err,
@@ -1295,7 +1300,7 @@ export function createCoreRoutesPlugin(
             );
             return createBuilderBrowserCallbackErrorPage(msg, {
               parentOrigin: getBuilderBrowserOriginForEvent(event),
-            });
+            }, resolveSsrLanguage(event));
           }
           await trackBuilderLifecycle(
             event,
@@ -1352,12 +1357,12 @@ export function createCoreRoutesPlugin(
             const orgCtx = await getOrgContext(event);
             orgId = orgCtx.orgId ?? null;
           } catch {
-            /* org module not present in this template — keep userEmail-only */
+            /* org module not present in this template 鈥?keep userEmail-only */
           }
 
           // Wrap in runWithRequestContext so resolveBuilderCredential() inside
           // runBuilderAgent() resolves per-user app_secrets rather than falling
-          // through to process.env — the same pattern the /builder/status endpoint
+          // through to process.env 鈥?the same pattern the /builder/status endpoint
           // uses. Without this, per-user Builder keys stored in app_secrets are
           // invisible to the run path and the call throws "Builder keys are not
           // configured" even though the status endpoint correctly reports configured=true.
@@ -1377,7 +1382,7 @@ export function createCoreRoutesPlugin(
                 await import("./credential-provider.js");
               const builderUserId =
                 (await resolveBuilderCred("BUILDER_USER_ID")) || undefined;
-              // Server-controlled projectId — don't let clients target arbitrary
+              // Server-controlled projectId 鈥?don't let clients target arbitrary
               // Builder projects with our private key. When this feature graduates
               // past the hardcoded preview, the projectId will come from
               // workspace/org config, still resolved server-side.
@@ -1405,7 +1410,7 @@ export function createCoreRoutesPlugin(
       );
 
       // Branch-creation waitlist signup. Used by ConnectBuilderCard when the
-      // current request has no Builder branch project configured — instead of
+      // current request has no Builder branch project configured 鈥?instead of
       // the raw 403 from /builder/run, the card surfaces a waitlist CTA that
       // POSTs here. Recorded as a tracking event so PostHog/Mixpanel/etc.
       // capture demand without us standing up new storage.
@@ -1485,14 +1490,14 @@ export function createCoreRoutesPlugin(
           // path the callback is served from the env-configured gateway while
           // the opener lives on the preview origin. Three sources of opener
           // origin, in priority order:
-          //   1. `_an_opener` — written into the callback URL's query by
+          //   1. `_an_opener` 鈥?written into the callback URL's query by
           //      buildBuilderCliAuthUrl when cli-auth's allow-list forced
           //      preview_url onto the gateway. Survives Builder's redirect
           //      verbatim (Builder preserves redirect_url's query string).
-          //   2. `preview-url` — Builder echoes the top-level preview_url back
+          //   2. `preview-url` 鈥?Builder echoes the top-level preview_url back
           //      as a query param on the callback. Reflects the gateway on
           //      the fallback path, but matches the opener on the happy path.
-          //   3. The event's own origin — last-resort fallback.
+          //   3. The event's own origin 鈥?last-resort fallback.
           const openerOriginFromQuery =
             requestUrl.searchParams.get(BUILDER_OPENER_PARAM);
           const callbackParentOrigin =
@@ -1554,14 +1559,14 @@ export function createCoreRoutesPlugin(
                   pendingError =
                     "Could not consume pending-connect token (storage error). Please retry.";
                   console.error(
-                    "[builder] deleteSetting failed for pending-connect — refusing to proceed (replay risk):",
+                    "[builder] deleteSetting failed for pending-connect 鈥?refusing to proceed (replay risk):",
                     (err as Error)?.message ?? err,
                   );
                 }
               }
             }
           } catch {
-            // DB temporarily unavailable — treat as missing.
+            // DB temporarily unavailable 鈥?treat as missing.
           }
 
           if (pendingError) {
@@ -1589,7 +1594,7 @@ export function createCoreRoutesPlugin(
             );
             return createBuilderBrowserCallbackErrorPage(pendingError, {
               parentOrigin: callbackParentOrigin,
-            });
+            }, resolveSsrLanguage(event));
           }
 
           if (!pendingValid) {
@@ -1624,7 +1629,7 @@ export function createCoreRoutesPlugin(
                 at: Date.now(),
               });
             } catch {
-              // DB unavailable — parent will time out naturally.
+              // DB unavailable 鈥?parent will time out naturally.
             }
             setResponseStatus(event, 403);
             setResponseHeader(
@@ -1634,7 +1639,7 @@ export function createCoreRoutesPlugin(
             );
             return createBuilderBrowserCallbackErrorPage(msg, {
               parentOrigin: callbackParentOrigin,
-            });
+            }, resolveSsrLanguage(event));
           }
 
           const privateKey = requestUrl.searchParams.get("p-key");
@@ -1669,7 +1674,7 @@ export function createCoreRoutesPlugin(
             );
             return createBuilderBrowserCallbackErrorPage(msg, {
               parentOrigin: callbackParentOrigin,
-            });
+            }, resolveSsrLanguage(event));
           }
 
           const userId = requestUrl.searchParams.get("user-id");
@@ -1692,7 +1697,7 @@ export function createCoreRoutesPlugin(
           // overwrites.
           //
           // Failure handling: a silent catch here (returning the success page
-          // anyway) was Midhun's bug on 2026-04-28 — popup said "yay", parent
+          // anyway) was Midhun's bug on 2026-04-28 鈥?popup said "yay", parent
           // window polled `/builder/status` for 5 minutes seeing
           // configured:false, never got a real error. Now we surface the
           // failure two ways: (a) a settings row that the next /builder/status
@@ -1706,7 +1711,7 @@ export function createCoreRoutesPlugin(
             // at org scope when an owner/admin is connecting (everyone in
             // the org auto-resolves them on next chat call). Members and
             // users with no active org silently fall back to user scope.
-            // Failure to read org context is non-fatal — we just keep the
+            // Failure to read org context is non-fatal 鈥?we just keep the
             // legacy per-user behaviour for that connection.
             let orgId: string | null = null;
             let role: string | null = null;
@@ -1717,7 +1722,7 @@ export function createCoreRoutesPlugin(
                 orgId = orgCtx.orgId ?? null;
                 role = orgCtx.role ?? null;
               } catch {
-                /* org module not present in this template — keep user scope */
+                /* org module not present in this template 鈥?keep user scope */
               }
             }
             const target = await writeBuilderCredentials(
@@ -1780,7 +1785,7 @@ export function createCoreRoutesPlugin(
             );
             return createBuilderBrowserCallbackErrorPage(writeError, {
               parentOrigin: callbackParentOrigin,
-            });
+            }, resolveSsrLanguage(event));
           }
 
           // Clear any legacy disconnect flag and any prior connect-error row
@@ -1788,12 +1793,12 @@ export function createCoreRoutesPlugin(
           try {
             await deleteSetting("builder-disconnected");
           } catch {
-            // DB not ready — proceed
+            // DB not ready 鈥?proceed
           }
           try {
             await deleteSetting(`builder-connect-error:${ownerEmail}`);
           } catch {
-            // No prior error row — fine
+            // No prior error row 鈥?fine
           }
 
           const previewUrl = resolveBuilderCallbackReturnUrl({
@@ -1819,20 +1824,20 @@ export function createCoreRoutesPlugin(
           );
           setResponseHeader(event, "Content-Type", "text/html; charset=utf-8");
           // The parent (opener) is the original preview surface that started the
-          // connect flow, NOT the callback server's own origin — when the
+          // connect flow, NOT the callback server's own origin 鈥?when the
           // env-configured gateway is used as the callback fallback (because
           // Builder rejects the preview host), the callback server and the
           // opener live on different origins, and postMessage to the gateway
           // origin would be dropped by the preview opener. callbackParentOrigin
-          // is the precomputed best-available opener origin (`_an_opener` →
-          // `preview-url` → event origin).
+          // is the precomputed best-available opener origin (`_an_opener` 鈫?
+          // `preview-url` 鈫?event origin).
           return createBuilderBrowserCallbackPage(previewUrl, {
             parentOrigin: callbackParentOrigin,
-          });
+          }, resolveSsrLanguage(event));
         }),
       );
 
-      // POST /_agent-native/builder/disconnect — revoke the user's per-user
+      // POST /_agent-native/builder/disconnect 鈥?revoke the user's per-user
       // or org-scoped Builder credentials in app_secrets. Deploy-level env
       // credentials are never mutated here; if env is configured it remains as
       // the fallback after request-scoped credentials are removed.
@@ -1866,7 +1871,7 @@ export function createCoreRoutesPlugin(
             orgId = orgCtx.orgId ?? null;
             role = orgCtx.role ?? null;
           } catch {
-            /* org module not present — keep user scope */
+            /* org module not present 鈥?keep user scope */
           }
 
           try {
@@ -1884,7 +1889,7 @@ export function createCoreRoutesPlugin(
             return {
               ok: false,
               error:
-                "Could not remove Builder credentials — your connection is unchanged. Please retry.",
+                "Could not remove Builder credentials 鈥?your connection is unchanged. Please retry.",
               cause: err instanceof Error ? err.message : String(err),
             };
           }
@@ -1979,13 +1984,13 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // Env key management — framework keys are always included
+      // Env key management 鈥?framework keys are always included
       const frameworkEnvKeys: EnvKeyConfig[] = [
         { key: "ENABLE_BUILDER", label: "Enable Builder.io features" },
         {
           key: "AGENT_ENGINE_PREFER_BYO_KEY",
           label:
-            "Prefer BYO LLM key over Builder gateway (default: false — gateway wins)",
+            "Prefer BYO LLM key over Builder gateway (default: false 鈥?gateway wins)",
         },
         ...Object.values(PROVIDER_ENV_META).map(({ envVar, label }) => ({
           key: envVar,
@@ -2104,7 +2109,7 @@ export function createCoreRoutesPlugin(
               );
               return {
                 error: rejectedEmpty
-                  ? "Env values must be non-empty — refusing to clear a saved key"
+                  ? "Env values must be non-empty 鈥?refusing to clear a saved key"
                   : "No recognized env keys in request",
               };
             }
@@ -2124,7 +2129,7 @@ export function createCoreRoutesPlugin(
                     : path.join(process.cwd(), ".env");
               await upsertEnvFile(envPath, filtered);
             } catch {
-              // Edge runtime — skip file write
+              // Edge runtime 鈥?skip file write
             }
 
             // Update process.env immediately
@@ -2146,7 +2151,7 @@ export function createCoreRoutesPlugin(
                 ...envMap,
               });
             } catch {
-              // DB not ready yet — skip
+              // DB not ready yet 鈥?skip
             }
 
             return { saved: filtered.map((v) => v.key) };
@@ -2159,10 +2164,10 @@ export function createCoreRoutesPlugin(
         createAgentEngineApiKeyHandler(),
       );
 
-      // GET /_agent-native/agent-engine/status — reports whether an engine
+      // GET /_agent-native/agent-engine/status 鈥?reports whether an engine
       // is configured (settings row, settings+env, or auto-detected from env).
       // The agent-chat UI uses this to skip the onboarding gate for providers
-      // not in the env-status list (OpenRouter, Groq, Ollama, …).
+      // not in the env-status list (OpenRouter, Groq, Ollama, 鈥?.
       getH3App(nitroApp).use(
         `${P}/agent-engine/status`,
         defineEventHandler(async (event) => {
@@ -2215,7 +2220,7 @@ export function createCoreRoutesPlugin(
                 envVar: "AGENT_ENGINE",
               };
             }
-            // Per-user app_secrets — a user who connected Builder (or pasted
+            // Per-user app_secrets 鈥?a user who connected Builder (or pasted
             // their own provider key) may not have any deploy-level env vars
             // set, so check their per-user secret store before reporting "no
             // engine configured" and re-showing the onboarding gate.
@@ -2277,14 +2282,14 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // POST /_agent-native/track — client-originated analytics events.
+      // POST /_agent-native/track 鈥?client-originated analytics events.
       // The browser `track()` helper POSTs `{ name, properties }` here so app
       // code can fan out to the SAME server-side providers (PostHog/Mixpanel/
       // etc.) that server `track()` reaches. Authenticated + first-party only:
       // the CSRF middleware above (mounted before route handlers) already
       // requires the X-Agent-Native-CSRF marker the client helper sends, and we
       // require a resolved session so this can't become an open relay. Events
-      // are attributed to the resolved user/org — never a client-supplied id.
+      // are attributed to the resolved user/org 鈥?never a client-supplied id.
       // Best-effort: invalid bodies 400, everything else returns 204 and
       // provider errors are swallowed by the server `track()`.
       getH3App(nitroApp).use(
@@ -2309,7 +2314,7 @@ export function createCoreRoutesPlugin(
 
           // Attribute to the active org when the template uses orgs. The
           // registry's `track()` only carries `userId` in meta, so org context
-          // rides along in properties — every built-in provider forwards
+          // rides along in properties 鈥?every built-in provider forwards
           // `properties` verbatim. Client-supplied properties never override
           // the server-resolved `org_id`.
           let orgId: string | null = null;
@@ -2317,7 +2322,7 @@ export function createCoreRoutesPlugin(
             const orgCtx = await getOrgContext(event);
             orgId = orgCtx.orgId ?? null;
           } catch {
-            /* org module not present in this template — keep userEmail-only */
+            /* org module not present in this template 鈥?keep userEmail-only */
           }
 
           const properties: Record<string, unknown> = {
@@ -2326,7 +2331,7 @@ export function createCoreRoutesPlugin(
           };
           if (orgId) properties.org_id = orgId;
 
-          // Best-effort — server `track()` swallows provider errors. We still
+          // Best-effort 鈥?server `track()` swallows provider errors. We still
           // guard here so an unexpected throw can't surface to the browser.
           try {
             track(validation.name as string, properties, {
@@ -2340,7 +2345,7 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // POST /_agent-native/agent-engine/disconnect — clear the agent-engine
+      // POST /_agent-native/agent-engine/disconnect 鈥?clear the agent-engine
       // setting. Env vars are left alone so the next chat turn falls back to
       // resolveEngine's env/default resolution.
       getH3App(nitroApp).use(
@@ -2368,7 +2373,7 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // GET/PUT/DELETE /_agent-native/agent-loop-settings — org/user-scoped
+      // GET/PUT/DELETE /_agent-native/agent-loop-settings 鈥?org/user-scoped
       // ceiling for tool-calling loop iterations before the agent asks whether
       // it should keep going.
       getH3App(nitroApp).use(
@@ -2452,7 +2457,7 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // ─── Usage & cost summary ────────────────────────────────────────
+      // 鈹€鈹€鈹€ Usage & cost summary 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
       // GET /_agent-native/usage?sinceDays=30
       // Returns spend broken down by label, model, app, and day for the
       // current user. Powers the Usage section in the agent settings panel.
@@ -2488,9 +2493,9 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // ─── File upload primitive ──────────────────────────────────────
-      // GET  /_agent-native/file-upload/status — report active provider
-      // POST /_agent-native/file-upload        — upload a file, return { url }
+      // 鈹€鈹€鈹€ File upload primitive 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // GET  /_agent-native/file-upload/status 鈥?report active provider
+      // POST /_agent-native/file-upload        鈥?upload a file, return { url }
       getH3App(nitroApp).use(
         `${P}/file-upload/status`,
         defineEventHandler(async (event) => {
@@ -2498,7 +2503,7 @@ export function createCoreRoutesPlugin(
           // resolveBuilderPrivateKey() reads per-user credentials from app_secrets
           // (DB), which requires request context (AsyncLocalStorage) to know which
           // user to scope by. Without runWithRequestContext() the ALS store is empty
-          // and it falls back to process.env only — missing OAuth-connected users.
+          // and it falls back to process.env only 鈥?missing OAuth-connected users.
           const session = await getSession(event).catch(() => null);
           const userEmail = session?.email;
           let builderConfigured = !!process.env.BUILDER_PRIVATE_KEY;
@@ -2600,20 +2605,20 @@ export function createCoreRoutesPlugin(
           setResponseStatus(event, 503);
           return {
             error:
-              "No file upload provider configured. Connect Builder.io in Settings → File uploads, or register a provider.",
+              "No file upload provider configured. Connect Builder.io in Settings 鈫?File uploads, or register a provider.",
           };
         }),
       );
 
-      // ─── Voice transcription (Whisper) ───────────────────────────────
-      // POST /_agent-native/transcribe-voice — multipart audio → text
+      // 鈹€鈹€鈹€ Voice transcription (Whisper) 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // POST /_agent-native/transcribe-voice 鈥?multipart audio 鈫?text
       getH3App(nitroApp).use(
         `${P}/transcribe-voice`,
         createTranscribeVoiceHandler(),
       );
 
-      // ─── Google realtime transcription session bridge ───────────────
-      // POST /_agent-native/transcribe-stream/session — resolve the user's
+      // 鈹€鈹€鈹€ Google realtime transcription session bridge 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // POST /_agent-native/transcribe-stream/session 鈥?resolve the user's
       // Google service-account credential server-side, mint an opaque managed
       // streaming session in ai-services, and return the websocket URL.
       getH3App(nitroApp).use(
@@ -2621,24 +2626,24 @@ export function createCoreRoutesPlugin(
         createGoogleRealtimeSessionHandler(),
       );
 
-      // ─── Voice provider status ───────────────────────────────────────
-      // GET /_agent-native/voice-providers/status — which providers are
+      // 鈹€鈹€鈹€ Voice provider status 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // GET /_agent-native/voice-providers/status 鈥?which providers are
       // configured for the current user (powers the Settings UI pills).
       getH3App(nitroApp).use(
         `${P}/voice-providers/status`,
         createVoiceProvidersStatusHandler(),
       );
 
-      // ─── Ad-hoc secrets (user-created keys) ────────────────────────────
+      // 鈹€鈹€鈹€ Ad-hoc secrets (user-created keys) 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
       // Must mount before the generic /secrets handler to avoid shadowing.
       const adHocSecretHandler = createAdHocSecretHandler();
       getH3App(nitroApp).use(`${P}/secrets/adhoc`, adHocSecretHandler);
 
-      // ─── Secrets registry ────────────────────────────────────────────
-      // GET    /_agent-native/secrets              — list registered secrets + status
-      // POST   /_agent-native/secrets/:key         — write a secret value
-      // DELETE /_agent-native/secrets/:key         — remove a secret value
-      // POST   /_agent-native/secrets/:key/test    — re-run the validator
+      // 鈹€鈹€鈹€ Secrets registry 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // GET    /_agent-native/secrets              鈥?list registered secrets + status
+      // POST   /_agent-native/secrets/:key         鈥?write a secret value
+      // DELETE /_agent-native/secrets/:key         鈥?remove a secret value
+      // POST   /_agent-native/secrets/:key/test    鈥?re-run the validator
       const listSecretsHandler = createListSecretsHandler();
       const writeSecretHandler = createWriteSecretHandler();
       const testSecretHandler = createTestSecretHandler();
@@ -2651,17 +2656,17 @@ export function createCoreRoutesPlugin(
             .replace(/\/+$/, "");
           const parts = pathname ? pathname.split("/") : [];
 
-          // Collection root — list handler.
+          // Collection root 鈥?list handler.
           if (parts.length === 0) {
             return listSecretsHandler(event);
           }
 
-          // /:key/test — re-validate stored value.
+          // /:key/test 鈥?re-validate stored value.
           if (parts.length === 2 && parts[1] === "test") {
             return testSecretHandler(event);
           }
 
-          // /:key — write / delete a specific secret.
+          // /:key 鈥?write / delete a specific secret.
           if (parts.length === 1) {
             return writeSecretHandler(event);
           }
@@ -2671,7 +2676,7 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // ─── Notifications inbox ──────────────────────────────────────────
+      // 鈹€鈹€鈹€ Notifications inbox 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
       // GET    /_agent-native/notifications[?unread&limit&before]
       // GET    /_agent-native/notifications/count
       // POST   /_agent-native/notifications/:id/read
@@ -2682,7 +2687,7 @@ export function createCoreRoutesPlugin(
         createNotificationsHandler(),
       );
 
-      // ─── Extensions (sandboxed mini-app runtime + proxy) ────────────────
+      // 鈹€鈹€鈹€ Extensions (sandboxed mini-app runtime + proxy) 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
       try {
         const { ensureExtensionsTables, registerExtensionsShareable } =
           await import("../extensions/store.js");
@@ -2692,12 +2697,12 @@ export function createCoreRoutesPlugin(
         registerExtensionsShareable();
         const extensionsHandler = createExtensionsHandler();
         getH3App(nitroApp).use(`${P}/extensions`, extensionsHandler);
-        // Legacy alias — the previous public API was /_agent-native/tools/*.
+        // Legacy alias 鈥?the previous public API was /_agent-native/tools/*.
         // Mounted in addition to /extensions/* so any deployed iframes mid-flight
         // (or external integrations bookmarked the old path) keep working.
         getH3App(nitroApp).use(`${P}/tools`, extensionsHandler);
 
-        // Extension-point slots — sub-system of extensions.
+        // Extension-point slots 鈥?sub-system of extensions.
         const { ensureSlotTables } =
           await import("../extensions/slots/store.js");
         const { createSlotsHandler } =
@@ -2705,14 +2710,14 @@ export function createCoreRoutesPlugin(
         ensureSlotTables().catch(() => {});
         getH3App(nitroApp).use(`${P}/slots`, createSlotsHandler());
       } catch {
-        // Extensions module not available — skip
+        // Extensions module not available 鈥?skip
       }
 
-      // ─── Page-level legacy redirect: /tools → /extensions ──────────────
+      // 鈹€鈹€鈹€ Page-level legacy redirect: /tools 鈫?/extensions 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
       // Catches direct browser navigation / bookmarks for the old page route
       // (`/tools`, `/tools/:id`) and 302s to the renamed equivalent under
       // `/extensions`. The framework API alias above (`/_agent-native/tools/*`)
-      // is intentionally untouched — it stays mounted in parallel.
+      // is intentionally untouched 鈥?it stays mounted in parallel.
       //
       // Mounted with no path so the helper can do its own base-path stripping
       // (h3 mount-matching only allows base-path stripping for `/_agent-native`
@@ -2734,28 +2739,28 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // ─── Agent run progress ───────────────────────────────────────────
+      // 鈹€鈹€鈹€ Agent run progress 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
       // GET    /_agent-native/runs[?active&limit]
       // GET    /_agent-native/runs/:id
       // DELETE /_agent-native/runs/:id
       getH3App(nitroApp).use(`${P}/runs`, createProgressHandler());
 
-      // ─── Automations API ──────────────────────────────────────────────
-      // GET  /_agent-native/automations — list all automations (parsed triggers)
-      // PATCH /_agent-native/automations — enable/disable a jobs/*.md automation
-      // POST /_agent-native/automations/fire-test — emit test.event.fired
+      // 鈹€鈹€鈹€ Automations API 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // GET  /_agent-native/automations 鈥?list all automations (parsed triggers)
+      // PATCH /_agent-native/automations 鈥?enable/disable a jobs/*.md automation
+      // POST /_agent-native/automations/fire-test 鈥?emit test.event.fired
       getH3App(nitroApp).use(`${P}/automations`, createAutomationsHandler());
 
-      // ─── Application State CRUD ──────────────────────────────────────
+      // 鈹€鈹€鈹€ Application State CRUD 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
       // Auto-mounted so templates don't need boilerplate route files.
 
-      // ─── User-scoped settings store ────────────────────────────────────
-      // GET    /_agent-native/settings/:key   — read current user's value
-      // PUT    /_agent-native/settings/:key   — write current user's value
-      // DELETE /_agent-native/settings/:key   — clear current user's value
+      // 鈹€鈹€鈹€ User-scoped settings store 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // GET    /_agent-native/settings/:key   鈥?read current user's value
+      // PUT    /_agent-native/settings/:key   鈥?write current user's value
+      // DELETE /_agent-native/settings/:key   鈥?clear current user's value
       //
       // Keys are auto-prefixed with `u:<email>:` so each user gets their
-      // own row — no leakage between sessions sharing the same DB.
+      // own row 鈥?no leakage between sessions sharing the same DB.
       getH3App(nitroApp).use(
         `${P}/settings`,
         defineEventHandler(async (event: H3Event) => {
@@ -2804,9 +2809,9 @@ export function createCoreRoutesPlugin(
         }),
       );
 
-      // ─── Avatar routes ──────────────────────────────────────────────────
-      // GET /_agent-native/avatar/:email — fetch any user's avatar (public)
-      // PUT /_agent-native/avatar       — update current user's avatar (auth required)
+      // 鈹€鈹€鈹€ Avatar routes 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+      // GET /_agent-native/avatar/:email 鈥?fetch any user's avatar (public)
+      // PUT /_agent-native/avatar       鈥?update current user's avatar (auth required)
       //
       // Only raster MIME types are accepted on write; SVG carries scripting risk
       // (data:image/svg+xml payloads can execute JS when rendered by browsers),
@@ -2886,8 +2891,8 @@ export function createCoreRoutesPlugin(
         );
 
         // Frictionless external-agent connection. A logged-in user mints a
-        // per-user, scoped, revocable MCP bearer token here — via the browser
-        // Connect page or the OAuth-style device-code flow a CLI drives — so
+        // per-user, scoped, revocable MCP bearer token here 鈥?via the browser
+        // Connect page or the OAuth-style device-code flow a CLI drives 鈥?so
         // they never copy a shared deployment secret. The handler resolves the
         // browser session itself and serves its own login form (like /open)
         // for the page + unauth device endpoints; the /token, /device/authorize,
@@ -2911,7 +2916,7 @@ export function createCoreRoutesPlugin(
         );
       }
 
-      // Cross-app SSO ("Sign in with Agent-Native") — CLIENT side. Mounted
+      // Cross-app SSO ("Sign in with Agent-Native") 鈥?CLIENT side. Mounted
       // ONLY when `AGENT_NATIVE_IDENTITY_HUB_URL` is set, so an unset env var
       // means the route is never even registered: zero new surface, existing
       // auth byte-for-byte unchanged. `/login` 302s to the identity hub;
@@ -2933,7 +2938,7 @@ export function createCoreRoutesPlugin(
 
       if (!options.disableOpenRoute) {
         // Stable deep-link route. External agents (MCP/A2A) surface
-        // `/_agent-native/open?app=…&view=…&<recordId>=…` links; this resolves
+        // `/_agent-native/open?app=鈥?view=鈥?<recordId>=鈥 links; this resolves
         // the browser session, writes the one-shot `navigate` app-state command
         // the UI already drains, and 302s to the rendered SPA view. The auth
         // guard bypasses this exact path so it can serve its own login form.
@@ -2981,7 +2986,7 @@ export function createCoreRoutesPlugin(
           }),
         );
 
-        // Generic application state — match `/application-state/:key` only
+        // Generic application state 鈥?match `/application-state/:key` only
         // (NOT `/application-state/compose/...` which the handler above owns).
         getH3App(nitroApp).use(
           `${P}/application-state`,
@@ -2989,7 +2994,7 @@ export function createCoreRoutesPlugin(
             const key =
               (event.url?.pathname || "").replace(/^\/+/, "").split("/")[0] ||
               "";
-            // Skip — compose handler above already handled it
+            // Skip 鈥?compose handler above already handled it
             if (key === "compose" || key === "") return;
             if (event.context) {
               event.context.params = { ...event.context.params, key };
@@ -3012,7 +3017,7 @@ export function createCoreRoutesPlugin(
 }
 
 /**
- * Default core routes plugin — mount with no configuration needed.
+ * Default core routes plugin 鈥?mount with no configuration needed.
  *
  * Usage in templates:
  * ```ts

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { agentNativePath, useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconDatabase,
   IconFileSearch,
@@ -164,6 +165,7 @@ function ResultCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <button
       type="button"
@@ -189,7 +191,9 @@ function ResultCard({
         </Badge>
       </div>
       <div className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
-        {result.snippet || result.preview || "No preview"}
+        {result.snippet ||
+          result.preview ||
+          t("dispatch.threadDebug.noPreview")}
       </div>
       <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
         <span className="truncate">{result.ownerEmail}</span>
@@ -200,6 +204,7 @@ function ResultCard({
 }
 
 function MessageBlock({ message }: { message: ThreadMessage }) {
+  const { t } = useI18n();
   const tools = toolParts(message);
   return (
     <div className="rounded-lg border bg-card">
@@ -216,7 +221,9 @@ function MessageBlock({ message }: { message: ThreadMessage }) {
         </div>
         <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
           {message.attachments.length > 0 ? (
-            <Badge variant="outline">{message.attachments.length} files</Badge>
+            <Badge variant="outline">
+              {message.attachments.length} {t("dispatch.threadDebug.files")}
+            </Badge>
           ) : null}
           <span>{formatDate(message.createdAt)}</span>
         </div>
@@ -227,7 +234,9 @@ function MessageBlock({ message }: { message: ThreadMessage }) {
             {message.text}
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground">No text content</div>
+          <div className="text-sm text-muted-foreground">
+            {t("dispatch.threadDebug.noTextContent")}
+          </div>
         )}
         {tools.length > 0 ? (
           <div className="space-y-2">
@@ -250,6 +259,7 @@ function MessageBlock({ message }: { message: ThreadMessage }) {
 }
 
 function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
+  const { t } = useI18n();
   const rawBundle = useMemo(
     () => ({
       thread: detail.thread,
@@ -280,24 +290,42 @@ function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{detail.messages.length} messages</Badge>
-            <Badge variant="secondary">{detail.runs.length} runs</Badge>
+            <Badge variant="secondary">
+              {detail.messages.length} {t("dispatch.threadDebug.messages")}
+            </Badge>
+            <Badge variant="secondary">
+              {detail.runs.length} {t("dispatch.threadDebug.runs")}
+            </Badge>
             <Badge variant="outline">{detail.source.label}</Badge>
           </div>
         </div>
         <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
-          <div className="truncate">Owner: {detail.thread.ownerEmail}</div>
-          <div>Created: {formatDate(detail.thread.createdAt)}</div>
-          <div>Updated: {formatDate(detail.thread.updatedAt)}</div>
+          <div className="truncate">
+            {t("dispatch.threadDebug.threadOwner")} {detail.thread.ownerEmail}
+          </div>
+          <div>
+            {t("dispatch.threadDebug.threadCreated")}{" "}
+            {formatDate(detail.thread.createdAt)}
+          </div>
+          <div>
+            {t("dispatch.threadDebug.threadUpdated")}{" "}
+            {formatDate(detail.thread.updatedAt)}
+          </div>
         </div>
       </div>
 
       <Tabs defaultValue="transcript" className="p-4">
         <TabsList>
-          <TabsTrigger value="transcript">Transcript</TabsTrigger>
-          <TabsTrigger value="runs">Runs</TabsTrigger>
-          <TabsTrigger value="internals">Internals</TabsTrigger>
-          <TabsTrigger value="raw">Raw</TabsTrigger>
+          <TabsTrigger value="transcript">
+            {t("dispatch.threadDebug.transcript")}
+          </TabsTrigger>
+          <TabsTrigger value="runs">
+            {t("dispatch.threadDebug.runs")}
+          </TabsTrigger>
+          <TabsTrigger value="internals">
+            {t("dispatch.threadDebug.internals")}
+          </TabsTrigger>
+          <TabsTrigger value="raw">{t("dispatch.threadDebug.raw")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="transcript" className="mt-4 space-y-3">
@@ -310,7 +338,7 @@ function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
             ))
           ) : (
             <div className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
-              No persisted messages.
+              {t("dispatch.threadDebug.noPersistedMessages")}
             </div>
           )}
         </TabsContent>
@@ -344,7 +372,7 @@ function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
                   ))}
                   {run.events.length === 0 ? (
                     <div className="text-sm text-muted-foreground">
-                      No retained run events.
+                      {t("dispatch.threadDebug.noRetainedRunEvents")}
                     </div>
                   ) : null}
                 </div>
@@ -352,7 +380,7 @@ function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
             ))
           ) : (
             <div className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
-              No retained runs.
+              {t("dispatch.threadDebug.noRetainedRuns")}
             </div>
           )}
         </TabsContent>
@@ -361,7 +389,7 @@ function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
           <div className="grid gap-4 lg:grid-cols-2">
             <div>
               <div className="mb-2 text-sm font-medium text-foreground">
-                Debug Runs
+                {t("dispatch.threadDebug.debugRuns")}
               </div>
               <RawBlock
                 value={
@@ -373,19 +401,19 @@ function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
             </div>
             <div>
               <div className="mb-2 text-sm font-medium text-foreground">
-                Trace Summaries
+                {t("dispatch.threadDebug.traceSummaries")}
               </div>
               <RawBlock value={detail.traces.summaries} />
             </div>
             <div>
               <div className="mb-2 text-sm font-medium text-foreground">
-                Trace Spans
+                {t("dispatch.threadDebug.traceSpans")}
               </div>
               <RawBlock value={detail.traces.spans} />
             </div>
             <div>
               <div className="mb-2 text-sm font-medium text-foreground">
-                Feedback And Evals
+                {t("dispatch.threadDebug.feedbackAndEvals")}
               </div>
               <RawBlock
                 value={{
@@ -409,6 +437,7 @@ function ThreadDetail({ detail }: { detail: ThreadDebugResponse }) {
 }
 
 export default function ThreadDebugRoute() {
+  const { t } = useI18n();
   const [sourceId, setSourceId] = useState("current");
   const [query, setQuery] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
@@ -504,15 +533,15 @@ export default function ThreadDebugRoute() {
 
   return (
     <DispatchShell
-      title="Thread Debug"
-      description="Inspect persisted agent chat threads, run events, and AI internals."
+      title={t("dispatch.threadDebug.title")}
+      description={t("dispatch.threadDebug.description")}
     >
       <div className="space-y-4">
         <section className="rounded-lg border bg-card p-4">
           <div className="grid gap-3 lg:grid-cols-[220px_1fr_260px_auto]">
             <Select value={sourceId} onValueChange={setSourceId}>
               <SelectTrigger>
-                <SelectValue placeholder="Source" />
+                <SelectValue placeholder={t("dispatch.threadDebug.source")} />
               </SelectTrigger>
               <SelectContent>
                 {sources.map((source) => (
@@ -528,7 +557,7 @@ export default function ThreadDebugRoute() {
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search title, preview, messages, tools"
+              placeholder={t("dispatch.threadDebug.searchPlaceholder")}
             />
             <Input
               value={ownerEmail}
@@ -546,7 +575,7 @@ export default function ThreadDebugRoute() {
               }
             >
               <IconSearch size={16} />
-              Search
+              {t("dispatch.threadDebug.search")}
             </Button>
           </div>
 
@@ -571,7 +600,7 @@ export default function ThreadDebugRoute() {
               }}
             >
               <IconFileSearch size={16} />
-              Inspect
+              {t("dispatch.threadDebug.inspect")}
             </Button>
           </div>
 
@@ -594,7 +623,7 @@ export default function ThreadDebugRoute() {
 
         {searchError ? (
           <Alert variant="destructive">
-            <AlertTitle>Search failed</AlertTitle>
+            <AlertTitle>{t("dispatch.threadDebug.searchFailed")}</AlertTitle>
             <AlertDescription>{String(searchError.message)}</AlertDescription>
           </Alert>
         ) : null}
@@ -604,7 +633,7 @@ export default function ThreadDebugRoute() {
             <div className="flex items-center justify-between border-b px-4 py-3">
               <div>
                 <div className="text-sm font-semibold text-foreground">
-                  Threads
+                  {t("dispatch.threadDebug.threads")}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {searchData?.count ?? 0} results ·{" "}
@@ -632,7 +661,7 @@ export default function ThreadDebugRoute() {
               {!searchLoading && (searchData?.threads?.length ?? 0) === 0 ? (
                 <div className="flex min-h-64 flex-col items-center justify-center rounded-lg border border-dashed px-4 text-center text-sm text-muted-foreground">
                   <IconDatabase className="mb-2 h-5 w-5" />
-                  No threads found.
+                  {t("dispatch.threadDebug.noThreadsFound")}
                 </div>
               ) : null}
               {searchData?.threads?.map((result) => (
@@ -655,7 +684,9 @@ export default function ThreadDebugRoute() {
           <section className="min-w-0">
             {detailError ? (
               <Alert variant="destructive">
-                <AlertTitle>Thread lookup failed</AlertTitle>
+                <AlertTitle>
+                  {t("dispatch.threadDebug.threadLookupFailed")}
+                </AlertTitle>
                 <AlertDescription>
                   {String(detailError.message)}
                 </AlertDescription>
@@ -672,7 +703,7 @@ export default function ThreadDebugRoute() {
             ) : (
               <div className="flex min-h-[520px] flex-col items-center justify-center rounded-lg border border-dashed bg-card px-4 text-center text-sm text-muted-foreground">
                 <IconFileSearch className="mb-2 h-5 w-5" />
-                Select or inspect a thread.
+                {t("dispatch.threadDebug.selectOrInspectThread")}
               </div>
             )}
           </section>

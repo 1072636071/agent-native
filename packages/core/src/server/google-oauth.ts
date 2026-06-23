@@ -26,6 +26,7 @@ import { getWorkspaceA2ADerivedSecret } from "./derived-secret.js";
 import { writeDesktopSso } from "./desktop-sso.js";
 import { appendSessionToOAuthReturnUrl } from "./oauth-return-url.js";
 import { getConfiguredAppBasePath } from "./app-base-path.js";
+import { parseAcceptLanguage } from "./i18n.js";
 
 // ─── Platform Detection ─────────────────────────────────────────────────────
 
@@ -51,11 +52,15 @@ function oauthSuccessCloseTabHtml(
   headline: string,
   footnote: string,
   debugFlowId?: string,
+  language?: "en" | "zh",
 ): string {
+  const isZh = language === "zh";
+  const title = isZh ? "已连接" : "Connected";
+  const langAttr = isZh ? "zh" : "en";
   const debug = debugFlowId
     ? `<p style="font-size:11px;color:#555;margin:12px 0 0 0">Debug flow: ${escapeHtml(debugFlowId)}</p>`
     : "";
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Connected</title></head><body style="background:#111;color:#ccc;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2l4 -4"/></svg><p style="font-size:16px;margin:0 0 12px 0">${headline}</p><p style="font-size:13px;color:#888;margin:0">${footnote}</p>${debug}<script>console.info("[agent-native][google-oauth] success page loaded",{flow:${JSON.stringify(debugFlowId || null)}});setTimeout(function(){try{window.close()}catch(e){}},250)</script></body></html>`;
+  return `<!DOCTYPE html><html lang="${langAttr}"><head><meta charset="utf-8"><title>${title}</title></head><body style="background:#111;color:#ccc;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2l4 -4"/></svg><p style="font-size:16px;margin:0 0 12px 0">${headline}</p><p style="font-size:13px;color:#888;margin:0">${footnote}</p>${debug}<script>console.info("[agent-native][google-oauth] success page loaded",{flow:${JSON.stringify(debugFlowId || null)}});setTimeout(function(){try{window.close()}catch(e){}},250)</script></body></html>`;
 }
 
 /**
@@ -721,6 +726,7 @@ export function oauthCallbackResponse(
   },
 ): Response | string | unknown | Promise<Response | string | unknown> {
   const mobile = isMobile(event);
+  const lang = parseAcceptLanguage(getHeader(event, "accept-language"));
   const query = getQuery(event);
   const callbackState =
     typeof query.state === "string" && query.state.length > 0
@@ -749,6 +755,7 @@ export function oauthCallbackResponse(
         msg,
         `You can close this tab and return to ${safeAppName}.`,
         oauthDebugFlowId(opts.flowId),
+        lang,
       ),
     );
   }
@@ -757,7 +764,7 @@ export function oauthCallbackResponse(
   // renderer can poll as a fallback, but the main handoff should use the
   // protocol deep link so the popup returns focus to the desktop app.
   if (opts.desktop && opts.flowId && isElectron(event) && opts.sessionToken) {
-    return desktopSuccessPage(event, email, opts.sessionToken, callbackState);
+    return desktopSuccessPage(event, email, opts.sessionToken, callbackState, lang);
   }
 
   // Desktop exchange flow (non-Electron tray app): the tray app polls the
@@ -771,6 +778,7 @@ export function oauthCallbackResponse(
         msg,
         `You can close this tab and return to ${safeAppName}.`,
         oauthDebugFlowId(opts.flowId),
+        lang,
       ),
     );
   }
@@ -784,7 +792,7 @@ export function oauthCallbackResponse(
   // Fusion webview hit this exact dead-end. Fall through to the web flow
   // for non-Agent-Native-Desktop clients so they get a real redirect.
   if (opts.desktop && isElectron(event)) {
-    return desktopSuccessPage(event, email, opts.sessionToken, callbackState);
+    return desktopSuccessPage(event, email, opts.sessionToken, callbackState, lang);
   }
 
   // Add-account web flow: close-tab page. The email is rendered into the
@@ -821,20 +829,25 @@ export function oauthCallbackResponse(
  *  callers pass `error.message` from a token-exchange or userinfo failure,
  *  which can echo upstream provider strings (and historically attacker-
  *  controlled query params via the `error_description` field). */
-export function oauthErrorPage(message: string): Response {
+export function oauthErrorPage(message: string, language?: "en" | "zh"): Response {
   const safe = escapeHtml(message);
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   return htmlResponse(
-    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Connection failed</title></head><body style="background:#111;color:#ccc;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column;text-align:center"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/></svg><p style="font-size:16px;margin:0 0 12px 0;color:#ddd">${safe}</p><p style="font-size:13px;color:#888;margin:0"><a href="/" style="color:#888;text-decoration:underline;text-underline-offset:3px">Back to login</a></p></body></html>`,
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${t("连接失败","Connection failed")}</title></head><body style="background:#111;color:#ccc;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column;text-align:center"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/></svg><p style="font-size:16px;margin:0 0 12px 0;color:#ddd">${safe}</p><p style="font-size:13px;color:#888;margin:0"><a href="/" style="color:#888;text-decoration:underline;text-underline-offset:3px">${t("返回登录","Back to login")}</a></p></body></html>`,
     400,
   );
 }
 
 export function oauthDesktopExchangePage(
   message = "Returning to the app...",
+  language?: "en" | "zh",
 ): Response {
   const safe = escapeHtml(message);
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   return htmlResponse(
-    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Returning</title></head><body style="background:#111;color:#aaa;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><p style="font-size:14px">${safe}</p><script>window.close()</script></body></html>`,
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${t("正在返回","Returning")}</title></head><body style="background:#111;color:#aaa;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><p style="font-size:14px">${safe}</p><script>window.close()</script></body></html>`,
   );
 }
 
@@ -868,25 +881,36 @@ function desktopSuccessPage(
   email?: string,
   sessionToken?: string,
   state?: string,
+  language?: "en" | "zh",
 ): Response {
   const safeEmail = email ? escapeHtml(email) : "";
-  const msg = safeEmail ? `Connected ${safeEmail}!` : "Connected!";
+  const isZh = language === "zh";
+  const msg = safeEmail
+    ? (isZh ? `已连接 ${safeEmail}！` : `Connected ${safeEmail}!`)
+    : (isZh ? "已连接" : "Connected!");
   if (sessionToken) {
     const deepLink = buildOAuthCompleteDeepLink(sessionToken, state);
     const deepLinkJson = JSON.stringify(deepLink);
+    const title = isZh ? "已连接" : "Connected";
+    const langAttr = isZh ? "zh" : "en";
+    const openAppText = isZh ? "打开 Agent Native" : "Open Agent Native";
+    const fallbackText = isZh ? "如果应用没有自动打开，请点击上面的按钮。" : "If the app didn\u2019t open automatically, click the button above.";
     // Defence in depth: if this page somehow gets served to a UA that isn't
     // the Agent Native desktop app (server gate bypassed, stale link, etc.),
     // skip the `agentnative://` deep link entirely and bounce to the app
     // root. The deep link silently fails outside the desktop app and the
     // "Open Agent Native" button is a dead end in a generic browser/webview.
     return htmlResponse(
-      `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Connected</title><style>@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.spinner{width:28px;height:28px;border:2px solid #333;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}.fallback{display:none;flex-direction:column;align-items:center;gap:8px;animation:fadeIn .2s ease-out}.fallback.show{display:flex}</style></head><body style="background:#111;color:#ccc;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column;gap:16px"><p style="font-size:16px;margin:0">${msg}</p><div id="loading" class="spinner"></div><div id="fallback" class="fallback"><a href=${deepLinkJson} style="display:inline-block;padding:10px 24px;background:#fff;color:#000;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500">Open Agent Native</a><p style="font-size:12px;color:#666;margin:0">If the app didn\u2019t open automatically, click the button above.</p></div><script>(function(){var ua=(navigator.userAgent||"");if(ua.indexOf("AgentNativeDesktop")===-1){window.location.replace("/");return}window.location.href=${deepLinkJson};setTimeout(function(){document.getElementById("loading").style.display="none";document.getElementById("fallback").classList.add("show")},3000)})()</script></body></html>`,
+      `<!DOCTYPE html><html lang="${langAttr}"><head><meta charset="utf-8"><title>${title}</title><style>@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.spinner{width:28px;height:28px;border:2px solid #333;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}.fallback{display:none;flex-direction:column;align-items:center;gap:8px;animation:fadeIn .2s ease-out}.fallback.show{display:flex}</style></head><body style="background:#111;color:#ccc;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column;gap:16px"><p style="font-size:16px;margin:0">${msg}</p><div id="loading" class="spinner"></div><div id="fallback" class="fallback"><a href=${deepLinkJson} style="display:inline-block;padding:10px 24px;background:#fff;color:#000;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500">${openAppText}</a><p style="font-size:12px;color:#666;margin:0">${fallbackText}</p></div><script>(function(){var ua=(navigator.userAgent||"");if(ua.indexOf("AgentNativeDesktop")===-1){window.location.replace("/");return}window.location.href=${deepLinkJson};setTimeout(function(){document.getElementById("loading").style.display="none";document.getElementById("fallback").classList.add("show")},3000)})()</script></body></html>`,
     );
   }
+  const closeTabText = isZh ? "你可以关闭此标签页并返回 Agent Native。" : "You can close this tab and return to Agent Native.";
   return htmlResponse(
     oauthSuccessCloseTabHtml(
       msg,
-      "You can close this tab and return to Agent Native.",
+      closeTabText,
+      undefined,
+      language,
     ),
   );
 }

@@ -105,10 +105,26 @@ function killPortProcesses(): boolean {
   let killed = false;
   for (const port of allPorts) {
     try {
-      const pids = execSync(`lsof -ti :${port}`, { encoding: "utf8" }).trim();
-      if (pids) {
-        execSync(`kill -9 ${pids.split("\n").join(" ")}`, { stdio: "ignore" });
-        killed = true;
+      if (process.platform === "win32") {
+        const output = execSync(`netstat -ano`, { encoding: "utf8" });
+        const lines = output.split(/\r?\n/);
+        const pids = new Set<string>();
+        for (const line of lines) {
+          const match = line.match(/^\s*TCP\s+\S+:${port}\s+\S+\s+LISTENING\s+(\d+)/);
+          if (match) pids.add(match[1]);
+        }
+        if (pids.size > 0) {
+          for (const pid of pids) {
+            execSync(`taskkill /PID ${pid} /F`, { stdio: "ignore" });
+          }
+          killed = true;
+        }
+      } else {
+        const pids = execSync(`lsof -ti :${port}`, { encoding: "utf8" }).trim();
+        if (pids) {
+          execSync(`kill -9 ${pids.split("\n").join(" ")}`, { stdio: "ignore" });
+          killed = true;
+        }
       }
     } catch {
       // Port not in use — fine
@@ -119,7 +135,7 @@ function killPortProcesses(): boolean {
 
 if (killPortProcesses()) {
   // Wait for processes to die, then verify
-  execSync("sleep 1");
+  execSync(process.platform === "win32" ? "timeout /t 1 /nobreak >nul" : "sleep 1", { stdio: "ignore" });
   killPortProcesses(); // Second pass for stragglers
   console.log(`\x1b[33m[dev-eager]\x1b[0m Killed stale processes`);
 }

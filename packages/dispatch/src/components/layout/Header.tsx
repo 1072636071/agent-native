@@ -4,26 +4,29 @@ import { AgentToggleButton } from "@agent-native/core/client";
 import { RunsTray } from "@agent-native/core/client/progress";
 import { Button } from "@/components/ui/button";
 import { IconLayoutSidebar } from "@tabler/icons-react";
+import { useI18n, type I18nKey } from "@agent-native/i18n";
 
-const pageTitles: Record<string, string> = {
-  "/": "Overview",
-  "/overview": "Overview",
-  "/vault": "Vault",
-  "/integrations": "Integrations",
-  "/workspace": "Resources",
-  "/messaging": "Messaging",
-  "/agents": "Agents",
-  "/destinations": "Destinations",
-  "/identities": "Identities",
-  "/approvals": "Approvals",
-  "/audit": "Audit",
-  "/team": "Team",
+const pageTitleKeys: Record<string, I18nKey> = {
+  "/": "dispatch.common.overview",
+  "/overview": "dispatch.common.overview",
+  "/vault": "dispatch.common.vault",
+  "/integrations": "dispatch.common.integrations",
+  "/workspace": "dispatch.common.resources",
+  "/messaging": "dispatch.common.messaging",
+  "/agents": "dispatch.common.agents",
+  "/destinations": "dispatch.common.destinations",
+  "/identities": "dispatch.common.identities",
+  "/approvals": "dispatch.common.approvals",
+  "/audit": "dispatch.common.audit",
+  "/team": "dispatch.common.team",
 };
 
-function resolveTitle(pathname: string): string {
-  if (pageTitles[pathname]) return pageTitles[pathname];
+function resolveTitle(pathname: string, t: (key: I18nKey) => string): string {
+  const key = pageTitleKeys[pathname];
+  if (key) return t(key);
 
-  if (pathname.startsWith("/extensions")) return "Extensions";
+  if (pathname.startsWith("/extensions"))
+    return t("dispatch.common.extensions");
 
   return "Dispatch";
 }
@@ -35,6 +38,7 @@ export function Header({
   onOpenMobile?: () => void;
   showAgentToggle?: boolean;
 }) {
+  const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const title = useHeaderTitle();
@@ -66,7 +70,7 @@ export function Header({
           size="icon"
           className="h-8 w-8 lg:hidden cursor-pointer"
           onClick={onOpenMobile}
-          aria-label="Open navigation"
+          aria-label={t("dispatch.shell.openNavigation")}
         >
           <IconLayoutSidebar />
         </Button>
@@ -74,7 +78,7 @@ export function Header({
       <div className="flex items-center gap-3 flex-1 min-w-0">
         {title ?? (
           <h1 className="text-lg font-semibold tracking-tight truncate">
-            {resolveTitle(location.pathname)}
+            {resolveTitle(location.pathname, t)}
           </h1>
         )}
       </div>

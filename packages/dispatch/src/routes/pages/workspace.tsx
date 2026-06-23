@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import { toast } from "sonner";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconAlertCircle,
   IconBook,
@@ -686,6 +687,7 @@ function EffectiveContextPreview({ resource }: { resource: any }) {
 }
 
 function ResourceRow({ resource, grants }: { resource: any; grants: any[] }) {
+  const { t } = useI18n();
   const [expanded, setExpanded] = useState(false);
 
   const deleteResource = useActionMutation("delete-workspace-resource", {
@@ -696,7 +698,7 @@ function ResourceRow({ resource, grants }: { resource: any; grants: any[] }) {
     onError: (err) => toast.error(String(err)),
   });
   const revokeGrant = useActionMutation("revoke-workspace-resource-grant", {
-    onSuccess: () => toast.success("Grant revoked"),
+    onSuccess: () => toast.success(t("dispatch.workspace.grantRevoked")),
     onError: (err) => toast.error(String(err)),
   });
 
@@ -1008,6 +1010,7 @@ function GlobalContextSection({ resources }: { resources: any[] }) {
 }
 
 export default function WorkspaceRoute() {
+  const { t } = useI18n();
   const { data: resources, isLoading } = useActionQuery(
     "list-workspace-resources",
     {},
@@ -1079,8 +1082,8 @@ export default function WorkspaceRoute() {
 
   return (
     <DispatchShell
-      title="Workspace Resources"
-      description="Manage inherited workspace skills, guardrail instructions, agent profiles, reference resources, and MCP servers. All-app resources are available to every app without syncing."
+      title={t("dispatch.resources.title")}
+      description={t("dispatch.resources.description")}
     >
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">

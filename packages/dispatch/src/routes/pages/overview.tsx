@@ -1,3 +1,4 @@
+import { useI18n } from "@agent-native/i18n";
 import { DispatchControlPlane } from "@/components/dispatch-control-plane";
 
 const SEO_TITLE =
@@ -18,5 +19,6 @@ export function meta() {
 }
 
 export default function OverviewRoute() {
+  const { t } = useI18n();
   return <DispatchControlPlane />;
 }

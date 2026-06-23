@@ -25,6 +25,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@agent-native/i18n";
 
 interface VaultSecretOption {
   id: string;
@@ -175,6 +176,7 @@ export function CreateAppFlow({
   onClose?: () => void;
   className?: string;
 }) {
+  const { t } = useI18n();
   const [step, setStep] = useState<"prompt" | "access">("prompt");
   const [prompt, setPrompt] = useState("");
   const [selectedSecretIds, setSelectedSecretIds] = useState<string[]>([]);
@@ -204,7 +206,9 @@ export function CreateAppFlow({
       .catch((err) => {
         if (cancelled) return;
         setSecrets([]);
-        setSecretsError(err?.message || "Could not load Dispatch keys");
+        setSecretsError(
+          err?.message || t("dispatch.createApp.loadDispatchKeysFailed"),
+        );
       });
     fetchJson(actionUrl(basePath, "get-vault-access-settings"))
       .then((data) => {
@@ -224,7 +228,9 @@ export function CreateAppFlow({
       .catch((err) => {
         if (cancelled) return;
         setResources([]);
-        setResourcesError(err?.message || "Could not load Dispatch resources");
+        setResourcesError(
+          err?.message || t("dispatch.createApp.loadDispatchResourcesFailed"),
+        );
       });
     return () => {
       cancelled = true;
@@ -292,11 +298,11 @@ export function CreateAppFlow({
     try {
       if (isInBuilderFrame()) {
         sendToAgentChat({ message, submit: true, type: "code" });
-        setStatusMessage("Sent to Builder chat.");
+        setStatusMessage(t("dispatch.createApp.sentToBuilderChat"));
         onClose?.();
       } else if (isDevMode) {
         sendToAgentChat({ message, submit: true, type: "code", newTab: true });
-        setStatusMessage("Sent to the local agent.");
+        setStatusMessage(t("dispatch.createApp.sentToLocalAgent"));
         onClose?.();
       } else {
         const result = await fetchJson(
@@ -318,7 +324,7 @@ export function CreateAppFlow({
         );
         if (result?.mode === "builder") {
           setBranchUrl(result?.url || null);
-          setStatusMessage("Builder branch created.");
+          setStatusMessage(t("dispatch.createApp.builderBranchCreated"));
         } else {
           setStatusMessage(
             result?.message ||
@@ -327,7 +333,9 @@ export function CreateAppFlow({
         }
       }
     } catch (err: any) {
-      setStatusMessage(err?.message || "Could not start the new app flow.");
+      setStatusMessage(
+        err?.message || t("dispatch.createApp.couldNotStartFlow"),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -340,7 +348,9 @@ export function CreateAppFlow({
       {step === "prompt" ? (
         <>
           <div className="flex items-center justify-between gap-2 px-1">
-            <p className="text-sm font-semibold text-foreground">Create app</p>
+            <p className="text-sm font-semibold text-foreground">
+              {t("dispatch.createApp.createApp")}
+            </p>
             <button
               type="button"
               onClick={() => setStep("access")}
@@ -353,7 +363,7 @@ export function CreateAppFlow({
           <PromptComposer
             autoFocus
             disabled={isSubmitting}
-            placeholder="Describe the app your teammate should be able to use..."
+            placeholder={t("dispatch.createApp.promptPlaceholder")}
             draftScope="dispatch:create-app"
             preserveDraftOnSubmit
             onSubmit={(text) => {
@@ -371,7 +381,7 @@ export function CreateAppFlow({
               className="inline-flex cursor-pointer items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
             >
               <IconArrowLeft size={12} />
-              Back
+              {t("dispatch.createApp.back")}
             </button>
             <span className="text-[11px] text-muted-foreground/70">
               {selectedAccessLabel}
@@ -380,11 +390,11 @@ export function CreateAppFlow({
           <div className="max-h-[180px] space-y-2 overflow-y-auto rounded-md border border-border bg-card p-2">
             <div className="flex items-center gap-1.5 px-1 pb-1 text-[11px] font-medium text-muted-foreground">
               <IconKey size={12} />
-              Dispatch keys
+              {t("dispatch.createApp.dispatchKeys")}
             </div>
             {vaultAccessMode === "all-apps" ? (
               <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
-                Every saved Dispatch vault key is available to new apps.
+                {t("dispatch.createApp.dispatchKeysDescription")}
               </p>
             ) : secretsError ? (
               <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
@@ -392,7 +402,7 @@ export function CreateAppFlow({
               </p>
             ) : secrets.length === 0 ? (
               <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
-                No Dispatch vault keys found yet.
+                {t("dispatch.createApp.noDispatchKeysYet")}
               </p>
             ) : (
               secrets.map((secret) => {
@@ -427,8 +437,8 @@ export function CreateAppFlow({
                         </span>
                         <span className="block truncate text-xs text-muted-foreground/70">
                           {selected
-                            ? "Will be requested for this app"
-                            : "Click to request"}
+                            ? t("dispatch.createApp.willBeRequested")
+                            : t("dispatch.createApp.clickToRequest")}
                         </span>
                       </span>
                     </button>
@@ -436,13 +446,17 @@ export function CreateAppFlow({
                       <details className="group/details border-t border-border/60 px-3 py-1.5 text-xs text-muted-foreground/75">
                         <summary className="flex cursor-pointer list-none items-center gap-1.5 text-[11px] hover:text-muted-foreground [&::-webkit-details-marker]:hidden">
                           <IconChevronDown className="h-3 w-3 transition-transform group-open/details:rotate-180" />
-                          Details
+                          {t("dispatch.createApp.details")}
                         </summary>
                         <div className="mt-1.5 space-y-1 pb-0.5 pl-4">
                           <div className="truncate">
-                            Provider: {secret.provider || "Not specified"}
+                            {t("dispatch.createApp.provider")}{" "}
+                            {secret.provider ||
+                              t("dispatch.createApp.notSpecified")}
                           </div>
-                          <div className="truncate">Name: {secret.name}</div>
+                          <div className="truncate">
+                            {t("dispatch.createApp.name")} {secret.name}
+                          </div>
                         </div>
                       </details>
                     )}
@@ -454,7 +468,7 @@ export function CreateAppFlow({
           <div className="max-h-[180px] space-y-2 overflow-y-auto rounded-md border border-border bg-card p-2">
             <div className="flex items-center gap-1.5 px-1 pb-1 text-[11px] font-medium text-muted-foreground">
               <IconBook size={12} />
-              Resource packs
+              {t("dispatch.createApp.resourcePacks")}
             </div>
             {resourcesError ? (
               <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
@@ -462,7 +476,7 @@ export function CreateAppFlow({
               </p>
             ) : resources.length === 0 ? (
               <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
-                No Dispatch resource packs found yet.
+                {t("dispatch.createApp.noResourcePacksYet")}
               </p>
             ) : (
               resources.map((resource) => {
@@ -506,14 +520,14 @@ export function CreateAppFlow({
                     <details className="group/details border-t border-border/60 px-3 py-1.5 text-xs text-muted-foreground/75">
                       <summary className="flex cursor-pointer list-none items-center gap-1.5 text-[11px] hover:text-muted-foreground [&::-webkit-details-marker]:hidden">
                         <IconChevronDown className="h-3 w-3 transition-transform group-open/details:rotate-180" />
-                        Details
+                        {t("dispatch.createApp.details")}
                       </summary>
                       <div className="mt-1.5 space-y-1 pb-0.5 pl-4">
                         <div className="truncate">
-                          Scope:{" "}
+                          {t("dispatch.createApp.scope")}{" "}
                           {resource.scope === "all"
-                            ? "All apps"
-                            : "Selected apps"}
+                            ? t("dispatch.createApp.allApps")
+                            : t("dispatch.createApp.selectedApps")}
                         </div>
                         {resource.description ? (
                           <div className="line-clamp-2">
@@ -539,12 +553,12 @@ export function CreateAppFlow({
               ) : (
                 <IconPlus className="h-3.5 w-3.5" />
               )}
-              Create app
+              {t("dispatch.createApp.createApp")}
             </Button>
           </div>
           {!prompt.trim() ? (
             <p className="px-1 text-[11px] text-muted-foreground/70">
-              Add a prompt on the previous step before creating the app.
+              {t("dispatch.createApp.addPromptFirst")}
             </p>
           ) : null}
         </>
@@ -560,7 +574,8 @@ export function CreateAppFlow({
               rel="noreferrer"
               className="ml-2 inline-flex items-center gap-1 font-medium text-foreground underline"
             >
-              Open branch <IconArrowUpRight className="h-3 w-3" />
+              {t("dispatch.createApp.openBranch")}{" "}
+              <IconArrowUpRight className="h-3 w-3" />
             </a>
           ) : null}
         </div>
@@ -573,6 +588,7 @@ export function CreateAppPopover({
   trigger,
   align = "center",
 }: CreateAppPopoverProps) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -584,7 +600,7 @@ export function CreateAppPopover({
           >
             <span className="inline-flex items-center gap-2">
               <IconPlus size={16} />
-              Create app
+              {t("dispatch.createApp.createApp")}
             </span>
           </button>
         )}

@@ -1,3 +1,4 @@
+import { useI18n } from "@agent-native/i18n";
 import { MessagingSetupPanel } from "@/components/messaging-setup-panel";
 import { DispatchShell } from "@/components/dispatch-shell";
 
@@ -6,10 +7,11 @@ export function meta() {
 }
 
 export default function MessagingRoute() {
+  const { t } = useI18n();
   return (
     <DispatchShell
-      title="Messaging"
-      description="Connect Slack and Telegram directly in dispatch so inbound conversations come through one place."
+      title={t("dispatch.messaging.title")}
+      description={t("dispatch.messaging.description")}
     >
       <MessagingSetupPanel />
     </DispatchShell>

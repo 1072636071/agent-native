@@ -76,6 +76,7 @@ import {
   getAllowedCorsOrigin,
   readCorsAllowedOrigins,
 } from "./cors-origins.js";
+import { parseAcceptLanguage } from "./i18n.js";
 import {
   getOnboardingHtml,
   getResetPasswordHtml,
@@ -965,6 +966,7 @@ function getOnboardingHtmlOptions(
     requestHost: event ? getRequestHost(event) : undefined,
     requestPath: rawPath,
     requestOrigin: event ? getOrigin(event) : undefined,
+    language: event ? parseAcceptLanguage(getHeader(event, "accept-language")) : undefined,
   };
 }
 
@@ -2306,13 +2308,15 @@ function stripAppBasePath(pathname: string): string {
 // Fallback login page HTML (custom auth with no login page configured)
 // ---------------------------------------------------------------------------
 
-function getCustomAuthRequiredHtml(): string {
+function getCustomAuthRequiredHtml(language?: "en" | "zh"): string {
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Authentication required</title>
+<title>${t("需要认证", "Authentication required")}</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -2386,10 +2390,10 @@ function getCustomAuthRequiredHtml(): string {
 </head>
 <body>
 <div class="card">
-  <div class="eyebrow">Authentication required</div>
-  <h1>Sign in is not configured</h1>
-  <p class="intro">This route requires an authenticated session, but this app's custom auth plugin did not provide a sign-in page.</p>
-  <p class="hint">If this route should be public, add it to the auth plugin's public route configuration. Otherwise configure a custom sign-in page for this app.</p>
+  <div class="eyebrow">${t("需要认证", "Authentication required")}</div>
+  <h1>${t("未配置登录", "Sign in is not configured")}</h1>
+  <p class="intro">${t("此路由需要已认证的会话，但该应用的自定义认证插件未提供登录页面。", "This route requires an authenticated session, but this app's custom auth plugin did not provide a sign-in page.")}</p>
+  <p class="hint">${t("如果此路由应为公开路由，请将其添加到认证插件的公开路由配置中。否则，请为此应用配置自定义登录页面。", "If this route should be public, add it to the auth plugin's public route configuration. Otherwise configure a custom sign-in page for this app.")}</p>
 </div>
 </body>
 </html>`;
@@ -2570,7 +2574,7 @@ async function mountBetterAuthRoutes(
               message: msg,
               code: providerError,
             });
-            return oauthErrorPage(`Connection failed: ${msg}`);
+            return oauthErrorPage(`Connection failed: ${msg}`, parseAcceptLanguage(getHeader(event, "accept-language")));
           }
           // Defence in depth: the state is HMAC-signed, but if the signing
           // key ever leaked an attacker could mint state with their own
@@ -2591,7 +2595,7 @@ async function mountBetterAuthRoutes(
               desktop,
               message: msg,
             });
-            return oauthErrorPage(`Connection failed: ${msg}`);
+            return oauthErrorPage(`Connection failed: ${msg}`, parseAcceptLanguage(getHeader(event, "accept-language")));
           }
 
           const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
@@ -2693,7 +2697,7 @@ async function mountBetterAuthRoutes(
             desktop: callbackDesktop,
             message: msg,
           });
-          return oauthErrorPage(`Connection failed: ${msg}`);
+          return oauthErrorPage(`Connection failed: ${msg}`, parseAcceptLanguage(getHeader(event, "accept-language")));
         }
       }),
     );
@@ -3188,7 +3192,7 @@ async function mountBetterAuthRoutes(
         setResponseStatus(event, 405);
         return { error: "Method not allowed" };
       }
-      return new Response(getResetPasswordHtml(), {
+      return new Response(getResetPasswordHtml(parseAcceptLanguage(getHeader(event, "accept-language"))), {
         headers: { "Content-Type": "text/html; charset=utf-8" },
       });
     }),
@@ -3477,7 +3481,10 @@ export async function autoMountAuth(
       ...(options.loginHtml
         ? {}
         : {
-            getLoginHtml: () => getCustomAuthRequiredHtml(),
+            getLoginHtml: (event) =>
+              getCustomAuthRequiredHtml(
+                event ? parseAcceptLanguage(getHeader(event, "accept-language")) : undefined,
+              ),
           }),
       publicPaths,
       workspaceAppAudience,

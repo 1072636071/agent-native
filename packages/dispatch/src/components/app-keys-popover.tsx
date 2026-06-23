@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconCheck,
   IconLoader2,
@@ -46,6 +47,7 @@ export function AppKeysPopover({
   side = "bottom",
 }: AppKeysPopoverProps) {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -53,7 +55,7 @@ export function AppKeysPopover({
         {trigger ?? (
           <button
             type="button"
-            aria-label={`Manage keys for ${appName}`}
+            aria-label={t("dispatch.appKeys.keysFor", { appName })}
             onClick={(event) => {
               // Keep parent card click handlers from also firing. Do not
               // preventDefault here: Radix uses the same click to open the
@@ -80,6 +82,7 @@ export function AppKeysPopover({
 }
 
 function AppKeysPanel({ appId, appName }: { appId: string; appName: string }) {
+  const { t } = useI18n();
   const { data: secrets = [], isLoading: secretsLoading } = useActionQuery(
     "list-vault-secret-options",
     {},
@@ -121,12 +124,14 @@ function AppKeysPanel({ appId, appName }: { appId: string; appName: string }) {
 
   const grantMutation = useActionMutation("create-vault-grant", {
     onSuccess: () => refetchGrants(),
-    onError: (err) => toast.error(`Could not grant: ${String(err)}`),
+    onError: (err) =>
+      toast.error(t("dispatch.appKeys.grantFailed", { error: String(err) })),
   });
 
   const revokeMutation = useActionMutation("revoke-vault-grant", {
     onSuccess: () => refetchGrants(),
-    onError: (err) => toast.error(`Could not revoke: ${String(err)}`),
+    onError: (err) =>
+      toast.error(t("dispatch.appKeys.revokeFailed", { error: String(err) })),
   });
 
   const syncMutation = useActionMutation("sync-vault-to-app", {
@@ -134,11 +139,12 @@ function AppKeysPanel({ appId, appName }: { appId: string; appName: string }) {
       const synced = result?.synced ?? 0;
       toast.success(
         synced > 0
-          ? `Synced ${synced} key${synced === 1 ? "" : "s"} to ${appName}`
-          : `${appName} is up to date`,
+          ? t("dispatch.appKeys.syncedKeys", { n: synced, name: appName })
+          : t("dispatch.appKeys.upToDate", { name: appName }),
       );
     },
-    onError: (err) => toast.error(`Sync failed: ${String(err)}`),
+    onError: (err) =>
+      toast.error(t("dispatch.appKeys.syncFailed", { error: String(err) })),
   });
 
   const isLoading = secretsLoading || grantsLoading || accessLoading;
@@ -164,12 +170,15 @@ function AppKeysPanel({ appId, appName }: { appId: string; appName: string }) {
       <div className="flex items-center justify-between gap-2 px-1">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-foreground">
-            Keys for {appName}
+            {t("dispatch.appKeys.keysFor", { appName })}
           </p>
           <p className="text-[11px] text-muted-foreground">
             {allApps
-              ? `${typedSecrets.length} available`
-              : `${grantedCount} of ${typedSecrets.length} granted`}
+              ? t("dispatch.appKeys.available", { count: typedSecrets.length })
+              : t("dispatch.appKeys.grantedCount", {
+                  granted: grantedCount,
+                  total: typedSecrets.length,
+                })}
           </p>
         </div>
         <Button
@@ -189,7 +198,7 @@ function AppKeysPanel({ appId, appName }: { appId: string; appName: string }) {
           ) : (
             <IconRefresh className="h-3 w-3" />
           )}
-          <span className="ml-1 text-xs">Sync</span>
+          <span className="ml-1 text-xs">{t("dispatch.appKeys.sync")}</span>
         </Button>
       </div>
 
@@ -211,7 +220,7 @@ function AppKeysPanel({ appId, appName }: { appId: string; appName: string }) {
           </div>
         ) : typedSecrets.length === 0 ? (
           <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
-            No vault keys yet. Add one from the Vault page.
+            {t("dispatch.appKeys.noVaultKeysYet")}
           </p>
         ) : (
           typedSecrets.map((secret) => {
@@ -247,8 +256,10 @@ function AppKeysPanel({ appId, appName }: { appId: string; appName: string }) {
                   </span>
                   <span className="block truncate text-xs text-muted-foreground/70">
                     {allApps
-                      ? "Available to this app"
-                      : secret.provider || secret.name || "Vault secret"}
+                      ? t("dispatch.appKeys.availableToThisApp")
+                      : secret.provider ||
+                        secret.name ||
+                        t("dispatch.appKeys.vaultSecret")}
                   </span>
                 </span>
               </button>

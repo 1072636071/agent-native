@@ -66,6 +66,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Header } from "./Header";
 import { HeaderActionsProvider } from "./HeaderActions";
+import { useI18n, type I18nKey, LanguageSwitcher } from "@agent-native/i18n";
 
 export type DispatchNavSection = "primary" | "operations";
 
@@ -214,11 +215,51 @@ const OPERATIONS_NAV_ITEMS = [
 
 const EMPTY_NAV_ITEMS: readonly DispatchNavItem[] = [];
 
+const NAV_LABEL_KEYS: Record<string, I18nKey> = {
+  chat: "dispatch.common.chat",
+  overview: "dispatch.common.overview",
+  apps: "dispatch.common.apps",
+  metrics: "dispatch.common.metrics",
+  vault: "dispatch.common.vault",
+  integrations: "dispatch.common.integrations",
+  agents: "dispatch.common.agents",
+  workspace: "dispatch.common.resources",
+  messaging: "dispatch.common.messaging",
+  destinations: "dispatch.common.destinations",
+  identities: "dispatch.common.identities",
+  approvals: "dispatch.common.approvals",
+  audit: "dispatch.common.audit",
+  dreams: "dispatch.common.dreams",
+  "thread-debug": "dispatch.common.threadDebug",
+  team: "dispatch.common.team",
+};
+
+function translateNavItems(
+  items: readonly DispatchNavItem[],
+  t: (key: I18nKey) => string,
+): DispatchNavItem[] {
+  return items.map((item) => ({
+    ...item,
+    label: NAV_LABEL_KEYS[item.id] ? t(NAV_LABEL_KEYS[item.id]) : item.label,
+  }));
+}
+
 const SIDEBAR_SUGGESTIONS = [
   "Build a workspace app for X",
   "Route Slack mentions to my analytics app",
   "Grant my OpenAI key to this app",
 ];
+
+function useSidebarSuggestions(t: (key: I18nKey) => string) {
+  return useMemo(
+    () => [
+      t("dispatch.sidebar.suggestionBuildApp"),
+      t("dispatch.sidebar.suggestionSlack"),
+      t("dispatch.sidebar.suggestionGrantKey"),
+    ],
+    [t],
+  );
+}
 
 const CHROMELESS_PATHS = ["/approval"];
 
@@ -301,8 +342,8 @@ function formatThreadAge(updatedAt: number) {
   });
 }
 
-function threadTitle(thread: ChatThreadSummary) {
-  return thread.title || thread.preview || "New chat";
+function threadTitle(thread: ChatThreadSummary, newChatLabel: string) {
+  return thread.title || thread.preview || newChatLabel;
 }
 
 function threadUpdatedAt(thread: ChatThreadSummary) {
@@ -314,6 +355,11 @@ function threadUpdatedAt(thread: ChatThreadSummary) {
 }
 
 function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useI18n();
+  const newChatLabel = t("dispatch.layout.newChat");
+  const newDispatchChatLabel = t("dispatch.layout.newDispatchChat");
+  const renameChatLabel = t("dispatch.layout.renameChat");
+  const chatsLabel = t("dispatch.layout.chats");
   const navigate = useNavigate();
   const {
     threads,
@@ -389,7 +435,7 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
 
   function startRenameThread(thread: ChatThreadSummary) {
     committingRenameRef.current = false;
-    setRenameDraft(threadTitle(thread));
+    setRenameDraft(threadTitle(thread, newChatLabel));
     setRenamingThreadId(thread.id);
   }
 
@@ -420,7 +466,7 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
     <div className="mt-2 border-l border-sidebar-border/70 pl-3">
       <div className="mb-1 flex h-7 items-center gap-2 pr-1">
         <div className="min-w-0 flex-1 text-xs font-medium text-sidebar-foreground/70">
-          Chats
+          {chatsLabel}
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -428,12 +474,12 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
               type="button"
               onClick={handleNewChat}
               className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              aria-label="New Dispatch chat"
+              aria-label={newDispatchChatLabel}
             >
               <IconPlus className="size-3.5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent>New chat</TooltipContent>
+          <TooltipContent>{newChatLabel}</TooltipContent>
         </Tooltip>
       </div>
       <div className="grid gap-0.5">
@@ -468,7 +514,7 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
                         }
                       }}
                       maxLength={160}
-                      aria-label={`Rename ${threadTitle(thread)}`}
+                      aria-label={`${renameChatLabel} ${threadTitle(thread, newChatLabel)}`}
                       className="h-6 min-w-0 rounded-sm border-sidebar-border bg-background px-1.5 text-xs"
                     />
                   </form>
@@ -480,7 +526,7 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
                       className="flex h-full min-w-0 flex-1 cursor-pointer items-center px-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       <span className="min-w-0 flex-1 truncate">
-                        {threadTitle(thread)}
+                        {threadTitle(thread, newChatLabel)}
                       </span>
                     </button>
                     <div className="relative flex size-7 shrink-0 items-center justify-end pr-1">
@@ -493,7 +539,7 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
                         <DropdownMenuTrigger asChild>
                           <button
                             type="button"
-                            aria-label={`Chat options for ${threadTitle(thread)}`}
+                            aria-label={`${t("dispatch.layout.chatOptionsFor")} ${threadTitle(thread, newChatLabel)}`}
                             className="absolute right-1 flex size-6 cursor-pointer items-center justify-center rounded-md text-sidebar-foreground/65 opacity-0 transition-opacity hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:opacity-100"
                           >
                             <IconDots className="size-4" />
@@ -508,7 +554,7 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
                             onSelect={() => startRenameThread(thread)}
                           >
                             <IconEdit className="size-4" />
-                            Rename chat
+                            {renameChatLabel}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -524,7 +570,7 @@ function DispatchChatsSection({ onNavigate }: { onNavigate?: () => void }) {
             onClick={handleNewChat}
             className="flex h-8 cursor-pointer items-center rounded-md px-2 text-left text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent/65 hover:text-sidebar-accent-foreground"
           >
-            <span className="truncate">New chat</span>
+            <span className="truncate">{newChatLabel}</span>
           </button>
         )}
       </div>
@@ -539,6 +585,7 @@ export function NavContent({
   onNavigate?: () => void;
   extensions?: DispatchExtensionConfig;
 }) {
+  const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const { data: workspace } = useActionQuery(
@@ -549,14 +596,20 @@ export function NavContent({
   const ws = workspace as WorkspaceInfo | undefined;
   const workspaceLabel = ws?.displayName ?? ws?.name ?? null;
   const extensionNavItems = extensions?.navItems ?? EMPTY_NAV_ITEMS;
-  const primaryNavItems = [
-    ...PRIMARY_NAV_ITEMS,
-    ...navItemsForSection(extensionNavItems, "primary"),
-  ];
-  const operationsNavItems = [
-    ...OPERATIONS_NAV_ITEMS,
-    ...navItemsForSection(extensionNavItems, "operations"),
-  ];
+  const primaryNavItems = useMemo(
+    () => [
+      ...translateNavItems(PRIMARY_NAV_ITEMS, t),
+      ...navItemsForSection(extensionNavItems, "primary"),
+    ],
+    [extensionNavItems, t],
+  );
+  const operationsNavItems = useMemo(
+    () => [
+      ...translateNavItems(OPERATIONS_NAV_ITEMS, t),
+      ...navItemsForSection(extensionNavItems, "operations"),
+    ],
+    [extensionNavItems, t],
+  );
   const localPathname = localDispatchPath(location.pathname);
   const operationsOpen = operationsNavItems.some((item) =>
     navItemMatchesPath(item, localPathname),
@@ -636,8 +689,8 @@ export function NavContent({
             </div>
             <div className="truncate text-xs text-muted-foreground">
               {workspaceLabel
-                ? `Workspace · ${ws?.appCount ?? 0} app${ws?.appCount === 1 ? "" : "s"}`
-                : "Workspace control plane"}
+                ? `${t("dispatch.shell.workspace")} · ${ws?.appCount ?? 0} ${t("dispatch.common.apps")}`
+                : t("dispatch.controlPlane.title")}
             </div>
           </div>
         </div>
@@ -652,7 +705,7 @@ export function NavContent({
           <div className="border-t px-2 py-2">
             <details className="group" open={operationsOpen}>
               <summary className="flex h-8 cursor-pointer list-none items-center justify-between rounded-md px-2 text-xs font-medium uppercase text-sidebar-foreground/50 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground [&::-webkit-details-marker]:hidden">
-                <span>Operations</span>
+                <span>{t("dispatch.shell.operations")}</span>
                 <IconChevronDown
                   size={14}
                   className="transition-transform group-open:rotate-180"
@@ -675,6 +728,13 @@ export function NavContent({
           <div className="border-t px-3 py-2">
             <FeedbackButton />
           </div>
+
+          <div className="border-t px-3 py-2">
+            <LanguageSwitcher
+              variant="icon"
+              className="text-xs text-sidebar-foreground/70 hover:text-sidebar-foreground"
+            />
+          </div>
         </div>
       </div>
     </>
@@ -688,6 +748,7 @@ export function Layout({
   children: ReactNode;
   extensions?: DispatchExtensionConfig;
 }) {
+  const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -699,6 +760,7 @@ export function Layout({
     enabled: !isChatRoute,
   });
   useAgentChatHomeHandoffLinks({ storageKey: "dispatch", chatPath: "/chat" });
+  const sidebarSuggestions = useSidebarSuggestions(t);
 
   if (CHROMELESS_PATHS.some((path) => localPathname === path)) {
     return <>{children}</>;
@@ -742,8 +804,8 @@ export function Layout({
       storageKey="dispatch"
       openOnChatRunning={chatHomeHandoffActive}
       onFullscreenRequest={openAskAgentFullscreen}
-      emptyStateText="Create apps, manage vault keys, and route work across the workspace."
-      suggestions={SIDEBAR_SUGGESTIONS}
+      emptyStateText={t("dispatch.sidebar.emptyStateText")}
+      suggestions={sidebarSuggestions}
     >
       {appContent}
     </AgentSidebar>
@@ -761,9 +823,11 @@ export function Layout({
             side="left"
             className="w-72 p-0 bg-sidebar text-sidebar-foreground [&>button]:hidden"
           >
-            <SheetTitle className="sr-only">Navigation</SheetTitle>
+            <SheetTitle className="sr-only">
+              {t("dispatch.shell.navigation")}
+            </SheetTitle>
             <SheetDescription className="sr-only">
-              Workspace navigation links
+              {t("dispatch.shell.workspaceNavigationLinks")}
             </SheetDescription>
             <div className="flex h-full w-full flex-col">
               <NavContent

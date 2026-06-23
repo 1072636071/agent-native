@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconActivity,
   IconAlertTriangle,
@@ -121,12 +122,14 @@ interface DispatchUsageMetrics {
 
 const RANGES = [7, 30, 90] as const;
 
-const USD_BILLING: UsageBillingMode = {
-  unit: "usd",
-  label: "Estimated spend",
-  shortLabel: "Cost",
-  source: "estimated-provider-cost",
-};
+function getUsdBilling(t: (...args: any[]) => string): UsageBillingMode {
+  return {
+    unit: "usd",
+    label: t("dispatch.metrics.estimatedSpend"),
+    shortLabel: t("dispatch.metrics.cost"),
+    source: "estimated-provider-cost",
+  };
+}
 
 function displayAmountFromCostCents(
   cents: number,
@@ -139,18 +142,23 @@ function displayAmountFromCostCents(
   return credits <= 0 ? 0 : Math.ceil(credits * 1000) / 1000;
 }
 
-function formatCredits(credits: number): string {
-  if (!Number.isFinite(credits) || credits === 0) return "0 credits";
+function formatCredits(credits: number, t: (...args: any[]) => string): string {
+  if (!Number.isFinite(credits) || credits === 0)
+    return t("dispatch.metrics.credits", { count: 0 });
   const maximumFractionDigits = credits < 1 ? 3 : credits < 10 ? 2 : 1;
   const value = credits.toLocaleString(undefined, {
     maximumFractionDigits,
   });
-  return `${value} ${credits === 1 ? "credit" : "credits"}`;
+  return `${value} ${credits === 1 ? t("dispatch.metrics.credit", { count: 1 }) : t("dispatch.metrics.credits", { count: Math.round(credits) })}`;
 }
 
-function formatSpend(cents: number, billing: UsageBillingMode): string {
+function formatSpend(
+  cents: number,
+  billing: UsageBillingMode,
+  t: (...args: any[]) => string,
+): string {
   if (billing.unit === "builder-credits") {
-    return formatCredits(displayAmountFromCostCents(cents, billing));
+    return formatCredits(displayAmountFromCostCents(cents, billing), t);
   }
   if (!Number.isFinite(cents) || cents === 0) return "$0.00";
   if (Math.abs(cents) < 1) return `${cents.toFixed(3)}¢`;
@@ -176,18 +184,27 @@ function formatTokens(value: number): string {
   }).format(value);
 }
 
-function timeAgo(timestamp: number | null): string {
-  if (!timestamp) return "No activity";
+function timeAgo(
+  timestamp: number | null,
+  t: (...args: any[]) => string,
+): string {
+  if (!timestamp) return t("dispatch.metrics.noActivity");
   const diff = Date.now() - timestamp;
-  if (diff < 60_000) return "just now";
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return `${Math.floor(diff / 86_400_000)}d ago`;
+  if (diff < 60_000) return t("dispatch.metrics.justNow");
+  if (diff < 3_600_000)
+    return `${Math.floor(diff / 60_000)}${t("dispatch.metrics.minutesAgo")}`;
+  if (diff < 86_400_000)
+    return `${Math.floor(diff / 3_600_000)}${t("dispatch.metrics.hoursAgo")}`;
+  return `${Math.floor(diff / 86_400_000)}${t("dispatch.metrics.daysAgo")}`;
 }
 
-function displayApp(value: string | null | undefined): string {
+function displayApp(
+  value: string | null | undefined,
+  t: (...args: any[]) => string,
+): string {
   const trimmed = value?.trim();
-  if (!trimmed || trimmed === "unattributed") return "Unattributed";
+  if (!trimmed || trimmed === "unattributed")
+    return t("dispatch.metrics.unattributed");
   return trimmed;
 }
 
@@ -312,11 +329,12 @@ function AppSpendRows({
   rows: UsageMetricBucket[];
   billing: UsageBillingMode;
 }) {
+  const { t } = useI18n();
   const max = maxSpend(rows, billing);
   if (rows.length === 0) {
     return (
       <div className="rounded-lg border border-dashed px-4 py-8 text-sm text-muted-foreground">
-        No LLM usage recorded for this window.
+        {t("dispatch.metrics.noLlmUsage")}
       </div>
     );
   }
@@ -327,7 +345,7 @@ function AppSpendRows({
           <div className="flex items-center justify-between gap-3 text-sm">
             <div className="min-w-0">
               <div className="truncate font-medium text-foreground">
-                {displayApp(row.key)}
+                {displayApp(row.key, t)}
               </div>
               <div className="text-xs text-muted-foreground">
                 {formatNumber(row.chatCalls)} chats ·{" "}
@@ -336,7 +354,7 @@ function AppSpendRows({
             </div>
             <div className="shrink-0 text-right">
               <div className="font-medium tabular-nums text-foreground">
-                {formatSpend(row.costCents, billing)}
+                {formatSpend(row.costCents, billing, t)}
               </div>
               <div className="text-xs text-muted-foreground">
                 {formatNumber(row.calls)} calls
@@ -361,6 +379,7 @@ function AppSpendRows({
 }
 
 function DailyActivity({ rows }: { rows: DailyUsageMetric[] }) {
+  const { t } = useI18n();
   const max = Math.max(
     1,
     rows.reduce((value, row) => Math.max(value, row.calls), 0),
@@ -368,7 +387,7 @@ function DailyActivity({ rows }: { rows: DailyUsageMetric[] }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-lg border border-dashed px-4 py-8 text-sm text-muted-foreground">
-        No activity in this window.
+        {t("dispatch.metrics.noActivity")}
       </div>
     );
   }
@@ -401,11 +420,12 @@ function AppAccessTable({
   rows: AppAccessMetric[];
   billing: UsageBillingMode;
 }) {
+  const { t } = useI18n();
   const visibleRows = rows.filter((row) => !row.isDispatch);
   if (visibleRows.length === 0) {
     return (
       <div className="rounded-lg border border-dashed px-4 py-8 text-sm text-muted-foreground">
-        No workspace apps discovered yet.
+        {t("dispatch.metrics.noActivity")}
       </div>
     );
   }
@@ -414,14 +434,24 @@ function AppAccessTable({
       <table className="w-full min-w-[720px] text-left text-xs">
         <thead>
           <tr className="border-b text-muted-foreground">
-            <th className="px-2 py-2 font-medium">App</th>
-            <th className="px-2 py-2 font-medium">Access</th>
-            <th className="px-2 py-2 text-right font-medium">Users</th>
-            <th className="px-2 py-2 text-right font-medium">Chats</th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.appHeader")}
+            </th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.accessHeader")}
+            </th>
+            <th className="px-2 py-2 text-right font-medium">
+              {t("dispatch.metrics.usersHeader")}
+            </th>
+            <th className="px-2 py-2 text-right font-medium">
+              {t("dispatch.metrics.chatsHeader")}
+            </th>
             <th className="px-2 py-2 text-right font-medium">
               {billing.shortLabel}
             </th>
-            <th className="px-2 py-2 text-right font-medium">Last activity</th>
+            <th className="px-2 py-2 text-right font-medium">
+              {t("dispatch.metrics.lastActivityHeader")}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -454,10 +484,10 @@ function AppAccessTable({
                 {formatNumber(row.chatCalls)}
               </td>
               <td className="px-2 py-3 text-right tabular-nums">
-                {formatSpend(row.costCents, billing)}
+                {formatSpend(row.costCents, billing, t)}
               </td>
               <td className="px-2 py-3 text-right text-muted-foreground">
-                {timeAgo(row.lastActiveAt)}
+                {timeAgo(row.lastActiveAt, t)}
               </td>
             </tr>
           ))}
@@ -474,10 +504,11 @@ function UserTable({
   rows: UserUsageMetric[];
   billing: UsageBillingMode;
 }) {
+  const { t } = useI18n();
   if (rows.length === 0) {
     return (
       <div className="rounded-lg border border-dashed px-4 py-8 text-sm text-muted-foreground">
-        No users have triggered LLM usage in this window.
+        {t("dispatch.metrics.noLlmUsage")}
       </div>
     );
   }
@@ -486,12 +517,24 @@ function UserTable({
       <table className="w-full min-w-[760px] text-left text-xs">
         <thead>
           <tr className="border-b text-muted-foreground">
-            <th className="px-2 py-2 font-medium">User</th>
-            <th className="px-2 py-2 font-medium">Role</th>
-            <th className="px-2 py-2 font-medium">Top app</th>
-            <th className="px-2 py-2 text-right font-medium">Chats</th>
-            <th className="px-2 py-2 text-right font-medium">Threads</th>
-            <th className="px-2 py-2 text-right font-medium">Tokens</th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.userHeader")}
+            </th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.roleHeader")}
+            </th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.topAppHeader")}
+            </th>
+            <th className="px-2 py-2 text-right font-medium">
+              {t("dispatch.metrics.chatsHeader")}
+            </th>
+            <th className="px-2 py-2 text-right font-medium">
+              {t("dispatch.metrics.threadsHeader")}
+            </th>
+            <th className="px-2 py-2 text-right font-medium">
+              {t("dispatch.metrics.tokensHeader")}
+            </th>
             <th className="px-2 py-2 text-right font-medium">
               {billing.shortLabel}
             </th>
@@ -505,14 +548,14 @@ function UserTable({
                   {row.ownerEmail}
                 </div>
                 <div className="text-muted-foreground">
-                  {timeAgo(row.lastActiveAt ?? row.lastChatAt)}
+                  {timeAgo(row.lastActiveAt ?? row.lastChatAt, t)}
                 </div>
               </td>
               <td className="px-2 py-3">
                 <Badge variant="secondary">{row.role ?? "user"}</Badge>
               </td>
               <td className="px-2 py-3 text-muted-foreground">
-                {displayApp(row.topApp)}
+                {displayApp(row.topApp, t)}
               </td>
               <td className="px-2 py-3 text-right tabular-nums">
                 {formatNumber(row.chatCalls)}
@@ -524,7 +567,7 @@ function UserTable({
                 {formatTokens(row.inputTokens + row.outputTokens)}
               </td>
               <td className="px-2 py-3 text-right tabular-nums">
-                {formatSpend(row.costCents, billing)}
+                {formatSpend(row.costCents, billing, t)}
               </td>
             </tr>
           ))}
@@ -543,6 +586,7 @@ function CompactBreakdown({
   empty: string;
   billing: UsageBillingMode;
 }) {
+  const { t } = useI18n();
   const max = maxSpend(rows, billing);
   if (rows.length === 0) {
     return <div className="text-sm text-muted-foreground">{empty}</div>;
@@ -556,7 +600,7 @@ function CompactBreakdown({
               {row.label}
             </span>
             <span className="shrink-0 tabular-nums text-muted-foreground">
-              {formatSpend(row.costCents, billing)}
+              {formatSpend(row.costCents, billing, t)}
             </span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-muted">
@@ -583,10 +627,11 @@ function RecentTable({
   rows: RecentUsageMetric[];
   billing: UsageBillingMode;
 }) {
+  const { t } = useI18n();
   if (rows.length === 0) {
     return (
       <div className="rounded-lg border border-dashed px-4 py-8 text-sm text-muted-foreground">
-        No recent LLM calls.
+        {t("dispatch.metrics.noLlmUsage")}
       </div>
     );
   }
@@ -595,11 +640,21 @@ function RecentTable({
       <table className="w-full min-w-[760px] text-left text-xs">
         <thead>
           <tr className="border-b text-muted-foreground">
-            <th className="px-2 py-2 font-medium">When</th>
-            <th className="px-2 py-2 font-medium">User</th>
-            <th className="px-2 py-2 font-medium">App</th>
-            <th className="px-2 py-2 font-medium">Label</th>
-            <th className="px-2 py-2 font-medium">Model</th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.whenHeader")}
+            </th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.userHeader")}
+            </th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.appHeader")}
+            </th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.labelHeader")}
+            </th>
+            <th className="px-2 py-2 font-medium">
+              {t("dispatch.metrics.modelHeader")}
+            </th>
             <th className="px-2 py-2 text-right font-medium">
               {billing.shortLabel}
             </th>
@@ -609,13 +664,13 @@ function RecentTable({
           {rows.slice(0, 10).map((row) => (
             <tr key={row.id} className="border-b last:border-0">
               <td className="px-2 py-3 text-muted-foreground">
-                {timeAgo(row.createdAt)}
+                {timeAgo(row.createdAt, t)}
               </td>
               <td className="max-w-56 px-2 py-3">
                 <div className="truncate text-foreground">{row.ownerEmail}</div>
               </td>
               <td className="px-2 py-3 text-muted-foreground">
-                {displayApp(row.app)}
+                {displayApp(row.app, t)}
               </td>
               <td className="px-2 py-3">
                 <Badge variant="outline">{row.label}</Badge>
@@ -626,7 +681,7 @@ function RecentTable({
                 </div>
               </td>
               <td className="px-2 py-3 text-right tabular-nums">
-                {formatSpend(row.costCents, billing)}
+                {formatSpend(row.costCents, billing, t)}
               </td>
             </tr>
           ))}
@@ -637,6 +692,7 @@ function RecentTable({
 }
 
 export default function MetricsRoute() {
+  const { t } = useI18n();
   const [sinceDays, setSinceDays] = useState(30);
   const { data, isLoading, error } = useActionQuery(
     "list-dispatch-usage-metrics",
@@ -644,7 +700,7 @@ export default function MetricsRoute() {
     { refetchInterval: 30_000 },
   );
   const metrics = data as DispatchUsageMetrics | undefined;
-  const billing = metrics?.billing ?? USD_BILLING;
+  const billing = metrics?.billing ?? getUsdBilling(t);
   const totalTokens = useMemo(() => {
     if (!metrics) return 0;
     return (
@@ -657,19 +713,19 @@ export default function MetricsRoute() {
 
   return (
     <DispatchShell
-      title="Metrics"
+      title={t("dispatch.metrics.title")}
       description={
         billing.unit === "builder-credits"
           ? "Workspace-wide Builder.io credit spend, chat volume, user activity, and app access."
-          : "Workspace-wide LLM spend, chat volume, user activity, and app access."
+          : t("dispatch.metrics.description")
       }
     >
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm text-muted-foreground">
             {metrics?.access.scope === "organization"
-              ? `${metrics.access.totalUsers} workspace users`
-              : `${metrics?.access.totalUsers ?? 0} signed-in users`}
+              ? `${metrics.access.totalUsers} ${t("dispatch.metrics.workspaceUsers")}`
+              : `${metrics?.access.totalUsers ?? 0} ${t("dispatch.metrics.signedInUsers")}`}
           </div>
           <RangeSelector value={sinceDays} onChange={setSinceDays} />
         </div>
@@ -677,9 +733,11 @@ export default function MetricsRoute() {
         {error ? (
           <Alert variant="destructive">
             <IconAlertTriangle className="h-4 w-4" />
-            <AlertTitle>Metrics unavailable</AlertTitle>
+            <AlertTitle>{t("dispatch.metrics.metricsUnavailable")}</AlertTitle>
             <AlertDescription>
-              {error instanceof Error ? error.message : "Unable to load usage."}
+              {error instanceof Error
+                ? error.message
+                : t("dispatch.metrics.unableToLoadUsage")}
             </AlertDescription>
           </Alert>
         ) : null}
@@ -691,30 +749,30 @@ export default function MetricsRoute() {
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
               <MetricCard
                 label={billing.label}
-                value={formatSpend(metrics.totals.costCents, billing)}
+                value={formatSpend(metrics.totals.costCents, billing, t)}
                 detail={`${formatTokens(totalTokens)} total tokens`}
                 icon={<IconCoin size={17} />}
               />
               <MetricCard
-                label="LLM calls"
+                label={t("dispatch.metrics.llmCalls")}
                 value={formatNumber(metrics.totals.calls)}
                 detail={`${formatNumber(metrics.totals.chatCalls)} chat turns`}
                 icon={<IconActivity size={17} />}
               />
               <MetricCard
-                label="Active users"
+                label={t("dispatch.metrics.activeUsers")}
                 value={formatNumber(metrics.totals.activeUsers)}
                 detail={`${formatNumber(metrics.access.totalUsers)} users with access`}
                 icon={<IconUsersGroup size={17} />}
               />
               <MetricCard
-                label="Workspace apps"
+                label={t("dispatch.metrics.workspaceApps")}
                 value={formatNumber(metrics.totals.workspaceApps)}
                 detail={`${formatNumber(metrics.byApp.length)} with usage`}
                 icon={<IconApps size={17} />}
               />
               <MetricCard
-                label="Chat threads"
+                label={t("dispatch.metrics.chatThreads")}
                 value={formatNumber(metrics.totals.chatThreads)}
                 detail={`${formatNumber(metrics.totals.chatMessages)} messages`}
                 icon={<IconMessages size={17} />}
@@ -725,44 +783,62 @@ export default function MetricsRoute() {
               <Panel
                 title={
                   billing.unit === "builder-credits"
-                    ? "Credit Spend By App"
+                    ? t("dispatch.metrics.creditSpendByApp")
                     : "Spend By App"
                 }
                 icon={<IconChartBar size={16} />}
               >
                 <AppSpendRows rows={metrics.byApp} billing={billing} />
               </Panel>
-              <Panel title="Daily Activity" icon={<IconClockHour4 size={16} />}>
+              <Panel
+                title={t("dispatch.metrics.dailyActivity")}
+                icon={<IconClockHour4 size={16} />}
+              >
                 <DailyActivity rows={metrics.daily} />
               </Panel>
             </div>
 
-            <Panel title="Access By App" icon={<IconApps size={16} />}>
+            <Panel
+              title={t("dispatch.metrics.accessByApp")}
+              icon={<IconApps size={16} />}
+            >
               <AppAccessTable rows={metrics.appAccess} billing={billing} />
             </Panel>
 
-            <Panel title="Users" icon={<IconUsersGroup size={16} />}>
+            <Panel
+              title={t("dispatch.metrics.users")}
+              icon={<IconUsersGroup size={16} />}
+            >
               <UserTable rows={metrics.byUser} billing={billing} />
             </Panel>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <Panel title="Models" icon={<IconChartBar size={16} />}>
+              <Panel
+                title={t("dispatch.metrics.models")}
+                icon={<IconChartBar size={16} />}
+              >
                 <CompactBreakdown
                   rows={metrics.byModel}
-                  empty="No model usage in this window."
+                  empty={t("dispatch.metrics.noModelUsage")}
                   billing={billing}
                 />
               </Panel>
-              <Panel title="Work Types" icon={<IconActivity size={16} />}>
+              <Panel
+                title={t("dispatch.metrics.workTypes")}
+                icon={<IconActivity size={16} />}
+              >
                 <CompactBreakdown
                   rows={metrics.byLabel}
-                  empty="No labeled usage in this window."
+                  empty={t("dispatch.metrics.noLabeledUsage")}
                   billing={billing}
                 />
               </Panel>
             </div>
 
-            <Panel title="Recent LLM Calls" icon={<IconActivity size={16} />}>
+            <Panel
+              title={t("dispatch.metrics.recentLlmCalls")}
+              icon={<IconActivity size={16} />}
+            >
               <RecentTable rows={metrics.recent} billing={billing} />
             </Panel>
           </>

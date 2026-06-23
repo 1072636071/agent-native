@@ -8,6 +8,7 @@ import {
   type LoaderFunctionArgs,
 } from "react-router";
 import { useActionQuery, appPath } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconArrowLeft,
   IconArrowUpRight,
@@ -93,6 +94,7 @@ export async function clientLoader({
 }
 
 export default function WorkspaceAppCatchAllRoute() {
+  const { t } = useI18n();
   const { appId } = useParams();
   const { data: apps = [], isLoading } = useActionQuery(
     "list-workspace-apps",
@@ -127,8 +129,8 @@ export default function WorkspaceAppCatchAllRoute() {
 
   return (
     <DispatchShell
-      title={app?.name || "Page not found"}
-      description="This route is not in the workspace app list yet."
+      title={app?.name || t("dispatch.workspaceApp.pageNotFound")}
+      description={t("dispatch.workspaceApp.routeNotInList")}
     >
       <div className="max-w-2xl rounded-lg border bg-card p-5">
         <Button asChild size="sm" variant="ghost" className="-ml-2 mb-4">
@@ -149,11 +151,11 @@ export default function WorkspaceAppCatchAllRoute() {
                 className="gap-1 border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
               >
                 <IconClockHour4 size={12} />
-                Building
+                {t("dispatch.workspaceApp.building")}
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
-              This app is being created. It will be available at{" "}
+              {t("dispatch.workspaceApp.appBeingCreated")}{" "}
               <span className="font-mono text-foreground">{app.path}</span>{" "}
               after its branch is merged and the workspace deploy finishes.
             </p>
@@ -165,7 +167,7 @@ export default function WorkspaceAppCatchAllRoute() {
             {app.builderUrl ? (
               <Button asChild>
                 <a href={app.builderUrl} target="_blank" rel="noreferrer">
-                  Open Builder branch
+                  {t("dispatch.workspaceApp.openBuilderBranch")}
                   <IconArrowUpRight size={15} className="ml-1.5" />
                 </a>
               </Button>
@@ -174,14 +176,16 @@ export default function WorkspaceAppCatchAllRoute() {
         ) : (
           <div className="space-y-3">
             <h2 className="text-base font-semibold text-foreground">
-              Page not found
+              {t("dispatch.workspaceApp.pageNotFound")}
             </h2>
             <p className="text-sm text-muted-foreground">
               <span className="font-mono text-foreground">/{appId}</span> isn't
               a Dispatch tab or a workspace app in this workspace.
             </p>
             <Button asChild>
-              <Link to={appPath("/apps")}>Browse apps</Link>
+              <Link to={appPath("/apps")}>
+                {t("dispatch.workspaceApp.browseApps")}
+              </Link>
             </Button>
           </div>
         )}

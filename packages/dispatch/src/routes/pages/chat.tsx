@@ -4,6 +4,7 @@ import {
   AgentChatSurface,
   markAgentChatHomeHandoff,
 } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { submitOverviewPrompt } from "@/lib/overview-chat";
 
 interface DispatchChatLocationState {
@@ -23,6 +24,7 @@ export function meta() {
 }
 
 export default function ChatRoute() {
+  const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const handledStateIds = useRef(new Set<string>());
@@ -96,17 +98,15 @@ export default function ChatRoute() {
         showTabBar={false}
         dynamicSuggestions={false}
         suggestions={[]}
-        emptyStateText="Ask Dispatch to create apps, route work, or manage the workspace."
+        emptyStateText={t("dispatch.chat.emptyStateText")}
         emptyStateDisplay="hidden"
         centerComposerWhenEmpty
         composerLayoutVariant="hero"
-        composerPlaceholder="Ask Dispatch..."
+        composerPlaceholder={t("dispatch.chat.composerPlaceholder")}
         composerSlot={
           <div className="dispatch-chat-intro">
-            <h1>What should Dispatch do next?</h1>
-            <p>
-              Create apps, manage shared keys, and route work across agents.
-            </p>
+            <h1>{t("dispatch.chat.whatShouldDispatchDoNext")}</h1>
+            <p>{t("dispatch.chat.subtitle")}</p>
           </div>
         }
       />

@@ -55,17 +55,23 @@ export const en: Record<I18nKey, string> = {
   "settings.update.status.reading": "Reading software update status.",
   "settings.update.status.unavailable": "Unavailable",
   "settings.update.status.checking": "Checking",
-  "settings.update.status.checkingDesc": "Looking for the newest Agent Native release.",
+  "settings.update.status.checkingDesc":
+    "Looking for the newest Agent Native release.",
   "settings.update.status.downloading": "Downloading",
-  "settings.update.status.availableDesc": "Version {version} is available and will install after download.",
-  "settings.update.status.downloadingDesc": "Update download is {percent}% complete.",
+  "settings.update.status.availableDesc":
+    "Version {version} is available and will install after download.",
+  "settings.update.status.downloadingDesc":
+    "Update download is {percent}% complete.",
   "settings.update.status.ready": "Ready",
-  "settings.update.status.readyDesc": "Version {version} is downloaded. Relaunch to install it.",
+  "settings.update.status.readyDesc":
+    "Version {version} is downloaded. Relaunch to install it.",
   "settings.update.status.upToDate": "Up to date",
-  "settings.update.status.upToDateDesc": "Agent Native {version} is the latest available version.",
+  "settings.update.status.upToDateDesc":
+    "Agent Native {version} is the latest available version.",
   "settings.update.status.needsRetry": "Needs retry",
   "settings.update.status.automatic": "Automatic",
-  "settings.update.status.backgroundCheck": "Agent Native checks for updates in the background.",
+  "settings.update.status.backgroundCheck":
+    "Agent Native checks for updates in the background.",
   "settings.remote.title": "Remote Control",
   "settings.remote.off": "Off",
   "settings.remote.polling": "Polling",
@@ -79,17 +85,21 @@ export const en: Record<I18nKey, string> = {
   "settings.remote.status.checking": "Checking",
   "settings.remote.status.checkingDesc": "Reading remote-control status.",
   "settings.remote.status.offline": "Offline",
-  "settings.remote.status.offlineDesc": "Pair this computer with an Agent-Native app.",
+  "settings.remote.status.offlineDesc":
+    "Pair this computer with an Agent-Native app.",
   "settings.remote.status.off": "Off",
-  "settings.remote.status.offDesc": "Remote requests are paused on this computer.",
+  "settings.remote.status.offDesc":
+    "Remote requests are paused on this computer.",
   "settings.remote.status.error": "Error",
   "settings.remote.status.errorDesc": "Remote control needs attention.",
   "settings.remote.status.polling": "Polling",
   "settings.remote.status.connectedTo": "Connected to {host}.",
   "settings.remote.status.connecting": "Connecting",
-  "settings.remote.status.waitingRetry": "Waiting to retry the remote connector.",
+  "settings.remote.status.waitingRetry":
+    "Waiting to retry the remote connector.",
   "settings.remote.status.startingRemote": "Starting remote control.",
-  "settings.remote.status.notPolling": "Remote control is not currently polling.",
+  "settings.remote.status.notPolling":
+    "Remote control is not currently polling.",
   "settings.codeTab.title": "Code tab",
   "settings.codeTab.desc": "Show Agent-Native Code in the sidebar.",
   "settings.shortcut.title": "Keyboard launch shortcuts",
@@ -119,7 +129,8 @@ export const en: Record<I18nKey, string> = {
   "settings.addApp.localDev": "Local dev",
   "settings.addApp.chooseFolder": "Choose folder",
   "settings.addApp.hostedUrl": "Hosted URL",
-  "settings.addApp.devTitle": "Use this for a cloned local app folder; Desktop opens the inferred localhost URL.",
+  "settings.addApp.devTitle":
+    "Use this for a cloned local app folder; Desktop opens the inferred localhost URL.",
   "settings.addApp.name": "Name *",
   "settings.addApp.namePlaceholder": "Dispatch",
   "settings.addApp.prodUrl": "Production URL *",
@@ -132,8 +143,10 @@ export const en: Record<I18nKey, string> = {
   "settings.addApp.localFolder": "Local Folder",
   "settings.addApp.selected": "Selected",
   "settings.addApp.chooseAppFolder": "Choose app folder",
-  "settings.addApp.folderSelectHint": "Select the folder you cloned or created.",
-  "settings.addApp.autoFill": "Auto-filled from the folder when possible. You can still edit it manually.",
+  "settings.addApp.folderSelectHint":
+    "Select the folder you cloned or created.",
+  "settings.addApp.autoFill":
+    "Auto-filled from the folder when possible. You can still edit it manually.",
   "settings.addApp.openApp": "Open App",
   "settings.addApp.addAppSubmit": "Add App",
   "settings.addApp.editTitle": "Edit App",
@@ -212,7 +225,8 @@ export const en: Record<I18nKey, string> = {
   "codeAgents.searchingTranscripts": "Searching transcripts…",
   "codeAgents.noChatsFound": "No chats found",
   "codeAgents.noChatsYet": "No chats yet",
-  "codeAgents.noChatsFoundDesc": "Try a title, folder, command, or phrase from the conversation.",
+  "codeAgents.noChatsFoundDesc":
+    "Try a title, folder, command, or phrase from the conversation.",
   "codeAgents.noChatsYetDesc": "Start a chat and it will show up here.",
   "codeAgents.noSessionSelected": "No session selected",
   "codeAgents.sessionLinkReady": "Session link ready",
@@ -236,7 +250,8 @@ export const en: Record<I18nKey, string> = {
   "codeAgents.rerun": "Re-run",
   "codeAgents.terminal": "Terminal",
   "codeAgents.connectProviderTitle": "Connect a provider to chat",
-  "codeAgents.connectProviderDesc": "Connect Builder.io, run codex login for Codex CLI, or add your own API key.",
+  "codeAgents.connectProviderDesc":
+    "Connect Builder.io, run codex login for Codex CLI, or add your own API key.",
   "codeAgents.connectBuilderio": "Connect Builder.io",
   "codeAgents.waiting": "Waiting…",
   "codeAgents.settings": "Settings",
@@ -260,16 +275,19 @@ export const en: Record<I18nKey, string> = {
 
   // ── Code Agents model ──
   "codeAgents.model.default": "Default model",
-  "codeAgents.model.defaultDesc": "Use the connected provider and saved default.",
+  "codeAgents.model.defaultDesc":
+    "Use the connected provider and saved default.",
   "codeAgents.model.anthropic": "Anthropic",
   "codeAgents.model.openai": "OpenAI",
   "codeAgents.model.gemini": "Gemini",
 
   // ── Code Agents run mode ──
   "codeAgents.runMode.plan": "Plan",
-  "codeAgents.runMode.planDesc": "Read the workspace and propose a plan before editing.",
+  "codeAgents.runMode.planDesc":
+    "Read the workspace and propose a plan before editing.",
   "codeAgents.runMode.auto": "Auto",
-  "codeAgents.runMode.autoDesc": "Edit, run checks, and only pause for destructive file, git, or data operations.",
+  "codeAgents.runMode.autoDesc":
+    "Edit, run checks, and only pause for destructive file, git, or data operations.",
 
   // ── Code Agents reasoning ──
   "codeAgents.reasoning.auto": "Auto",
@@ -282,7 +300,8 @@ export const en: Record<I18nKey, string> = {
   // ── Code Agents mobile ──
   "codeAgents.mobile.label": "Mobile",
   "codeAgents.mobile.title": "Agent Native mobile",
-  "codeAgents.mobile.desc": "Scan the QR code with the Agent Native mobile app to control coding sessions from your device.",
+  "codeAgents.mobile.desc":
+    "Scan the QR code with the Agent Native mobile app to control coding sessions from your device.",
   "codeAgents.mobile.ios": "iOS",
   "codeAgents.mobile.android": "Android",
   "codeAgents.mobile.pairThisMac": "Pair this Mac",
@@ -312,21 +331,29 @@ export const en: Record<I18nKey, string> = {
   "codeAgents.toast.builderConnected": "Builder.io connected",
   "codeAgents.toast.builderConnectedDesc": "Code can now use Builder credits.",
   "codeAgents.toast.builderConnectFail": "Builder.io connect did not finish",
-  "codeAgents.toast.folderPickerUnavailable": "Folder picker is not available here",
-  "codeAgents.toast.openDesktopForFolder": "Open Agent-Native Desktop to choose folders from the native picker.",
+  "codeAgents.toast.folderPickerUnavailable":
+    "Folder picker is not available here",
+  "codeAgents.toast.openDesktopForFolder":
+    "Open Agent-Native Desktop to choose folders from the native picker.",
   "codeAgents.toast.couldNotChooseFolder": "Could not choose folder",
   "codeAgents.toast.terminalUnavailable": "Terminal is not available here",
-  "codeAgents.toast.openDesktopForTerminal": "Open Agent-Native Desktop to launch a native terminal.",
+  "codeAgents.toast.openDesktopForTerminal":
+    "Open Agent-Native Desktop to launch a native terminal.",
   "codeAgents.toast.terminalOpened": "Terminal opened",
   "codeAgents.toast.terminalNotOpened": "Terminal was not opened",
-  "codeAgents.toast.mobilePairingUnavailable": "Mobile pairing is not available here",
-  "codeAgents.toast.openDesktopForMobile": "Open Agent-Native Desktop to pair this Mac.",
+  "codeAgents.toast.mobilePairingUnavailable":
+    "Mobile pairing is not available here",
+  "codeAgents.toast.openDesktopForMobile":
+    "Open Agent-Native Desktop to pair this Mac.",
   "codeAgents.toast.chooseRelayFirst": "Choose a relay first",
-  "codeAgents.toast.relayNeeded": "A Dispatch relay URL is needed before pairing.",
+  "codeAgents.toast.relayNeeded":
+    "A Dispatch relay URL is needed before pairing.",
   "codeAgents.toast.mobilePairingReady": "Mobile pairing ready",
   "codeAgents.toast.mobilePairingFailed": "Mobile pairing failed",
-  "codeAgents.toast.mobileControlsUnavailable": "Mobile pairing controls are not available here",
-  "codeAgents.toast.openDesktopForMobileControl": "Open Agent-Native Desktop to manage mobile pairing.",
+  "codeAgents.toast.mobileControlsUnavailable":
+    "Mobile pairing controls are not available here",
+  "codeAgents.toast.openDesktopForMobileControl":
+    "Open Agent-Native Desktop to manage mobile pairing.",
   "codeAgents.toast.mobileResumed": "Mobile pairing resumed",
   "codeAgents.toast.mobilePaused": "Mobile pairing paused",
   "codeAgents.toast.couldNotUpdateMobile": "Could not update mobile pairing",
@@ -360,7 +387,8 @@ export const en: Record<I18nKey, string> = {
   "codeAgents.contextUsed": "{pct}% ctx ({total} tokens)",
   "codeAgents.openIn": "Open in",
   "codeAgents.openGoalForSession": "Open in {surfaceLabel}",
-  "codeAgents.startOrSelectSession": "Type /{slashCommand} to start or select a session",
+  "codeAgents.startOrSelectSession":
+    "Type /{slashCommand} to start or select a session",
   "codeAgents.reviewPendingAction": "Review the pending action.",
 
   // ── Frame ──
@@ -422,7 +450,8 @@ export const en: Record<I18nKey, string> = {
   // ── Frame (dev preview) ──
   "frame.emptyState": "Ask me anything about {app}",
   "frame.cliUnavailable.title": "Open Desktop to use CLI",
-  "frame.cliUnavailable.desc": "Open Agent Native Desktop, click the + button, and add this app with its local dev URL to use CLI.",
+  "frame.cliUnavailable.desc":
+    "Open Agent Native Desktop, click the + button, and add this app with its local dev URL to use CLI.",
   "frame.cliUnavailable.openDesktop": "Open Desktop",
   "frame.cliUnavailable.download": "Download",
 
@@ -444,6 +473,704 @@ export const en: Record<I18nKey, string> = {
   "mobile.appForm.nameRequired": "App name is required",
   "mobile.appForm.urlRequired": "URL is required",
   "mobile.appForm.urlInvalid": "Please enter a valid URL",
+
+  // ── Dispatch ──
+  "dispatch.common.chat": "Chat",
+  "dispatch.common.overview": "Overview",
+  "dispatch.common.apps": "Apps",
+  "dispatch.common.metrics": "Metrics",
+  "dispatch.common.vault": "Vault",
+  "dispatch.common.integrations": "Integrations",
+  "dispatch.common.agents": "Agents",
+  "dispatch.common.resources": "Resources",
+  "dispatch.common.messaging": "Messaging",
+  "dispatch.common.destinations": "Destinations",
+  "dispatch.common.identities": "Identities",
+  "dispatch.common.approvals": "Approvals",
+  "dispatch.common.audit": "Audit",
+  "dispatch.common.dreams": "Dreams",
+  "dispatch.common.threadDebug": "Thread Debug",
+  "dispatch.common.team": "Team",
+  "dispatch.common.extensions": "Extensions",
+
+  "dispatch.shell.navigation": "Navigation",
+  "dispatch.shell.workspaceNavigationLinks": "Workspace navigation links",
+  "dispatch.shell.operations": "Operations",
+  "dispatch.shell.openNavigation": "Open navigation",
+  "dispatch.shell.workspace": "Workspace",
+  "dispatch.sidebar.toggleSidebar": "Toggle Sidebar",
+  "dispatch.sidebar.sidebar": "Sidebar",
+  "dispatch.sidebar.mobileSidebarNavigation": "Mobile sidebar navigation",
+  "dispatch.sidebar.emptyStateText":
+    "Create apps, manage vault keys, and route work across the workspace.",
+  "dispatch.sidebar.suggestionBuildApp": "Build a workspace app for X",
+  "dispatch.sidebar.suggestionSlack":
+    "Route Slack mentions to my analytics app",
+  "dispatch.sidebar.suggestionGrantKey": "Grant my OpenAI key to this app",
+
+  "dispatch.layout.chats": "Chats",
+  "dispatch.layout.newDispatchChat": "New Dispatch chat",
+  "dispatch.layout.newChat": "New chat",
+  "dispatch.layout.renameChat": "Rename chat",
+  "dispatch.layout.chatOptionsFor": "Chat options for",
+
+  "dispatch.command.commandMenu": "Command Menu",
+  "dispatch.command.actions": "Actions",
+  "dispatch.command.search": "Search",
+  "dispatch.command.appearance": "Appearance",
+  "dispatch.command.toggleTheme": "Toggle theme",
+  "dispatch.command.suggestionHealth": "Summarize the current workspace health",
+  "dispatch.command.suggestionOnboardingApp":
+    "Create an app for onboarding requests",
+  "dispatch.command.suggestionAnalyticsAgents":
+    "Check which agents can help with analytics",
+
+  "dispatch.ui.close": "Close",
+  "dispatch.ui.more": "More",
+  "dispatch.ui.previous": "Previous",
+  "dispatch.ui.next": "Next",
+  "dispatch.ui.previousSlide": "Previous slide",
+  "dispatch.ui.nextSlide": "Next slide",
+  "dispatch.ui.morePages": "More pages",
+  "dispatch.ui.loading": "Loading",
+
+  "dispatch.controlPlane.title": "Control plane",
+  "dispatch.controlPlane.description":
+    "Dispatch is the workspace shell for chats, runs, apps, agents, automations, approvals, and resources.",
+  "dispatch.controlPlane.askDispatch": "Ask Dispatch",
+  "dispatch.controlPlane.openChat": "Open chat",
+  "dispatch.controlPlane.routeWorkPlaceholder":
+    "Route work, inspect status, or create an app...",
+  "dispatch.controlPlane.chats": "Chats",
+  "dispatch.controlPlane.runs": "Runs",
+  "dispatch.controlPlane.apps": "Apps",
+  "dispatch.controlPlane.agents": "Agents",
+  "dispatch.controlPlane.automations": "Automations",
+  "dispatch.controlPlane.approvals": "Approvals",
+  "dispatch.controlPlane.metricChatsDetail": "{count} with messages",
+  "dispatch.controlPlane.metricRunsDetail": "{count} queued",
+  "dispatch.controlPlane.metricAppsDetail": "{count} building",
+  "dispatch.controlPlane.metricAgentsDetail": "{count} custom",
+  "dispatch.controlPlane.metricAutomationsDetail": "{count} need attention",
+  "dispatch.controlPlane.metricApprovalsDetailReview": "review mode",
+  "dispatch.controlPlane.metricApprovalsDetailImmediate": "immediate changes",
+  "dispatch.controlPlane.new": "New",
+  "dispatch.controlPlane.startADispatchChat": "Start a Dispatch chat",
+  "dispatch.controlPlane.queued": "Queued",
+  "dispatch.controlPlane.active": "Active",
+  "dispatch.controlPlane.activeCount": "{count} active",
+  "dispatch.controlPlane.done1h": "Done 1h",
+  "dispatch.controlPlane.failed1h": "Failed 1h",
+  "dispatch.controlPlane.oldestQueued": "Oldest queued:",
+  "dispatch.controlPlane.runsDetailFailed": "{count} failed in the last hour",
+  "dispatch.controlPlane.runsDetailProcessing": "{count} processing",
+  "dispatch.controlPlane.noErrorMessage": "(no error message)",
+  "dispatch.controlPlane.attempts": "{count} attempts",
+  "dispatch.controlPlane.projectsAndApps": "Projects and apps",
+  "dispatch.controlPlane.viewAll": "View all",
+  "dispatch.controlPlane.create": "Create",
+  "dispatch.controlPlane.last": "Last",
+  "dispatch.controlPlane.next": "Next",
+  "dispatch.controlPlane.noAutomationsYet": "No automations yet",
+  "dispatch.controlPlane.automationsDetail":
+    "{enabled} enabled · {errors} errors",
+  "dispatch.controlPlane.enable": "Enable",
+  "dispatch.controlPlane.disable": "Disable",
+  "dispatch.controlPlane.automation": "automation",
+  "dispatch.controlPlane.agentsDetail": "{builtin} built in · {extra} added",
+  "dispatch.controlPlane.builtIn": "built in",
+  "dispatch.controlPlane.added": "added",
+  "dispatch.controlPlane.manage": "Manage",
+  "dispatch.controlPlane.noAgentsDetected": "No agents detected",
+  "dispatch.controlPlane.activity": "Activity",
+  "dispatch.controlPlane.audit": "Audit",
+  "dispatch.controlPlane.open": "Open",
+  "dispatch.controlPlane.noApprovalRequests": "No approval requests",
+  "dispatch.controlPlane.recentAudit": "Recent audit",
+  "dispatch.controlPlane.noAuditEntries": "No audit entries",
+  "dispatch.controlPlane.readiness": "Readiness",
+  "dispatch.controlPlane.recent": "recent",
+  "dispatch.controlPlane.activityDetail":
+    "{approvals} approvals · {audit} audit rows",
+  "dispatch.controlPlane.messages": "{count} messages",
+  "dispatch.controlPlane.secrets": "{count} secrets",
+  "dispatch.controlPlane.noSecrets": "no secrets",
+  "dispatch.controlPlane.available": "{count} available",
+  "dispatch.controlPlane.enabledCount": "{count} enabled",
+  "dispatch.controlPlane.linkedIdentities": "{count} linked identities",
+  "dispatch.controlPlane.vault": "Vault",
+  "dispatch.controlPlane.resources": "Resources",
+  "dispatch.controlPlane.activeGrants": "{count} active grants",
+  "dispatch.controlPlane.destinations": "destinations",
+  "dispatch.controlPlane.integrationFailuresDetected":
+    "Integration failures detected",
+  "dispatch.controlPlane.checkCredentialsDestinations":
+    "Check credentials, destinations, and recent queue errors.",
+  "dispatch.controlPlane.paused": "Paused",
+  "dispatch.controlPlane.error": "Error",
+  "dispatch.controlPlane.running": "Running",
+  "dispatch.controlPlane.skipped": "Skipped",
+  "dispatch.controlPlane.healthy": "Healthy",
+  "dispatch.controlPlane.ready": "Ready",
+
+  "dispatch.overview.title": "Overview",
+  "dispatch.overview.noData": "No data",
+
+  "dispatch.chat.title": "Chat",
+  "dispatch.chat.whatShouldDispatchDoNext": "What should Dispatch do next?",
+  "dispatch.chat.subtitle":
+    "Create apps, manage shared keys, and route work across agents.",
+  "dispatch.chat.composerPlaceholder": "Ask Dispatch...",
+  "dispatch.chat.emptyStateText":
+    "Ask Dispatch to create apps, route work, or manage the workspace.",
+
+  "dispatch.apps.title": "Apps",
+  "dispatch.apps.createApp": "Create app",
+  "dispatch.apps.templates": "Templates",
+  "dispatch.apps.hiddenApps": "Hidden apps",
+  "dispatch.apps.noWorkspaceAppsYet": "No workspace apps yet",
+  "dispatch.apps.createAnAppWhenAWorkflowNeeds":
+    "Create an app when a workflow needs its own focused place to live.",
+  "dispatch.apps.adding": "Adding...",
+  "dispatch.apps.addToWorkspace": "Add to workspace",
+  "dispatch.apps.descriptionWithWorkspace":
+    'Apps in the "{workspace}" workspace. Each app gets its own route under this workspace and shares its database, auth, and agent chat.',
+  "dispatch.apps.descriptionNoWorkspace":
+    "Open workspace apps and start new app creation from Dispatch.",
+  "dispatch.apps.workspaceApps": "Workspace apps",
+  "dispatch.apps.appsInWorkspace": "Apps in {workspace}",
+  "dispatch.apps.activeCount": "{count} active",
+  "dispatch.apps.hiddenCount": "{count} hidden",
+  "dispatch.apps.checkingAvailableTemplates": "Checking available templates",
+  "dispatch.apps.availableToScaffold": "{count} available to scaffold",
+  "dispatch.apps.show": "Show",
+  "dispatch.apps.hide": "Hide",
+  "dispatch.apps.hiddenAppCount": "{count} hidden app",
+  "dispatch.apps.scaffoldedApp":
+    "Scaffolded apps/{appId}. The gateway will pick it up shortly.",
+  "dispatch.apps.couldNotScaffold": "Could not scaffold {label}: {error}",
+  "dispatch.apps.appNotFound": "App not found",
+  "dispatch.apps.building": "Building",
+  "dispatch.apps.opening": "Opening",
+  "dispatch.apps.redirectingTo": "Redirecting to",
+  "dispatch.apps.openApp": "Open app",
+  "dispatch.apps.openBuilderBranch": "Open Builder branch",
+
+  "dispatch.approvals.title": "Approvals",
+  "dispatch.approvals.description":
+    "Review durable dispatch changes before they apply.",
+  "dispatch.approvals.approvalPolicy": "Approval policy",
+  "dispatch.approvals.requireApprovalForDurableChanges":
+    "Require approval for durable changes",
+  "dispatch.approvals.approverEmails": "Approver emails",
+  "dispatch.approvals.saveApprovers": "Save approvers",
+  "dispatch.approvals.pendingAndRecentRequests": "Pending and recent requests",
+  "dispatch.approvals.requestedBy": "requested by",
+  "dispatch.approvals.approve": "Approve",
+  "dispatch.approvals.reject": "Reject",
+  "dispatch.approvals.noApprovalRequestsYet": "No approval requests yet.",
+
+  "dispatch.audit.title": "Audit",
+  "dispatch.audit.description":
+    "Change history for routes, settings, and approvals.",
+  "dispatch.audit.noAuditEntriesYet": "No audit entries yet.",
+
+  "dispatch.agents.title": "Agents",
+  "dispatch.agents.description":
+    "Dispatch can delegate to the built-in app suite over A2A by default. Add extra agents here only if you want to route work to apps outside that built-in set.",
+  "dispatch.agents.availableByDefault": "Available by default",
+  "dispatch.agents.noDefaultAgentsDetected": "No default agents detected.",
+  "dispatch.agents.addedInThisWorkspace": "Added in this workspace",
+  "dispatch.agents.removeThisAgent": "Remove this agent?",
+  "dispatch.agents.removeAgentDescription":
+    " will be removed from the workspace. Any jobs or chats that delegate to it will stop working.",
+  "dispatch.agents.noExtraAgentsAddedYet": "No extra agents added yet.",
+  "dispatch.agents.addExternalAgent": "Add external agent",
+  "dispatch.agents.addExternalAgentDescription":
+    "Add another A2A-compatible app by saving its agent endpoint here.",
+  "dispatch.agents.namePlaceholder": "Name",
+  "dispatch.agents.urlPlaceholder": "https://app.example.com",
+  "dispatch.agents.descriptionOptional": "Description (optional)",
+  "dispatch.agents.unifiedMcpGateway": "Unified MCP gateway",
+  "dispatch.agents.unifiedMcpGatewayDescription":
+    "Connect external agents to Dispatch once, then route to granted workspace apps through list_apps, ask_app, and open_app.",
+  "dispatch.agents.allApps": "All apps",
+  "dispatch.agents.selectedApps": "Selected apps",
+  "dispatch.agents.loading": "Loading",
+  "dispatch.agents.grantedCount": "{count} granted",
+  "dispatch.agents.copyUrl": "Copy URL",
+  "dispatch.agents.mcpUrlCopied": "MCP URL copied",
+  "dispatch.agents.couldNotCopyMcpUrl": "Could not copy MCP URL",
+  "dispatch.agents.mcpAppAccessUpdated": "MCP app access updated",
+  "dispatch.agents.selectAtLeastOneApp":
+    "Select at least one app, or expose all apps.",
+  "dispatch.agents.exposeAllApps": "Expose all apps through Dispatch MCP",
+
+  "dispatch.destinations.title": "Destinations",
+  "dispatch.destinations.description":
+    "Saved outbound Slack channels, Telegram chats, and thread targets.",
+  "dispatch.destinations.savedDestinations": "Saved destinations",
+  "dispatch.destinations.addDestination": "Add destination",
+  "dispatch.destinations.quickTestMessage": "Quick test message",
+  "dispatch.destinations.send": "Send",
+  "dispatch.destinations.delete": "Delete",
+  "dispatch.destinations.deleteDestination": "Delete destination?",
+  "dispatch.destinations.deleteDestinationDescription":
+    " will be removed. Any saved workflows or jobs that target this destination will start failing on the next send.",
+  "dispatch.destinations.noDestinationsSavedYet":
+    "No destinations saved yet. Add your first Slack channel or Telegram chat on the right.",
+  "dispatch.destinations.dailyDigestChannel": "Daily digest channel",
+  "dispatch.destinations.optionalThreadOrTopicId":
+    "Optional thread or topic id",
+  "dispatch.destinations.whatShouldUseThisDestination":
+    "What should use this destination?",
+  "dispatch.destinations.saveDestination": "Save destination",
+
+  "dispatch.vault.title": "Vault",
+  "dispatch.vault.description":
+    "Manage secrets and credentials that can be shared across apps.",
+  "dispatch.vault.noVaultKeysYet":
+    "No vault keys yet. Add one from the Vault page.",
+  "dispatch.vault.keysFor": "Keys for",
+  "dispatch.vault.sync": "Sync",
+
+  "dispatch.integrations.title": "Integrations",
+  "dispatch.integrations.description":
+    "Connect third-party services used by the workspace.",
+
+  "dispatch.resources.title": "Resources",
+  "dispatch.resources.description":
+    "Manage workspace resources and their grants.",
+
+  "dispatch.team.title": "Team",
+  "dispatch.team.description": "Workspace membership and approval ownership.",
+  "dispatch.team.createOrgDescription":
+    "Set up a team to share dispatch destinations and approvals with your colleagues.",
+
+  "dispatch.messaging.title": "Messaging",
+  "dispatch.messaging.description":
+    "Connect Slack and Telegram directly in dispatch so inbound conversations come through one place.",
+  "dispatch.messaging.slack": "Slack",
+  "dispatch.messaging.slackDescription":
+    "Receive mentions and DMs in one workspace-aware dispatch.",
+  "dispatch.messaging.telegram": "Telegram",
+  "dispatch.messaging.telegramDescription":
+    "Chat with dispatch through a Telegram bot.",
+  "dispatch.messaging.email": "Email",
+  "dispatch.messaging.emailDescription":
+    "Give your agent an email address. People can email it directly or CC it on threads.",
+  "dispatch.messaging.whatsapp": "WhatsApp",
+  "dispatch.messaging.whatsappDescription":
+    "Receive WhatsApp messages and reply through a Meta-managed phone number.",
+  "dispatch.messaging.savedReEnter": "Saved. Re-enter below to change.",
+  "dispatch.messaging.connected": "Connected",
+  "dispatch.messaging.configuredNotEnabled": "Configured, not enabled",
+  "dispatch.messaging.notConfigured": "Not configured",
+  "dispatch.messaging.docs": "Docs",
+  "dispatch.messaging.setupSteps": "Setup steps",
+  "dispatch.messaging.credentials": "Credentials",
+  "dispatch.messaging.checking": "Checking...",
+  "dispatch.messaging.optional": "(optional)",
+  "dispatch.messaging.saved": "Saved",
+  "dispatch.messaging.saving": "Saving...",
+  "dispatch.messaging.webhookUrl": "Webhook URL",
+  "dispatch.messaging.settingUp": "Setting up...",
+  "dispatch.messaging.enable": "Enable",
+  "dispatch.messaging.saveRequiredCredentialsFirst":
+    "Save the required credentials first.",
+  "dispatch.messaging.loadingMessagingStatus": "Loading messaging status...",
+
+  "dispatch.identities.title": "Identities",
+  "dispatch.identities.description":
+    "Link external senders to workspace users.",
+  "dispatch.identities.activeLinks": "Active links",
+  "dispatch.identities.newSlackToken": "New Slack token",
+  "dispatch.identities.newTelegramToken": "New Telegram token",
+  "dispatch.identities.noLinkedIdentitiesYet":
+    "No linked identities yet. Generate a token and ask the user to send",
+  "dispatch.identities.fromSlackOrTelegram": "from Slack or Telegram.",
+  "dispatch.identities.linkTokens": "Link tokens",
+  "dispatch.identities.expires": "expires",
+  "dispatch.identities.noActiveLinkTokens": "No active link tokens.",
+
+  "dispatch.extensions.title": "Extensions",
+  "dispatch.extensions.description": "Manage workspace extensions.",
+
+  // ── Dreams ──
+  "dispatch.dreams.title": "Dreams",
+  "dispatch.dreams.description":
+    "Review agent runs, proposals, and source health.",
+  "dispatch.dreams.sourceHealth": "Source health",
+  "dispatch.dreams.settings": "Settings",
+  "dispatch.dreams.enabled": "Enabled",
+  "dispatch.dreams.paused": "Paused",
+  "dispatch.dreams.noSchedule": "No schedule",
+  "dispatch.dreams.dreamSettings": "Dream settings",
+  "dispatch.dreams.dreamSettingsDescription":
+    "Configure recurring dream scope, schedule, and scan limits.",
+  "dispatch.dreams.schedule": "Schedule",
+  "dispatch.dreams.sources": "Sources",
+  "dispatch.dreams.scanLimits": "Scan Limits",
+  "dispatch.dreams.close": "Close",
+  "dispatch.dreams.saveSettings": "Save settings",
+  "dispatch.dreams.review": "Review",
+  "dispatch.dreams.approvalRequest": "Approval request",
+  "dispatch.dreams.rejectionReason": "Rejection reason",
+  "dispatch.dreams.reject": "Reject",
+  "dispatch.dreams.requestApproval": "Request approval",
+  "dispatch.dreams.apply": "Apply",
+  "dispatch.dreams.dreamReportCreated": "Dream report created",
+  "dispatch.dreams.proposalRejected": "Proposal rejected",
+  "dispatch.dreams.dreamScheduleUpdated": "Dream schedule updated",
+  "dispatch.dreams.dreamSettingsSaved": "Dream settings saved",
+  "dispatch.dreams.addCronScheduleBeforeSaving":
+    "Add a cron schedule before saving",
+  "dispatch.dreams.dreamPasses": "Dream passes",
+  "dispatch.dreams.pendingProposals": "Pending proposals",
+  "dispatch.dreams.candidateRuns": "Candidate runs",
+  "dispatch.dreams.inspectedThreads": "Inspected threads",
+  "dispatch.dreams.refresh": "Refresh",
+  "dispatch.dreams.ensureSchedule": "Ensure schedule",
+  "dispatch.dreams.runAllSources": "Run all sources",
+  "dispatch.dreams.runDream": "Run dream",
+  "dispatch.dreams.recentPasses": "Recent passes",
+  "dispatch.dreams.recentPassesDescription":
+    "Reports generated from prior agent activity.",
+  "dispatch.dreams.noDreamsYet": "No dreams yet",
+  "dispatch.dreams.noDreamsYetDescription":
+    "Run the first dream pass to review candidates.",
+  "dispatch.dreams.nothingSelected": "Nothing selected",
+  "dispatch.dreams.nothingSelectedDescription":
+    "Choose a recent dream pass to inspect.",
+  "dispatch.dreams.proposals": "Proposals",
+  "dispatch.dreams.report": "Report",
+  "dispatch.dreams.thread": "Thread:",
+  "dispatch.dreams.run": "Run:",
+  "dispatch.dreams.owner": "Owner:",
+  "dispatch.dreams.status": "Status:",
+  "dispatch.dreams.candidateRunsDescription":
+    "Grounded signals ready for review.",
+  "dispatch.dreams.runHeader": "Run",
+  "dispatch.dreams.signalsHeader": "Signals",
+  "dispatch.dreams.scoreHeader": "Score",
+  "dispatch.dreams.noCandidates": "No candidates",
+  "dispatch.dreams.noCandidatesDescription":
+    "No recent runs matched the dream candidate heuristics.",
+
+  // ── Metrics ──
+  "dispatch.metrics.title": "Metrics",
+  "dispatch.metrics.description": "Usage metrics for the workspace.",
+  "dispatch.metrics.estimatedSpend": "Estimated spend",
+  "dispatch.metrics.cost": "Cost",
+  "dispatch.metrics.credits": "{count} credits",
+  "dispatch.metrics.credit": "{count} credit",
+  "dispatch.metrics.noActivity": "No activity",
+  "dispatch.metrics.unattributed": "Unattributed",
+  "dispatch.metrics.noLlmUsage": "No LLM usage recorded for this window.",
+  "dispatch.metrics.workspaceUsers": "workspace users",
+  "dispatch.metrics.signedInUsers": "signed-in users",
+  "dispatch.metrics.metricsUnavailable": "Metrics unavailable",
+  "dispatch.metrics.unableToLoadUsage": "Unable to load usage.",
+  "dispatch.metrics.llmCalls": "LLM calls",
+  "dispatch.metrics.activeUsers": "Active users",
+  "dispatch.metrics.workspaceApps": "Workspace apps",
+  "dispatch.metrics.chatThreads": "Chat threads",
+  "dispatch.metrics.creditSpendByApp": "Credit Spend By App",
+  "dispatch.metrics.dailyActivity": "Daily Activity",
+  "dispatch.metrics.accessByApp": "Access By App",
+  "dispatch.metrics.users": "Users",
+  "dispatch.metrics.models": "Models",
+  "dispatch.metrics.workTypes": "Work Types",
+  "dispatch.metrics.recentLlmCalls": "Recent LLM Calls",
+  "dispatch.metrics.noModelUsage": "No model usage in this window.",
+  "dispatch.metrics.noLabeledUsage": "No labeled usage in this window.",
+  "dispatch.metrics.appHeader": "App",
+  "dispatch.metrics.accessHeader": "Access",
+  "dispatch.metrics.usersHeader": "Users",
+  "dispatch.metrics.chatsHeader": "Chats",
+  "dispatch.metrics.lastActivityHeader": "Last activity",
+  "dispatch.metrics.userHeader": "User",
+  "dispatch.metrics.roleHeader": "Role",
+  "dispatch.metrics.topAppHeader": "Top app",
+  "dispatch.metrics.threadsHeader": "Threads",
+  "dispatch.metrics.tokensHeader": "Tokens",
+  "dispatch.metrics.whenHeader": "When",
+  "dispatch.metrics.labelHeader": "Label",
+  "dispatch.metrics.modelHeader": "Model",
+  "dispatch.metrics.justNow": "just now",
+  "dispatch.metrics.minutesAgo": "m ago",
+  "dispatch.metrics.hoursAgo": "h ago",
+  "dispatch.metrics.daysAgo": "d ago",
+
+  // ── Thread Debug ──
+  "dispatch.threadDebug.title": "Thread Debug",
+  "dispatch.threadDebug.description":
+    "Inspect persisted agent chat threads, run events, and AI internals.",
+  "dispatch.threadDebug.transcript": "Transcript",
+  "dispatch.threadDebug.runs": "Runs",
+  "dispatch.threadDebug.internals": "Internals",
+  "dispatch.threadDebug.raw": "Raw",
+  "dispatch.threadDebug.source": "Source",
+  "dispatch.threadDebug.searchPlaceholder":
+    "Search title, preview, messages, tools",
+  "dispatch.threadDebug.search": "Search",
+  "dispatch.threadDebug.inspect": "Inspect",
+  "dispatch.threadDebug.searchFailed": "Search failed",
+  "dispatch.threadDebug.threads": "Threads",
+  "dispatch.threadDebug.noThreadsFound": "No threads found.",
+  "dispatch.threadDebug.threadLookupFailed": "Thread lookup failed",
+  "dispatch.threadDebug.selectOrInspectThread": "Select or inspect a thread.",
+  "dispatch.threadDebug.noPreview": "No preview",
+  "dispatch.threadDebug.files": "files",
+  "dispatch.threadDebug.noTextContent": "No text content",
+  "dispatch.threadDebug.messages": "messages",
+  "dispatch.threadDebug.threadOwner": "Owner:",
+  "dispatch.threadDebug.threadCreated": "Created:",
+  "dispatch.threadDebug.threadUpdated": "Updated:",
+  "dispatch.threadDebug.noPersistedMessages": "No persisted messages.",
+  "dispatch.threadDebug.noRetainedRunEvents": "No retained run events.",
+  "dispatch.threadDebug.noRetainedRuns": "No retained runs.",
+  "dispatch.threadDebug.debugRuns": "Debug Runs",
+  "dispatch.threadDebug.traceSummaries": "Trace Summaries",
+  "dispatch.threadDebug.traceSpans": "Trace Spans",
+  "dispatch.threadDebug.feedbackAndEvals": "Feedback And Evals",
+
+  // ── Workspace App Card ──
+  "dispatch.workspaceAppCard.builderBranch": "Builder branch",
+  "dispatch.workspaceAppCard.hidden": "Hidden",
+  "dispatch.workspaceAppCard.public": "Public",
+  "dispatch.workspaceAppCard.editDetails": "Edit details",
+  "dispatch.workspaceAppCard.removeFromList": "Remove from list",
+  "dispatch.workspaceAppCard.restoreToList": "Restore to list",
+  "dispatch.workspaceAppCard.hideFromList": "Hide from list",
+  "dispatch.workspaceAppCard.editAppDetails": "Edit app details",
+  "dispatch.workspaceAppCard.name": "Name",
+  "dispatch.workspaceAppCard.description": "Description",
+  "dispatch.workspaceAppCard.cancel": "Cancel",
+  "dispatch.workspaceAppCard.saving": "Saving...",
+  "dispatch.workspaceAppCard.save": "Save",
+  "dispatch.workspaceAppCard.context": "Context",
+  "dispatch.workspaceAppCard.total": "total",
+  "dispatch.workspaceAppCard.workspace": "workspace",
+  "dispatch.workspaceAppCard.granted": "granted",
+  "dispatch.workspaceAppCard.autoLoaded": "auto-loaded",
+  "dispatch.workspaceAppCard.noResourcesYet":
+    "No workspace or granted resources are visible to this app yet.",
+  "dispatch.workspaceAppCard.allApps": "All apps",
+  "dispatch.workspaceAppCard.autoLoadedBadge": "Auto-loaded",
+  "dispatch.workspaceAppCard.selectedGrant": "Selected grant",
+  "dispatch.workspaceAppCard.stack": "Stack",
+  "dispatch.workspaceAppCard.done": "Done",
+  "dispatch.workspaceAppCard.couldNotHide": "Could not hide {name}.",
+  "dispatch.workspaceAppCard.couldNotRestore": "Could not restore {name}.",
+  "dispatch.workspaceAppCard.couldNotRemove":
+    "Could not remove pending {name}.",
+  "dispatch.workspaceAppCard.updatedName": "Updated {name}.",
+  "dispatch.workspaceAppCard.couldNotUpdate": "Could not update {name}.",
+  "dispatch.workspaceAppCard.hidFromList": "Hid {name} from the Apps list",
+  "dispatch.workspaceAppCard.restoredToList":
+    "Restored {name} to the Apps list",
+  "dispatch.workspaceAppCard.removedPending": "Removed pending {name}",
+  "dispatch.workspaceAppCard.appNameRequired": "App name is required.",
+
+  // ── Agents Panel ──
+  "dispatch.agentsPanel.nameRequired": "Agent name is required.",
+  "dispatch.agentsPanel.nameNeedsLetter":
+    "Agent name must include at least one letter or number.",
+  "dispatch.agentsPanel.urlRequired": "Agent endpoint URL is required.",
+  "dispatch.agentsPanel.urlMustBeHttp":
+    "Use an http:// or https:// endpoint URL.",
+  "dispatch.agentsPanel.urlNeedsHost":
+    "Enter a complete endpoint URL with a host.",
+  "dispatch.agentsPanel.urlNoCredentials":
+    "Do not include credentials in the endpoint URL.",
+  "dispatch.agentsPanel.urlInvalid":
+    "Enter a valid endpoint URL (e.g. https://app.example.com/api).",
+  "dispatch.agentsPanel.addFailed":
+    "Could not add agent. Request failed with {status}.",
+  "dispatch.agentsPanel.addFailedGeneric":
+    "Could not add agent. Please try again.",
+  "dispatch.agentsPanel.availableByDefault": "Available by default",
+  "dispatch.agentsPanel.noDefaultAgents": "No default agents detected.",
+  "dispatch.agentsPanel.addedInWorkspace": "Added in this workspace",
+  "dispatch.agentsPanel.noExtraAgents": "No extra agents added yet.",
+  "dispatch.agentsPanel.removeThisAgent": "Remove this agent?",
+  "dispatch.agentsPanel.removeAgentDescription":
+    " will be removed from the workspace. Any jobs or chats that delegate to it will stop working.",
+  "dispatch.agentsPanel.cancel": "Cancel",
+  "dispatch.agentsPanel.remove": "Remove",
+  "dispatch.agentsPanel.addExternalAgent": "Add external agent",
+  "dispatch.agentsPanel.addExternalAgentDescription":
+    "Add another A2A-compatible app by saving its agent endpoint here.",
+  "dispatch.agentsPanel.namePlaceholder": "Name",
+  "dispatch.agentsPanel.urlPlaceholder": "https://app.example.com",
+  "dispatch.agentsPanel.descriptionOptional": "Description (optional)",
+  "dispatch.agentsPanel.saving": "Saving...",
+  "dispatch.agentsPanel.addAgent": "Add agent",
+
+  // ── Messaging Setup Panel ──
+  "dispatch.messagingSetup.savedReEnter": "Saved. Re-enter below to change.",
+  "dispatch.messagingSetup.connected": "Connected",
+  "dispatch.messagingSetup.configuredNotEnabled": "Configured, not enabled",
+  "dispatch.messagingSetup.notConfigured": "Not configured",
+  "dispatch.messagingSetup.docs": "Docs",
+  "dispatch.messagingSetup.setupSteps": "Setup steps",
+  "dispatch.messagingSetup.credentials": "Credentials",
+  "dispatch.messagingSetup.checking": "Checking...",
+  "dispatch.messagingSetup.optional": "(optional)",
+  "dispatch.messagingSetup.saved": "Saved",
+  "dispatch.messagingSetup.missing": "Missing",
+  "dispatch.messagingSetup.notSet": "Not set",
+  "dispatch.messagingSetup.enterLabel": "Enter {label}",
+  "dispatch.messagingSetup.saving": "Saving...",
+  "dispatch.messagingSetup.saveCredentials": "Save credentials",
+  "dispatch.messagingSetup.webhookUrl": "Webhook URL",
+  "dispatch.messagingSetup.settingUp": "Setting up...",
+  "dispatch.messagingSetup.setUpWebhook": "Set up webhook",
+  "dispatch.messagingSetup.enable": "Enable",
+  "dispatch.messagingSetup.disable": "Disable",
+  "dispatch.messagingSetup.saveRequiredCredentialsFirst":
+    "Save the required credentials first.",
+  "dispatch.messagingSetup.loadingMessagingStatus":
+    "Loading messaging status...",
+  "dispatch.messagingSetup.credentialsSaved": "credentials saved",
+  "dispatch.messagingSetup.credentialsSaveFailed": "Failed to save credentials",
+  "dispatch.messagingSetup.disconnected": "disconnected",
+  "dispatch.messagingSetup.connectedToast": "connected",
+  "dispatch.messagingSetup.setupComplete": "setup complete",
+  "dispatch.messagingSetup.webhookUrlCopied": "Webhook URL copied",
+  "dispatch.messagingSetup.addRequiredCredentialsFirst":
+    "Add the required credentials first.",
+
+  // ── Create App Popover ──
+  "dispatch.createApp.loadDispatchKeysFailed": "Could not load Dispatch keys",
+  "dispatch.createApp.loadDispatchResourcesFailed":
+    "Could not load Dispatch resources",
+  "dispatch.createApp.sentToBuilderChat": "Sent to Builder chat.",
+  "dispatch.createApp.sentToLocalAgent": "Sent to the local agent.",
+  "dispatch.createApp.builderBranchCreated": "Builder branch created.",
+  "dispatch.createApp.couldNotStartFlow": "Could not start the new app flow.",
+  "dispatch.createApp.createApp": "Create app",
+  "dispatch.createApp.promptPlaceholder":
+    "Describe the app your teammate should be able to use...",
+  "dispatch.createApp.back": "Back",
+  "dispatch.createApp.dispatchKeys": "Dispatch keys",
+  "dispatch.createApp.dispatchKeysDescription":
+    "Every saved Dispatch vault key is available to new apps.",
+  "dispatch.createApp.noDispatchKeysYet": "No Dispatch vault keys found yet.",
+  "dispatch.createApp.willBeRequested": "Will be requested for this app",
+  "dispatch.createApp.clickToRequest": "Click to request",
+  "dispatch.createApp.details": "Details",
+  "dispatch.createApp.provider": "Provider:",
+  "dispatch.createApp.notSpecified": "Not specified",
+  "dispatch.createApp.name": "Name:",
+  "dispatch.createApp.resourcePacks": "Resource packs",
+  "dispatch.createApp.noResourcePacksYet":
+    "No Dispatch resource packs found yet.",
+  "dispatch.createApp.scope": "Scope:",
+  "dispatch.createApp.allApps": "All apps",
+  "dispatch.createApp.selectedApps": "Selected apps",
+  "dispatch.createApp.addPromptFirst": "Add a prompt on the previous step...",
+  "dispatch.createApp.openBranch": "Open branch",
+
+  // ── App Keys Popover ──
+  "dispatch.appKeys.keysFor": "Keys for {appName}",
+  "dispatch.appKeys.available": "{count} available",
+  "dispatch.appKeys.grantedCount": "{granted} of {total} granted",
+  "dispatch.appKeys.sync": "Sync",
+  "dispatch.appKeys.noVaultKeysYet":
+    "No vault keys yet. Add one from the Vault page.",
+  "dispatch.appKeys.availableToThisApp": "Available to this app",
+  "dispatch.appKeys.vaultSecret": "Vault secret",
+  "dispatch.appKeys.grantFailed": "Could not grant: {error}",
+  "dispatch.appKeys.revokeFailed": "Could not revoke: {error}",
+  "dispatch.appKeys.syncedKeys": "Synced {n} key(s) to {name}",
+  "dispatch.appKeys.upToDate": "{name} is up to date",
+  "dispatch.appKeys.syncFailed": "Sync failed: {error}",
+
+  // ── Workspace Resource Impact Preview ──
+  "dispatch.resourceImpact.approvalRequested": "Approval requested",
+  "dispatch.resourceImpact.allAppsImpact": "All apps impact",
+  "dispatch.resourceImpact.selectedOnly": "Selected only",
+  "dispatch.resourceImpact.approvalRequired": "Approval required",
+  "dispatch.resourceImpact.allAppsDescription":
+    "This change applies to every workspace app that does not have a local override.",
+  "dispatch.resourceImpact.selectedAppsDescription":
+    "This change only applies to explicitly granted apps.",
+  "dispatch.resourceImpact.willBeQueued":
+    "It will be queued for approval before taking effect.",
+  "dispatch.resourceImpact.takesEffectImmediately":
+    "It will take effect immediately when saved.",
+  "dispatch.resourceImpact.moreOverrides": "{count} more override(s)",
+
+  // ── Workspace Resource Effective Stack ──
+  "dispatch.resourceStack.inheritedByAllApps": "Inherited by all apps",
+  "dispatch.resourceStack.grantedToThisApp": "Granted to this app",
+  "dispatch.resourceStack.notGranted": "Not granted",
+  "dispatch.resourceStack.selectApp": "Select app",
+  "dispatch.resourceStack.notManaged": "Not managed",
+  "dispatch.resourceStack.checking": "Checking",
+  "dispatch.resourceStack.wins": "Wins",
+  "dispatch.resourceStack.overridden": "Overridden",
+  "dispatch.resourceStack.missing": "Missing",
+  "dispatch.resourceStack.notPresent": "not present",
+  "dispatch.resourceStack.effectiveContextStack": "Effective context stack",
+  "dispatch.resourceStack.updated": "Updated",
+  "dispatch.resourceStack.noFileAtLayer": "No file at this layer",
+  "dispatch.resourceStack.winningLayer": "Winning layer:",
+  "dispatch.resourceStack.noActiveResource":
+    "No active resource exists for this path yet.",
+
+  // ── Approval Value Block ──
+  "dispatch.approvalValue.none": "None",
+
+  // ── Group B pages ──
+  "dispatch.newApp.title": "New App",
+  "dispatch.newApp.description":
+    "Create a workspace app from a prompt and apply the workspace vault policy.",
+  "dispatch.workspaceApp.title": "Workspace App",
+  "dispatch.workspaceApp.description":
+    "Open a deployed app or check the status of an app that is being built.",
+  "dispatch.workspaceApp.appsLink": "Apps",
+  "dispatch.workspaceApp.appNotFound": "App not found",
+  "dispatch.workspaceApp.routeNotInList":
+    "This route is not in the workspace app list yet.",
+  "dispatch.workspaceApp.building": "Building",
+  "dispatch.workspaceApp.appBeingCreated": "This app is being created...",
+  "dispatch.workspaceApp.openBuilderBranch": "Open Builder branch",
+  "dispatch.workspaceApp.opening": "Opening {name}",
+  "dispatch.workspaceApp.redirectingTo": "Redirecting to",
+  "dispatch.workspaceApp.openApp": "Open app",
+  "dispatch.workspaceApp.pageNotFound": "Page not found",
+  "dispatch.workspaceApp.browseApps": "Browse apps",
+  "dispatch.workspaceApp.builderBranchPrefix": "Builder branch: ",
+
+  // ── Tools (meta only) ──
+  "dispatch.tools.title": "Tools",
+  "dispatch.tools.description": "Manage workspace tools.",
+
+  // ── Toast messages (Group A cleanup) ──
+  "dispatch.vault.secretCreated": "Secret created",
+  "dispatch.vault.secretUpdated": "Secret updated",
+  "dispatch.vault.secretDeleted": "Secret deleted",
+  "dispatch.vault.grantRevoked": "Grant revoked",
+  "dispatch.vault.requestApproved": "Request approved",
+  "dispatch.vault.requestDenied": "Request denied",
+  "dispatch.integrations.enterValueToSave": "Enter a value to save",
+  "dispatch.integrations.failedToSaveCredential": "Failed to save credential",
+  "dispatch.integrations.saving": "Saving...",
+  "dispatch.integrations.connect": "Connect",
+  "dispatch.identities.linkTokenCreated": "Link token created",
+  "dispatch.approvals.approvalPolicyUpdated": "Approval policy updated",
+  "dispatch.approvals.changeApproved": "Change approved",
+  "dispatch.approvals.changeRejected": "Change rejected",
+  "dispatch.approval.before": "Before",
+  "dispatch.approval.after": "After",
+  "dispatch.destinations.messageSent": "Message sent",
+  "dispatch.destinations.unableToSendMessage": "Unable to send message",
+  "dispatch.destinations.destinationSaved": "Destination saved",
+  "dispatch.destinations.destinationRemoved": "Destination removed",
+  "dispatch.workspace.grantRevoked": "Grant revoked",
 
   // ── Language switcher ──
   "lang.switchTo": "Switch to English",

@@ -130,6 +130,7 @@ import {
 } from "../resources/metadata.js";
 import nodePath from "node:path";
 import { readBody } from "./h3-helpers.js";
+import { parseAcceptLanguage } from "./i18n.js";
 import {
   AGENT_TEAM_PROCESS_RUN_PATH,
   getCurrentDelegationDepth,
@@ -271,8 +272,11 @@ function formatSharedThreadTime(value: string | number | null | undefined) {
 function renderSharedThreadHtml(
   thread: SanitizedSharedThread,
   runs: AgentRunSummary[],
+  language?: "en" | "zh",
 ): string {
-  const title = thread.title || "Shared agent session";
+  const isZh = language === "zh";
+  const t = (zh: string, en: string) => (isZh ? zh : en);
+  const title = thread.title || t("共享的代理会话", "Shared agent session");
   const messages = thread.messages
     .map((message) => {
       const time = formatSharedThreadTime(message.createdAt);
@@ -286,17 +290,17 @@ function renderSharedThreadHtml(
     })
     .join("");
   const runsHtml = runs.length
-    ? `<section class="runs" aria-label="Recent runs">
-        <h2>Recent runs</h2>
+    ? `<section class="runs" aria-label="${t("最近的运行", "Recent runs")}">
+        <h2>${t("最近的运行", "Recent runs")}</h2>
         <ol>${runs
           .map((run) => {
             const started = formatSharedThreadTime(run.startedAt);
             const completed = formatSharedThreadTime(run.completedAt);
             const detail = [
-              started ? `started ${started}` : "",
-              completed ? `completed ${completed}` : "",
-              run.errorCode ? `error ${run.errorCode}` : "",
-              run.abortReason ? `aborted ${run.abortReason}` : "",
+              started ? `${t("开始于", "started")} ${started}` : "",
+              completed ? `${t("完成于", "completed")} ${completed}` : "",
+              run.errorCode ? `${t("错误", "error")} ${run.errorCode}` : "",
+              run.abortReason ? `${t("已中止", "aborted")} ${run.abortReason}` : "",
             ]
               .filter(Boolean)
               .join(" · ");
@@ -349,19 +353,20 @@ function renderSharedThreadHtml(
 <body>
   <main>
     <header>
-      <p class="eyebrow">Read-only shared agent session</p>
+      <p class="eyebrow">${t("只读共享代理会话", "Read-only shared agent session")}</p>
       <h1>${escapeSharedThreadHtml(title)}</h1>
       <p class="summary">${escapeSharedThreadHtml(thread.preview || `${thread.messageCount} message${thread.messageCount === 1 ? "" : "s"}`)}</p>
     </header>
-    ${messages || '<p class="empty">No transcript messages were shared.</p>'}
+    ${messages || `<p class="empty">${t("未共享任何对话记录。", "No transcript messages were shared.")}</p>`}
     ${runsHtml}
   </main>
 </body>
 </html>`;
 }
 
-function renderSharedThreadErrorHtml(status: number, message: string): string {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex, nofollow" /><title>${status} ${escapeSharedThreadHtml(message)}</title><style>body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f7f5;color:#1d1d1b}main{max-width:720px;margin:0 auto;padding:64px 24px}p{color:#676760;line-height:1.6}@media(prefers-color-scheme:dark){body{background:#11110f;color:#f5f5ef}p{color:#b9b9ad}}</style></head><body><main><h1>${status}</h1><p>${escapeSharedThreadHtml(message)}</p></main></body></html>`;
+function renderSharedThreadErrorHtml(status: number, message: string, language?: "en" | "zh"): string {
+  const isZh = language === "zh";
+  return `<!doctype html><html lang="${isZh ? "zh" : "en"}"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex, nofollow" /><title>${status} ${escapeSharedThreadHtml(message)}</title><style>body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f7f5;color:#1d1d1b}main{max-width:720px;margin:0 auto;padding:64px 24px}p{color:#676760;line-height:1.6}@media(prefers-color-scheme:dark){body{background:#11110f;color:#f5f5ef}p{color:#b9b9ad}}</style></head><body><main><h1>${status}</h1><p>${escapeSharedThreadHtml(message)}</p></main></body></html>`;
 }
 
 function sharedThreadError(event: H3Event, status: number, message: string) {
@@ -370,7 +375,7 @@ function sharedThreadError(event: H3Event, status: number, message: string) {
   setResponseHeader(event, "X-Robots-Tag", "noindex, nofollow");
   if (wantsSharedThreadHtml(event)) {
     setResponseHeader(event, "Content-Type", "text/html; charset=utf-8");
-    return renderSharedThreadErrorHtml(status, message);
+    return renderSharedThreadErrorHtml(status, message, parseAcceptLanguage(getHeader(event, "accept-language")));
   }
   return { error: message };
 }
@@ -403,7 +408,7 @@ export async function handleSharedThreadRequest(
   setResponseHeader(event, "X-Robots-Tag", "noindex, nofollow");
   if (wantsSharedThreadHtml(event)) {
     setResponseHeader(event, "Content-Type", "text/html; charset=utf-8");
-    return renderSharedThreadHtml(payload.thread, runs);
+    return renderSharedThreadHtml(payload.thread, runs, parseAcceptLanguage(getHeader(event, "accept-language")));
   }
   setResponseHeader(event, "Content-Type", "application/json");
   return payload;

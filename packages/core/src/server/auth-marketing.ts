@@ -1,3 +1,24 @@
+import {
+  parseAcceptLanguage as _parseAcceptLanguage,
+  type SsrLanguage,
+  SUPPORTED_LANGUAGES as _SUPPORTED_LANGUAGES,
+} from "./i18n.js";
+
+/**
+ * @deprecated Use `SsrLanguage` from `./i18n.js` instead.
+ */
+export type AuthMarketingLanguage = SsrLanguage;
+
+/**
+ * @deprecated Use `SUPPORTED_LANGUAGES` from `./i18n.js` instead.
+ */
+export const SUPPORTED_LANGUAGES: AuthMarketingLanguage[] = _SUPPORTED_LANGUAGES;
+
+/**
+ * @deprecated Use `parseAcceptLanguage` from `./i18n.js` instead.
+ */
+export const parseAcceptLanguage = _parseAcceptLanguage;
+
 export interface AuthMarketingContent {
   appName: string;
   tagline: string;
@@ -9,6 +30,11 @@ export interface AuthMarketingContent {
 export interface ResolveBuiltInAuthMarketingOptions {
   requestHost?: string;
   requestPath?: string;
+  /**
+   * Preferred language for marketing content.
+   * When not set, defaults to "en".
+   */
+  language?: AuthMarketingLanguage;
 }
 
 export const BUILT_IN_AUTH_MARKETING: Record<string, AuthMarketingContent> = {
@@ -155,6 +181,150 @@ export const BUILT_IN_AUTH_MARKETING: Record<string, AuthMarketingContent> = {
   },
 };
 
+export const CN_AUTH_MARKETING: Record<string, AuthMarketingContent> = {
+  analytics: {
+    appName: "Agent-Native 分析",
+    tagline:
+      "你的 AI 代理可以查询数据源、构建仪表盘，并与你一起回答业务问题。",
+    features: [
+      "从 BigQuery、HubSpot、Jira 等数据源提出任何问题并获得答案",
+      "代理自动构建的仪表盘，实时拉取所有来源的数据",
+      "已保存的分析结果，代理可按需重新运行并获取最新数据",
+    ],
+  },
+  brain: {
+    appName: "Agent-Native 知识库",
+    tagline:
+      "企业的记忆层——原始对话被转化为经过审查、可搜索的机构知识。",
+    features: [
+      "导入通话记录、笔记、Slack 导出文件和 Granola 摘要",
+      "通过精确的原文引用验证每一条事实",
+      "通过提案工作流进行全公司范围的知识审查",
+    ],
+  },
+  calendar: {
+    appName: "Agent-Native 日历",
+    tagline:
+      "你的 AI 代理替你安排、调整和管理日历，你再也不用为此操心了。",
+    features: [
+      "自动查找空闲时段并为你预订会议",
+      "自动管理可用时间和预订链接",
+      "即时回答日程问题并解决冲突",
+    ],
+  },
+  clips: {
+    appName: "Agent-Native 录制",
+    tagline:
+      "你的 AI 代理为你的所有录制内容提供转录、摘要和搜索服务。",
+    features: [
+      "一键屏幕录制，自动生成标题、摘要和章节",
+      "与日历同步的会议记录，包含实况转录和待办事项",
+      "在录制、会议和口述之间进行统一搜索",
+    ],
+  },
+  content: {
+    appName: "Agent-Native 内容",
+    tagline:
+      "面向 MDX 的开源 Obsidian：AI 代理直接在本地编辑文档、创建自定义组件，帮你组织所有内容。",
+    features: [
+      "直接编辑本地 Markdown/MDX 文件，按需提供托管同步",
+      "生成丰富的交互式自定义 MDX 组件，可视化编辑其属性",
+      "即时搜索、摘要、交叉引用和重构文档树",
+    ],
+  },
+  plan: {
+    appName: "Agent-Native 计划",
+    tagline:
+      "可视化计划、PR 回顾、图表、线框图和可分享的审查——为编程代理工作而生。",
+    features: [
+      "将实施方案转化为结构化的可视化制品",
+      "审查附有图表、文件地图和注释代码的 PR 回顾",
+      "通过分享链接进行异步评论和产品审查",
+    ],
+  },
+  design: {
+    appName: "Agent-Native 设计",
+    tagline:
+      "只需描述你的想法，AI 代理就能在数秒内将你的创意转化为交互式、完全响应式的设计。",
+    features: [
+      "仅凭描述即可创建精美的原型",
+      "构建和应用设计系统，保持所有内容品牌统一",
+      "导出你的作品或通过链接分享",
+    ],
+  },
+  dispatch: {
+    appName: "Agent-Native 调度中心",
+    tagline:
+      "你的 AI 代理管理密钥、编排其他代理，并跨越整个工作空间路由消息。",
+    features: [
+      "集中的密钥保险库，支持精细的应用级授权",
+      "跨代理编排和委托任务给专业应用",
+      "Slack 和 Telegram 消息路由，支持审批工作流",
+    ],
+  },
+  forms: {
+    appName: "Agent-Native 表单",
+    tagline:
+      "你的 AI 代理与你一起构建、发布和分析表单。",
+    features: [
+      "一句话就能创建完整的表单",
+      "即时发布，附带可分享链接和验证码",
+      "按需获取回复摘要、导出和趋势分析",
+    ],
+  },
+  assets: {
+    appName: "Agent-Native 资源",
+    tagline:
+      "你的 AI 代理与你一起创建、优化和组织品牌资源。",
+    features: [
+      "从 Logo、产品截图、视频和参考素材中构建可复用的资源库",
+      "通过提示词生成英雄图、图表、幻灯片配图、产品视觉和视频",
+      "审计每次运行的提示词、参考、输出和优化历史",
+    ],
+  },
+  mail: {
+    appName: "Agent-Native 邮件",
+    tagline: "你的 AI 代理与你一起阅读、起草和组织邮件。",
+    features: [
+      "回复内容与你的语气和风格保持一致",
+      "多账号 Gmail 统一收件箱",
+      "自动分类、归档和跟进",
+    ],
+    runLocalCommand:
+      "npx @agent-native/core@latest create my-mail-app --template mail",
+  },
+  slides: {
+    appName: "Agent-Native 幻灯片",
+    tagline:
+      "你的 AI 代理与你一起构建、编辑和优化演示文稿。",
+    features: [
+      "一句话生成整份演示文稿",
+      "在演示或审查过程中进行精准的幻灯片编辑",
+      "你和代理之间实时协作",
+    ],
+  },
+  chat: {
+    appName: "Agent-Native 聊天",
+    tagline:
+      "从聊天优先的应用开始，随着代理的发展逐步添加操作、界面和工作流。",
+    features: [
+      "全屏聊天，支持持久化线程和工具调用历史",
+      "操作可从聊天、UI、HTTP、MCP、A2A 和 CLI 触发",
+      "使用内置的应用-代理循环，或接入你自己的代理后端",
+    ],
+  },
+  videos: {
+    appName: "Agent-Native 视频",
+    tagline:
+      "你的 AI 代理与你一起构建、动画化和优化程序化视频。",
+    features: [
+      "通过描述生成动画组件和合成画面",
+      "精细调整轨道、关键帧和缓动效果，无需编写代码",
+      "相机移动、交互元素和特效——全由代理帮你串联",
+    ],
+  },
+};
+
 const SLUG_ALIASES: Record<string, string> = {
   "agent-native": "",
   "blank-app": "chat",
@@ -237,11 +407,26 @@ function candidateSlugs(
   return candidates.filter((slug): slug is string => !!slug);
 }
 
+/**
+ * Get the marketing content map for a given language.
+ */
+function getMarketingForLanguage(language: AuthMarketingLanguage): Record<string, AuthMarketingContent> {
+  switch (language) {
+    case "zh":
+      return CN_AUTH_MARKETING;
+    case "en":
+    default:
+      return BUILT_IN_AUTH_MARKETING;
+  }
+}
+
 export function resolveBuiltInAuthMarketing(
   opts: ResolveBuiltInAuthMarketingOptions = {},
 ): AuthMarketingContent | undefined {
+  const language = opts.language ?? "en";
+  const marketingMap = getMarketingForLanguage(language);
   for (const slug of candidateSlugs(opts)) {
-    const marketing = BUILT_IN_AUTH_MARKETING[slug];
+    const marketing = marketingMap[slug];
     if (marketing) return cloneMarketing(marketing);
   }
   return undefined;
@@ -249,8 +434,10 @@ export function resolveBuiltInAuthMarketing(
 
 export function resolveBuiltInAuthMarketingByName(
   value: string | undefined,
+  language?: AuthMarketingLanguage,
 ): AuthMarketingContent | undefined {
   const slug = normalizeSlug(value);
-  const marketing = slug ? BUILT_IN_AUTH_MARKETING[slug] : undefined;
+  const marketingMap = getMarketingForLanguage(language ?? "en");
+  const marketing = slug ? marketingMap[slug] : undefined;
   return marketing ? cloneMarketing(marketing) : undefined;
 }

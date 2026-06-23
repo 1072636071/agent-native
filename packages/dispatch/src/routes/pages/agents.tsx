@@ -4,6 +4,7 @@ import {
   useActionMutation,
   useActionQuery,
 } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { AgentsPanel, type ConnectedAgent } from "@/components/agents-panel";
 import { DispatchShell } from "@/components/dispatch-shell";
 import { Button } from "@/components/ui/button";
@@ -39,12 +40,13 @@ function dispatchMcpUrl(): string {
 }
 
 function DispatchMcpAccessPanel() {
+  const { t } = useI18n();
   const { data, isLoading } = useActionQuery("list-mcp-app-access", {});
   const [optimistic, setOptimistic] = useState<McpAccessState | null>(null);
   const saveAccess = useActionMutation("set-mcp-app-access", {
     onSuccess: () => {
       setOptimistic(null);
-      toast.success("MCP app access updated");
+      toast.success(t("dispatch.agents.mcpAppAccessUpdated"));
     },
     onError: (error) => {
       setOptimistic(null);
@@ -73,7 +75,7 @@ function DispatchMcpAccessPanel() {
 
   function persist(next: McpAccessState) {
     if (next.mode === "selected-apps" && next.selectedAppIds.length === 0) {
-      toast.error("Select at least one app, or expose all apps.");
+      toast.error(t("dispatch.agents.selectAtLeastOneApp"));
       return;
     }
     setOptimistic(next);
@@ -90,9 +92,9 @@ function DispatchMcpAccessPanel() {
   async function copyUrl() {
     try {
       await navigator.clipboard.writeText(mcpUrl);
-      toast.success("MCP URL copied");
+      toast.success(t("dispatch.agents.mcpUrlCopied"));
     } catch {
-      toast.error("Could not copy MCP URL");
+      toast.error(t("dispatch.agents.couldNotCopyMcpUrl"));
     }
   }
 
@@ -102,21 +104,23 @@ function DispatchMcpAccessPanel() {
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <IconPlugConnected size={16} />
-            Unified MCP gateway
+            {t("dispatch.agents.unifiedMcpGateway")}
           </div>
           <div className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Connect external agents to Dispatch once, then route to granted
-            workspace apps through <code>list_apps</code>, <code>ask_app</code>,
-            and <code>open_app</code>.
+            {t("dispatch.agents.unifiedMcpGatewayDescription")}
           </div>
         </div>
         <div className="flex items-center gap-3 rounded-xl border px-3 py-2">
           <div>
             <div className="text-xs font-medium text-foreground">
-              {access.mode === "all-apps" ? "All apps" : "Selected apps"}
+              {access.mode === "all-apps"
+                ? t("dispatch.agents.allApps")
+                : t("dispatch.agents.selectedApps")}
             </div>
             <div className="text-xs text-muted-foreground">
-              {isLoading ? "Loading" : `${grantedCount} granted`}
+              {isLoading
+                ? t("dispatch.agents.loading")
+                : t("dispatch.agents.grantedCount", { count: grantedCount })}
             </div>
           </div>
           <Switch
@@ -130,7 +134,7 @@ function DispatchMcpAccessPanel() {
                   : apps.map((app) => app.id),
               })
             }
-            aria-label="Expose all apps through Dispatch MCP"
+            aria-label={t("dispatch.agents.exposeAllApps")}
           />
         </div>
       </div>
@@ -139,7 +143,7 @@ function DispatchMcpAccessPanel() {
         <Input readOnly value={mcpUrl} className="font-mono text-xs" />
         <Button type="button" variant="outline" onClick={copyUrl}>
           <IconCopy size={15} />
-          Copy URL
+          {t("dispatch.agents.copyUrl")}
         </Button>
       </div>
 
@@ -186,12 +190,13 @@ function DispatchMcpAccessPanel() {
 }
 
 export default function AgentsRoute() {
+  const { t } = useI18n();
   const { data, refetch } = useActionQuery("list-connected-agents", {});
 
   return (
     <DispatchShell
-      title="Agents"
-      description="Dispatch can delegate to the built-in app suite over A2A by default. Add extra agents here only if you want to route work to apps outside that built-in set."
+      title={t("dispatch.agents.title")}
+      description={t("dispatch.agents.description")}
     >
       <div className="space-y-4">
         <DispatchMcpAccessPanel />

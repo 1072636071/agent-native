@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { toast } from "sonner";
 import {
   IconAlertTriangle,
@@ -435,6 +436,7 @@ function StatusBadge({ status }: { status?: DreamStatus | null }) {
 }
 
 function SourceHealthPanel({ sources }: { sources: DreamSourceHealth[] }) {
+  const { t } = useI18n();
   if (sources.length === 0) return null;
   const unhealthyCount = sources.filter(
     (source) => String(source.status).toLowerCase() !== "ok",
@@ -442,7 +444,7 @@ function SourceHealthPanel({ sources }: { sources: DreamSourceHealth[] }) {
   return (
     <Alert variant={unhealthyCount > 0 ? "destructive" : "default"}>
       <IconDatabase className="h-4 w-4" />
-      <AlertTitle>Source health</AlertTitle>
+      <AlertTitle>{t("dispatch.dreams.sourceHealth")}</AlertTitle>
       <AlertDescription>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {sources.map((source) => (
@@ -582,6 +584,7 @@ function DreamSettingsSheet({
   saving: boolean;
   loading: boolean;
 }) {
+  const { t } = useI18n();
   const sourceIds = splitSourceIds(draft.sourceIdsText);
   const canSave = draft.schedule.trim().length > 0;
 
@@ -597,22 +600,26 @@ function DreamSettingsSheet({
       <SheetTrigger asChild>
         <Button variant="outline" disabled={loading}>
           <IconSettings size={15} className="mr-1.5" />
-          Settings
+          {t("dispatch.dreams.settings")}
         </Button>
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col p-0 sm:max-w-2xl">
         <SheetHeader className="border-b px-5 py-4">
           <div className="flex flex-wrap items-center gap-2 pr-8">
             <Badge variant={draft.enabled ? "default" : "secondary"}>
-              {draft.enabled ? "Enabled" : "Paused"}
+              {draft.enabled
+                ? t("dispatch.dreams.enabled")
+                : t("dispatch.dreams.paused")}
             </Badge>
             <Badge variant="outline" className="font-mono">
-              {draft.schedule || "No schedule"}
+              {draft.schedule || t("dispatch.dreams.noSchedule")}
             </Badge>
           </div>
-          <SheetTitle className="mt-2 text-base">Dream settings</SheetTitle>
+          <SheetTitle className="mt-2 text-base">
+            {t("dispatch.dreams.dreamSettings")}
+          </SheetTitle>
           <SheetDescription>
-            Configure recurring dream scope, schedule, and scan limits.
+            {t("dispatch.dreams.dreamSettingsDescription")}
           </SheetDescription>
         </SheetHeader>
 
@@ -620,7 +627,7 @@ function DreamSettingsSheet({
           <div className="space-y-6 p-5">
             <section className="space-y-3">
               <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Schedule
+                {t("dispatch.dreams.schedule")}
               </div>
               <div className="flex items-center justify-between gap-4 rounded-lg border bg-muted/20 px-3 py-3">
                 <div>
@@ -666,7 +673,7 @@ function DreamSettingsSheet({
 
             <section className="space-y-3">
               <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Sources
+                {t("dispatch.dreams.sources")}
               </div>
               <div className="flex items-center justify-between gap-4 rounded-lg border bg-muted/20 px-3 py-3">
                 <div>
@@ -723,7 +730,7 @@ function DreamSettingsSheet({
 
             <section className="space-y-3">
               <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Scan Limits
+                {t("dispatch.dreams.scanLimits")}
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
@@ -817,11 +824,11 @@ function DreamSettingsSheet({
 
         <SheetFooter className="gap-2 border-t px-5 py-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Close
+            {t("dispatch.dreams.close")}
           </Button>
           <Button disabled={!canSave || saving} onClick={onSave}>
             {saving ? <Spinner className="mr-1.5 size-3.5" /> : null}
-            Save settings
+            {t("dispatch.dreams.saveSettings")}
           </Button>
         </SheetFooter>
       </SheetContent>
@@ -842,6 +849,7 @@ function ProposalCard({
   onApply: () => void;
   onReject: (reason?: string) => void;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const evidence = proposal.evidence ?? [];
@@ -886,7 +894,7 @@ function ProposalCard({
             <SheetTrigger asChild>
               <Button size="sm" variant={canAct ? "default" : "outline"}>
                 <IconFileDiff size={14} className="mr-1.5" />
-                Review
+                {t("dispatch.dreams.review")}
               </Button>
             </SheetTrigger>
             <SheetContent className="flex w-full flex-col p-0 sm:max-w-3xl">
@@ -900,7 +908,9 @@ function ProposalCard({
                     {preview?.operation || "review"}
                   </Badge>
                   {preview?.approval?.willRequestApproval ? (
-                    <Badge variant="secondary">Approval request</Badge>
+                    <Badge variant="secondary">
+                      {t("dispatch.dreams.approvalRequest")}
+                    </Badge>
                   ) : null}
                 </div>
                 <SheetTitle className="mt-2 text-base">
@@ -1060,7 +1070,7 @@ function ProposalCard({
                   {canAct ? (
                     <div className="space-y-2">
                       <Label htmlFor={`reject-${proposal.id}`}>
-                        Rejection reason
+                        {t("dispatch.dreams.rejectionReason")}
                       </Label>
                       <Textarea
                         id={`reject-${proposal.id}`}
@@ -1089,7 +1099,7 @@ function ProposalCard({
                   ) : (
                     <IconX size={14} className="mr-1.5" />
                   )}
-                  Reject
+                  {t("dispatch.dreams.reject")}
                 </Button>
                 <Button
                   disabled={!canAct || applying || rejecting}
@@ -1103,7 +1113,9 @@ function ProposalCard({
                   ) : (
                     <IconCheck size={14} className="mr-1.5" />
                   )}
-                  {needsApproval ? "Request approval" : "Apply"}
+                  {needsApproval
+                    ? t("dispatch.dreams.requestApproval")
+                    : t("dispatch.dreams.apply")}
                 </Button>
               </SheetFooter>
             </SheetContent>
@@ -1170,6 +1182,7 @@ function ProposalCard({
 }
 
 export default function DreamsRoute() {
+  const { t } = useI18n();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedDreamId, setSelectedDreamId] = useState<string | null>(
     searchParams.get("dreamId"),
@@ -1261,7 +1274,7 @@ export default function DreamsRoute() {
     onSuccess: (result) => {
       const nextId = resultDreamId(result);
       if (nextId) selectDream(nextId);
-      toast.success("Dream report created");
+      toast.success(t("dispatch.dreams.dreamReportCreated"));
     },
     onError: (err) => toast.error(String(err)),
   });
@@ -1272,8 +1285,8 @@ export default function DreamsRoute() {
       onSuccess: (result) => {
         toast.success(
           isApprovalRequestResult(result)
-            ? "Approval requested"
-            : "Proposal applied",
+            ? t("dispatch.dreams.requestApproval")
+            : t("dispatch.dreams.apply"),
         );
         dreamDetailQuery.refetch();
         dreamsQuery.refetch();
@@ -1286,7 +1299,7 @@ export default function DreamsRoute() {
     "reject-dream-proposal",
     {
       onSuccess: () => {
-        toast.success("Proposal rejected");
+        toast.success(t("dispatch.dreams.proposalRejected"));
         dreamDetailQuery.refetch();
         dreamsQuery.refetch();
       },
@@ -1298,7 +1311,7 @@ export default function DreamsRoute() {
     Partial<DreamSettings>
   >("ensure-dream-job", {
     onSuccess: () => {
-      toast.success("Dream schedule updated");
+      toast.success(t("dispatch.dreams.dreamScheduleUpdated"));
       dreamSettingsQuery.refetch();
     },
     onError: (err) => toast.error(String(err)),
@@ -1308,7 +1321,7 @@ export default function DreamsRoute() {
     Partial<DreamSettings>
   >("set-dream-settings", {
     onSuccess: (settings) => {
-      toast.success("Dream settings saved");
+      toast.success(t("dispatch.dreams.dreamSettingsSaved"));
       setSettingsDraft(dreamSettingsToDraft(settings));
       setSettingsOpen(false);
       dreamSettingsQuery.refetch();
@@ -1348,7 +1361,7 @@ export default function DreamsRoute() {
   function saveSettings() {
     const update = dreamSettingsUpdateFromDraft(settingsDraft);
     if (!update.schedule) {
-      toast.error("Add a cron schedule before saving");
+      toast.error(t("dispatch.dreams.addCronScheduleBeforeSaving"));
       return;
     }
     saveDreamSettings.mutate(update);
@@ -1390,29 +1403,29 @@ export default function DreamsRoute() {
 
   return (
     <DispatchShell
-      title="Dreams"
-      description="Review agent runs, propose memory improvements, and apply evidence-backed learning changes."
+      title={t("dispatch.dreams.title")}
+      description={t("dispatch.dreams.description")}
     >
       <div className="space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="grid flex-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
             <StatTile
-              label="Dream passes"
+              label={t("dispatch.dreams.dreamPasses")}
               value={dreams.length}
               icon={IconBrain}
             />
             <StatTile
-              label="Pending proposals"
+              label={t("dispatch.dreams.pendingProposals")}
               value={pendingProposalCount}
               icon={IconCircleDashed}
             />
             <StatTile
-              label="Candidate runs"
+              label={t("dispatch.dreams.candidateRuns")}
               value={candidates.length}
               icon={IconClock}
             />
             <StatTile
-              label="Inspected threads"
+              label={t("dispatch.dreams.inspectedThreads")}
               value={selectedDream ? dreamInspectedCount(selectedDream) : 0}
               icon={IconCheck}
             />
@@ -1420,9 +1433,12 @@ export default function DreamsRoute() {
           <div className="flex shrink-0 flex-wrap gap-2">
             {dreamSettings ? (
               <Badge variant="outline" className="h-9 px-3">
-                {dreamSettings.enabled ? "Enabled" : "Paused"} ·{" "}
+                {dreamSettings.enabled
+                  ? t("dispatch.dreams.enabled")
+                  : t("dispatch.dreams.paused")}{" "}
+                ·{" "}
                 {dreamSettings.allSources
-                  ? "All sources"
+                  ? t("dispatch.dreams.sources")
                   : dreamSettings.sourceId}{" "}
                 · {dreamSettings.schedule}
               </Badge>
@@ -1445,7 +1461,7 @@ export default function DreamsRoute() {
               }}
             >
               <IconRefresh size={15} className="mr-1.5" />
-              Refresh
+              {t("dispatch.dreams.refresh")}
             </Button>
             <Button
               variant="outline"
@@ -1457,7 +1473,7 @@ export default function DreamsRoute() {
               ) : (
                 <IconCalendarTime size={15} className="mr-1.5" />
               )}
-              Ensure schedule
+              {t("dispatch.dreams.ensureSchedule")}
             </Button>
             <Button
               variant="outline"
@@ -1469,7 +1485,7 @@ export default function DreamsRoute() {
               ) : (
                 <IconDatabase size={15} className="mr-1.5" />
               )}
-              Run all sources
+              {t("dispatch.dreams.runAllSources")}
             </Button>
             <Button
               onClick={() => runDream(false)}
@@ -1480,7 +1496,7 @@ export default function DreamsRoute() {
               ) : (
                 <IconPlayerPlay size={15} className="mr-1.5" />
               )}
-              Run dream
+              {t("dispatch.dreams.runDream")}
             </Button>
           </div>
         </div>
@@ -1489,10 +1505,10 @@ export default function DreamsRoute() {
           <section className="rounded-lg border bg-card">
             <div className="border-b px-4 py-3">
               <div className="text-sm font-semibold text-foreground">
-                Recent passes
+                {t("dispatch.dreams.recentPasses")}
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                Reports generated from prior agent activity.
+                {t("dispatch.dreams.recentPassesDescription")}
               </div>
             </div>
             <div className="max-h-[720px] overflow-auto p-3">
@@ -1554,8 +1570,8 @@ export default function DreamsRoute() {
                   </div>
                 ) : (
                   <EmptyPanel
-                    title="No dreams yet"
-                    description="Run the first dream pass to review recent agent history and generate proposed memory changes."
+                    title={t("dispatch.dreams.noDreamsYet")}
+                    description={t("dispatch.dreams.noDreamsYetDescription")}
                   />
                 )
               ) : null}
@@ -1600,8 +1616,8 @@ export default function DreamsRoute() {
               {dreamDetailQuery.isLoading ? <ProposalSkeleton /> : null}
               {!selectedDreamId && !dreamDetailQuery.isLoading ? (
                 <EmptyPanel
-                  title="Nothing selected"
-                  description="Choose a recent dream pass or run one from candidate agent runs."
+                  title={t("dispatch.dreams.nothingSelected")}
+                  description={t("dispatch.dreams.nothingSelectedDescription")}
                 />
               ) : null}
               {selectedDreamId &&
@@ -1609,9 +1625,15 @@ export default function DreamsRoute() {
               !dreamDetailQuery.error ? (
                 <Tabs defaultValue="proposals" className="w-full">
                   <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="proposals">Proposals</TabsTrigger>
-                    <TabsTrigger value="report">Report</TabsTrigger>
-                    <TabsTrigger value="sources">Sources</TabsTrigger>
+                    <TabsTrigger value="proposals">
+                      {t("dispatch.dreams.proposals")}
+                    </TabsTrigger>
+                    <TabsTrigger value="report">
+                      {t("dispatch.dreams.report")}
+                    </TabsTrigger>
+                    <TabsTrigger value="sources">
+                      {t("dispatch.dreams.sources")}
+                    </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="proposals" className="mt-4">
@@ -1684,19 +1706,25 @@ export default function DreamsRoute() {
                             <AccordionContent className="pb-4">
                               <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
                                 <div>
-                                  Thread:{" "}
+                                  {t("dispatch.dreams.thread")}{" "}
                                   <span className="font-mono text-foreground">
                                     {run.thread?.id ?? run.threadId ?? "n/a"}
                                   </span>
                                 </div>
                                 <div>
-                                  Run:{" "}
+                                  {t("dispatch.dreams.run")}{" "}
                                   <span className="font-mono text-foreground">
                                     {run.runId ?? run.id}
                                   </span>
                                 </div>
-                                <div>Owner: {candidateOwner(run)}</div>
-                                <div>Status: {candidateStatus(run)}</div>
+                                <div>
+                                  {t("dispatch.dreams.owner")}{" "}
+                                  {candidateOwner(run)}
+                                </div>
+                                <div>
+                                  {t("dispatch.dreams.status")}{" "}
+                                  {candidateStatus(run)}
+                                </div>
                               </div>
                               {candidateSignals(run).length > 0 ? (
                                 <div className="mt-3 flex flex-wrap gap-1.5">
@@ -1741,10 +1769,10 @@ export default function DreamsRoute() {
             <div className="border-b px-4 py-3">
               <div>
                 <div className="text-sm font-semibold text-foreground">
-                  Candidate runs
+                  {t("dispatch.dreams.candidateRuns")}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  Grounded signals ready for review.
+                  {t("dispatch.dreams.candidateRunsDescription")}
                 </div>
               </div>
             </div>
@@ -1766,9 +1794,13 @@ export default function DreamsRoute() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Run</TableHead>
-                        <TableHead>Signals</TableHead>
-                        <TableHead className="w-20 text-right">Score</TableHead>
+                        <TableHead>{t("dispatch.dreams.runHeader")}</TableHead>
+                        <TableHead>
+                          {t("dispatch.dreams.signalsHeader")}
+                        </TableHead>
+                        <TableHead className="w-20 text-right">
+                          {t("dispatch.dreams.scoreHeader")}
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1814,8 +1846,8 @@ export default function DreamsRoute() {
                   </Table>
                 ) : (
                   <EmptyPanel
-                    title="No candidates"
-                    description="No recent runs matched the dream candidate heuristics."
+                    title={t("dispatch.dreams.noCandidates")}
+                    description={t("dispatch.dreams.noCandidatesDescription")}
                   />
                 )
               ) : null}

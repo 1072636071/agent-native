@@ -1,4 +1,5 @@
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { DispatchShell } from "@/components/dispatch-shell";
 
 export function meta() {
@@ -6,12 +7,13 @@ export function meta() {
 }
 
 export default function AuditRoute() {
+  const { t } = useI18n();
   const { data } = useActionQuery("list-dispatch-audit", { limit: 100 });
 
   return (
     <DispatchShell
-      title="Audit"
-      description="Change history for routes, settings, and approvals."
+      title={t("dispatch.audit.title")}
+      description={t("dispatch.audit.description")}
     >
       <section className="rounded-2xl border bg-card p-5">
         <div className="space-y-3">
@@ -31,7 +33,7 @@ export default function AuditRoute() {
           ))}
           {(data?.length || 0) === 0 && (
             <div className="rounded-xl border border-dashed px-4 py-6 text-sm text-muted-foreground">
-              No audit entries yet.
+              {t("dispatch.audit.noAuditEntriesYet")}
             </div>
           )}
         </div>

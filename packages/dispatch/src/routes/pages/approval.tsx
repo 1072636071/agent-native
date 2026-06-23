@@ -7,6 +7,7 @@ import {
   appPath,
 } from "@agent-native/core/client";
 import { toast } from "sonner";
+import { useI18n } from "@agent-native/i18n";
 import {
   ApprovalValueBlock,
   parseApprovalValue,
@@ -62,6 +63,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function ApprovalPreviewRoute() {
+  const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id") ?? "";
 
@@ -71,10 +73,10 @@ export default function ApprovalPreviewRoute() {
   );
 
   const approve = useActionMutation("approve-dispatch-change", {
-    onSuccess: () => toast.success("Change approved"),
+    onSuccess: () => toast.success(t("dispatch.approvals.changeApproved")),
   });
   const reject = useActionMutation("reject-dispatch-change", {
-    onSuccess: () => toast.success("Change rejected"),
+    onSuccess: () => toast.success(t("dispatch.approvals.changeRejected")),
   });
 
   const inEmbed = isInAgentEmbed();
@@ -191,7 +193,7 @@ export default function ApprovalPreviewRoute() {
                 <StatusBadge status={approval.status} />
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                Requested by{" "}
+                {t("dispatch.approvals.requestedBy")}{" "}
                 <span className="font-medium text-foreground">
                   {approval.requestedBy}
                 </span>
@@ -232,8 +234,14 @@ export default function ApprovalPreviewRoute() {
 
           {(beforeValue !== null || afterValue !== null) && (
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <ApprovalValueBlock label="Before" value={beforeValue} />
-              <ApprovalValueBlock label="After" value={afterValue} />
+              <ApprovalValueBlock
+                label={t("dispatch.approval.before")}
+                value={beforeValue}
+              />
+              <ApprovalValueBlock
+                label={t("dispatch.approval.after")}
+                value={afterValue}
+              />
             </div>
           )}
 
@@ -246,7 +254,7 @@ export default function ApprovalPreviewRoute() {
                 onClick={() => approve.mutate({ id: approval.id })}
               >
                 <IconCheck size={14} className="mr-1.5" />
-                Approve
+                {t("dispatch.approvals.approve")}
               </Button>
               <Button
                 size="sm"
@@ -261,7 +269,7 @@ export default function ApprovalPreviewRoute() {
                 }
               >
                 <IconX size={14} className="mr-1.5" />
-                Reject
+                {t("dispatch.approvals.reject")}
               </Button>
             </div>
           )}

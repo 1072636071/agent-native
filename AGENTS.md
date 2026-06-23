@@ -167,8 +167,15 @@ packages/core/       Framework runtime
 packages/dispatch/   Dispatch package
 packages/scheduling/ Scheduling package
 templates/*/         Template apps
+scripts/             Utility scripts (e.g. kill-dev-ports)
 .agents/skills/      Detailed implementation guidance
 ```
+
+## Development
+
+- `pnpm dev` starts all core template dev servers on ports 8082–8105 (see
+  `packages/shared-app-config/templates.ts`). If a port is in use from a stale
+  process, run `.\scripts\kill-dev-ports.ps1` to clear them.
 
 ## Skill Index
 

@@ -1,48 +1,68 @@
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-export function appAvailabilityLabel(value?: string) {
+export function appAvailabilityLabel(
+  value?: string,
+  t?: (...args: any[]) => string,
+) {
+  const fallback = (key: string, fallbackText: string) =>
+    t ? t(key) : fallbackText;
   switch (value) {
     case "all-apps":
-      return "Inherited by all apps";
+      return fallback(
+        "dispatch.resourceStack.inheritedByAllApps",
+        "Inherited by all apps",
+      );
     case "selected-granted":
-      return "Granted to this app";
+      return fallback(
+        "dispatch.resourceStack.grantedToThisApp",
+        "Granted to this app",
+      );
     case "selected-not-granted":
-      return "Not granted";
+      return fallback("dispatch.resourceStack.notGranted", "Not granted");
     case "selected-no-app":
-      return "Select app";
+      return fallback("dispatch.resourceStack.selectApp", "Select app");
     case "path-not-managed":
-      return "Not managed";
+      return fallback("dispatch.resourceStack.notManaged", "Not managed");
     default:
-      return "Checking";
+      return fallback("dispatch.resourceStack.checking", "Checking");
   }
 }
 
-export function appLayerState(layer: any): {
+export function appLayerState(
+  layer: any,
+  t?: (...args: any[]) => string,
+): {
   label: string;
   className: string;
 } {
+  const fallback = (key: string, fallbackText: string) =>
+    t ? t(key) : fallbackText;
   if (layer.effective) {
     return {
-      label: "Wins",
+      label: fallback("dispatch.resourceStack.wins", "Wins"),
       className: "border-green-500/30 bg-green-500/10 text-green-700",
     };
   }
   if (layer.overridden) {
     return {
-      label: "Overridden",
+      label: fallback("dispatch.resourceStack.overridden", "Overridden"),
       className: "border-amber-500/30 bg-amber-500/10 text-amber-700",
     };
   }
   return {
-    label: "Missing",
+    label: fallback("dispatch.resourceStack.missing", "Missing"),
     className: "text-muted-foreground",
   };
 }
 
-export function formatResourceTimestamp(value?: number | null): string {
-  if (!value) return "not present";
+export function formatResourceTimestamp(
+  value?: number | null,
+  t?: (...args: any[]) => string,
+): string {
+  if (!value) return t ? t("dispatch.resourceStack.notPresent") : "not present";
   return new Date(value).toLocaleString();
 }
 
@@ -53,6 +73,7 @@ export function AppResourceEffectiveStack({
   appId: string;
   resource: any;
 }) {
+  const { t } = useI18n();
   const { data: context, isLoading } = useActionQuery(
     "get-workspace-resource-effective-context",
     { resourceId: resource.id, appId },
@@ -80,18 +101,18 @@ export function AppResourceEffectiveStack({
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="text-xs font-semibold uppercase text-muted-foreground">
-            Effective context stack
+            {t("dispatch.resourceStack.effectiveContextStack")}
           </div>
           <div className="mt-1 truncate font-mono text-[11px] text-muted-foreground">
             {resource.path}
           </div>
         </div>
-        <Badge variant="outline">{appAvailabilityLabel(availability)}</Badge>
+        <Badge variant="outline">{appAvailabilityLabel(availability, t)}</Badge>
       </div>
 
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
         {layers.map((layer) => {
-          const state = appLayerState(layer);
+          const state = appLayerState(layer, t);
           return (
             <div
               key={layer.scope}
@@ -112,11 +133,12 @@ export function AppResourceEffectiveStack({
               </div>
               {layer.resource ? (
                 <div className="mt-2 text-[11px] text-muted-foreground">
-                  Updated {formatResourceTimestamp(layer.resource.updatedAt)}
+                  {t("dispatch.resourceStack.updated")}{" "}
+                  {formatResourceTimestamp(layer.resource.updatedAt, t)}
                 </div>
               ) : (
                 <div className="mt-2 text-[11px] text-muted-foreground">
-                  No file at this layer
+                  {t("dispatch.resourceStack.noFileAtLayer")}
                 </div>
               )}
             </div>
@@ -127,13 +149,13 @@ export function AppResourceEffectiveStack({
       <div className="mt-3 rounded-md bg-background/70 px-3 py-2 text-xs text-muted-foreground">
         {active ? (
           <>
-            Winning layer:{" "}
+            {t("dispatch.resourceStack.winningLayer")}:{" "}
             <span className="font-mono text-foreground">
               {active.owner}/{active.path}
             </span>
           </>
         ) : (
-          "No active resource exists for this path yet."
+          t("dispatch.resourceStack.noActiveResource")
         )}
       </div>
     </div>

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import { useOrg } from "@agent-native/core/client/org";
 import { toast } from "sonner";
+import { useI18n } from "@agent-native/i18n";
 import { DispatchShell } from "@/components/dispatch-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ export function meta() {
 }
 
 export default function ApprovalsRoute() {
+  const { t } = useI18n();
   const { data: settings } = useActionQuery("get-dispatch-settings", {});
   const { data: approvals } = useActionQuery("list-dispatch-approvals", {});
   const { data: org } = useOrg();
@@ -28,33 +30,34 @@ export default function ApprovalsRoute() {
   );
 
   const savePolicy = useActionMutation("set-dispatch-approval-policy", {
-    onSuccess: () => toast.success("Approval policy updated"),
+    onSuccess: () =>
+      toast.success(t("dispatch.approvals.approvalPolicyUpdated")),
     onError: (err) => toast.error(String(err)),
   });
   const approve = useActionMutation("approve-dispatch-change", {
-    onSuccess: () => toast.success("Change approved"),
+    onSuccess: () => toast.success(t("dispatch.approvals.changeApproved")),
     onError: (err) => toast.error(String(err)),
   });
   const reject = useActionMutation("reject-dispatch-change", {
-    onSuccess: () => toast.success("Change rejected"),
+    onSuccess: () => toast.success(t("dispatch.approvals.changeRejected")),
     onError: (err) => toast.error(String(err)),
   });
 
   return (
     <DispatchShell
-      title="Approvals"
-      description="Review durable dispatch changes before they apply."
+      title={t("dispatch.approvals.title")}
+      description={t("dispatch.approvals.description")}
     >
       <div className="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <section className="rounded-2xl border bg-card p-5">
           <h2 className="text-lg font-semibold text-foreground">
-            Approval policy
+            {t("dispatch.approvals.approvalPolicy")}
           </h2>
           <div className="mt-4 space-y-4">
             <label className="flex items-center justify-between rounded-xl border px-4 py-3">
               <div>
                 <div className="text-sm font-medium text-foreground">
-                  Require approval for durable changes
+                  {t("dispatch.approvals.requireApprovalForDurableChanges")}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
                   {hasOrg
@@ -75,7 +78,7 @@ export default function ApprovalsRoute() {
             </label>
             <div className="space-y-2">
               <div className="text-sm font-medium text-foreground">
-                Approver emails
+                {t("dispatch.approvals.approverEmails")}
               </div>
               <Input
                 value={emails}
@@ -94,7 +97,7 @@ export default function ApprovalsRoute() {
                   })
                 }
               >
-                Save approvers
+                {t("dispatch.approvals.saveApprovers")}
               </Button>
             </div>
           </div>
@@ -102,7 +105,7 @@ export default function ApprovalsRoute() {
 
         <section className="rounded-2xl border bg-card p-5">
           <h2 className="text-lg font-semibold text-foreground">
-            Pending and recent requests
+            {t("dispatch.approvals.pendingAndRecentRequests")}
           </h2>
           <div className="mt-4 space-y-3">
             {(approvals || []).map((approval: any) => (
@@ -116,7 +119,8 @@ export default function ApprovalsRoute() {
                       {approval.summary}
                     </div>
                     <div className="mt-1 text-xs text-muted-foreground">
-                      {approval.status} · requested by {approval.requestedBy}
+                      {approval.status} · {t("dispatch.approvals.requestedBy")}{" "}
+                      {approval.requestedBy}
                     </div>
                   </div>
                   {approval.status === "pending" && (
@@ -125,7 +129,7 @@ export default function ApprovalsRoute() {
                         size="sm"
                         onClick={() => approve.mutate({ id: approval.id })}
                       >
-                        Approve
+                        {t("dispatch.approvals.approve")}
                       </Button>
                       <Button
                         size="sm"
@@ -137,7 +141,7 @@ export default function ApprovalsRoute() {
                           })
                         }
                       >
-                        Reject
+                        {t("dispatch.approvals.reject")}
                       </Button>
                     </div>
                   )}
@@ -146,7 +150,7 @@ export default function ApprovalsRoute() {
             ))}
             {(approvals?.length || 0) === 0 && (
               <div className="rounded-xl border border-dashed px-4 py-8 text-sm text-muted-foreground">
-                No approval requests yet.
+                {t("dispatch.approvals.noApprovalRequestsYet")}
               </div>
             )}
           </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconArrowUpRight,
   IconChevronDown,
@@ -55,10 +56,12 @@ export function WorkspaceAppCard({
   app: WorkspaceAppSummary;
   className?: string;
 }) {
+  const { t } = useI18n();
   const href = workspaceAppHref(app);
   const openInNewTab = isPendingBuilderHref(app);
   const isPending = app.status === "pending";
-  const pendingLabel = app.statusLabel || "Builder branch";
+  const pendingLabel =
+    app.statusLabel || t("dispatch.workspaceAppCard.builderBranch");
   const isArchived = !!app.archived;
   const audience = app.audience ?? "internal";
   const [editOpen, setEditOpen] = useState(false);
@@ -75,42 +78,64 @@ export function WorkspaceAppCard({
 
   const archive = useActionMutation("archive-workspace-app", {
     onError: (err) =>
-      toast.error(`Could not hide ${app.name}: ${stringifyError(err)}`),
+      toast.error(
+        t("dispatch.workspaceAppCard.couldNotHide", { name: app.name }) +
+          `: ${stringifyError(err)}`,
+      ),
   });
   const unarchive = useActionMutation("unarchive-workspace-app", {
     onError: (err) =>
-      toast.error(`Could not restore ${app.name}: ${stringifyError(err)}`),
+      toast.error(
+        t("dispatch.workspaceAppCard.couldNotRestore", { name: app.name }) +
+          `: ${stringifyError(err)}`,
+      ),
   });
   const removePending = useActionMutation("remove-pending-workspace-app", {
     onError: (err) =>
-      toast.error(`Could not remove ${app.name}: ${stringifyError(err)}`),
+      toast.error(
+        t("dispatch.workspaceAppCard.couldNotRemove", { name: app.name }) +
+          `: ${stringifyError(err)}`,
+      ),
   });
   const updateMetadata = useActionMutation("update-workspace-app-metadata", {
     onSuccess: () => {
-      toast.success(`Updated ${draftName.trim() || app.name}`);
+      toast.success(
+        t("dispatch.workspaceAppCard.updatedName", {
+          name: draftName.trim() || app.name,
+        }),
+      );
       setEditOpen(false);
     },
     onError: (err) =>
-      toast.error(`Could not update ${app.name}: ${stringifyError(err)}`),
+      toast.error(
+        t("dispatch.workspaceAppCard.couldNotUpdate", { name: app.name }) +
+          `: ${stringifyError(err)}`,
+      ),
   });
 
   const handleArchive = () => {
     archive.mutate({ appId: app.id });
-    toast.success(`Hid ${app.name} from the Apps list`);
+    toast.success(
+      t("dispatch.workspaceAppCard.hidFromList", { name: app.name }),
+    );
   };
   const handleUnarchive = () => {
     unarchive.mutate({ appId: app.id });
-    toast.success(`Restored ${app.name} to the Apps list`);
+    toast.success(
+      t("dispatch.workspaceAppCard.restoredToList", { name: app.name }),
+    );
   };
   const handleRemovePending = () => {
     removePending.mutate({ appId: app.id });
-    toast.success(`Removed pending ${app.name}`);
+    toast.success(
+      t("dispatch.workspaceAppCard.removedPending", { name: app.name }),
+    );
   };
   const handleMetadataSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const name = draftName.trim();
     if (!name) {
-      toast.error("App name is required.");
+      toast.error(t("dispatch.workspaceAppCard.appNameRequired"));
       return;
     }
     updateMetadata.mutate({
@@ -157,13 +182,13 @@ export function WorkspaceAppCard({
             {isArchived ? (
               <Badge variant="outline" className="shrink-0 gap-1">
                 <IconEyeOff size={12} />
-                Hidden
+                {t("dispatch.workspaceAppCard.hidden")}
               </Badge>
             ) : null}
             {audience === "public" ? (
               <Badge variant="outline" className="shrink-0 gap-1">
                 <IconWorld size={12} />
-                Public
+                {t("dispatch.workspaceAppCard.public")}
               </Badge>
             ) : null}
           </div>
@@ -172,7 +197,7 @@ export function WorkspaceAppCard({
           </p>
           {isPending && app.branchName ? (
             <p className="mt-1 truncate text-xs text-muted-foreground">
-              Builder branch: {app.branchName}
+              {t("dispatch.workspaceAppCard.builderBranch")}: {app.branchName}
             </p>
           ) : null}
           {app.description ? (
@@ -212,7 +237,7 @@ export function WorkspaceAppCard({
                   }}
                 >
                   <IconEdit size={14} className="mr-2" />
-                  Edit details
+                  {t("dispatch.workspaceAppCard.editDetails")}
                 </DropdownMenuItem>
                 {isPending ? (
                   <DropdownMenuItem
@@ -220,17 +245,17 @@ export function WorkspaceAppCard({
                     className="text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
                   >
                     <IconTrash size={14} className="mr-2" />
-                    Remove from list
+                    {t("dispatch.workspaceAppCard.removeFromList")}
                   </DropdownMenuItem>
                 ) : isArchived ? (
                   <DropdownMenuItem onSelect={handleUnarchive}>
                     <IconEye size={14} className="mr-2" />
-                    Restore to list
+                    {t("dispatch.workspaceAppCard.restoreToList")}
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem onSelect={handleArchive}>
                     <IconEyeOff size={14} className="mr-2" />
-                    Hide from list
+                    {t("dispatch.workspaceAppCard.hideFromList")}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -247,11 +272,15 @@ export function WorkspaceAppCard({
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit app details</DialogTitle>
+            <DialogTitle>
+              {t("dispatch.workspaceAppCard.editAppDetails")}
+            </DialogTitle>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleMetadataSubmit}>
             <div className="space-y-2">
-              <Label htmlFor={`app-name-${app.id}`}>Name</Label>
+              <Label htmlFor={`app-name-${app.id}`}>
+                {t("dispatch.workspaceAppCard.name")}
+              </Label>
               <Input
                 id={`app-name-${app.id}`}
                 value={draftName}
@@ -260,7 +289,9 @@ export function WorkspaceAppCard({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`app-description-${app.id}`}>Description</Label>
+              <Label htmlFor={`app-description-${app.id}`}>
+                {t("dispatch.workspaceAppCard.description")}
+              </Label>
               <Textarea
                 id={`app-description-${app.id}`}
                 value={draftDescription}
@@ -275,10 +306,12 @@ export function WorkspaceAppCard({
                 variant="outline"
                 onClick={() => setEditOpen(false)}
               >
-                Cancel
+                {t("dispatch.workspaceAppCard.cancel")}
               </Button>
               <Button type="submit" disabled={updateMetadata.isPending}>
-                {updateMetadata.isPending ? "Saving..." : "Save"}
+                {updateMetadata.isPending
+                  ? t("dispatch.workspaceAppCard.saving")
+                  : t("dispatch.workspaceAppCard.save")}
               </Button>
             </DialogFooter>
           </form>
@@ -289,6 +322,7 @@ export function WorkspaceAppCard({
 }
 
 function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [inspectedResourceId, setInspectedResourceId] = useState<string | null>(
     null,
@@ -325,7 +359,9 @@ function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>Context</TooltipContent>
+        <TooltipContent>
+          {t("dispatch.workspaceAppCard.context")}
+        </TooltipContent>
       </Tooltip>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
@@ -342,13 +378,19 @@ function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{counts?.total ?? 0} total</Badge>
-            <Badge variant="outline">
-              {counts?.workspace ?? counts?.global ?? 0} workspace
+            <Badge variant="secondary">
+              {counts?.total ?? 0} {t("dispatch.workspaceAppCard.total")}
             </Badge>
-            <Badge variant="outline">{counts?.granted ?? 0} granted</Badge>
             <Badge variant="outline">
-              {counts?.autoLoaded ?? 0} auto-loaded
+              {counts?.workspace ?? counts?.global ?? 0}{" "}
+              {t("dispatch.workspaceAppCard.workspace")}
+            </Badge>
+            <Badge variant="outline">
+              {counts?.granted ?? 0} {t("dispatch.workspaceAppCard.granted")}
+            </Badge>
+            <Badge variant="outline">
+              {counts?.autoLoaded ?? 0}{" "}
+              {t("dispatch.workspaceAppCard.autoLoaded")}
             </Badge>
           </div>
 
@@ -360,7 +402,7 @@ function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
             </div>
           ) : resources.length === 0 ? (
             <div className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
-              No workspace or granted resources are visible to this app yet.
+              {t("dispatch.workspaceAppCard.noResourcesYet")}
             </div>
           ) : (
             <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
@@ -380,11 +422,13 @@ function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
                           <Badge variant="secondary">{resource.kind}</Badge>
                           <Badge variant="outline">
                             {resource.source === "workspace"
-                              ? "All apps"
-                              : "Granted"}
+                              ? t("dispatch.workspaceAppCard.allApps")
+                              : t("dispatch.workspaceAppCard.granted")}
                           </Badge>
                           {resource.autoLoaded ? (
-                            <Badge variant="outline">Auto-loaded</Badge>
+                            <Badge variant="outline">
+                              {t("dispatch.workspaceAppCard.autoLoadedBadge")}
+                            </Badge>
                           ) : null}
                         </div>
                         <div className="mt-1 truncate font-mono text-xs text-muted-foreground">
@@ -394,7 +438,7 @@ function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
                       <div className="flex shrink-0 flex-col items-end gap-2">
                         {resource.source === "grant" ? (
                           <div className="text-right text-[11px] text-muted-foreground">
-                            Selected grant
+                            {t("dispatch.workspaceAppCard.selectedGrant")}
                           </div>
                         ) : null}
                         <Button
@@ -414,7 +458,7 @@ function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
                           ) : (
                             <IconChevronRight size={14} className="mr-1" />
                           )}
-                          Stack
+                          {t("dispatch.workspaceAppCard.stack")}
                         </Button>
                       </div>
                     </div>
@@ -439,7 +483,7 @@ function AppResourcesDialog({ app }: { app: WorkspaceAppSummary }) {
         </div>
         <DialogFooter>
           <Button type="button" onClick={() => setOpen(false)}>
-            Done
+            {t("dispatch.workspaceAppCard.done")}
           </Button>
         </DialogFooter>
       </DialogContent>

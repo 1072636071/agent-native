@@ -1,0 +1,1032 @@
+[dev-lazy] Prebuilding @agent-native/core...
+
+> @agent-native/core@0.66.0 build E:\work\sp\agent-native\packages\core
+> tsc && tsc -p tsconfig.cli.json && node scripts/finalize-build.mjs
+
+[dev-lazy] Default: http://127.0.0.1:8080/dispatch
+[dev-lazy] Gateway: http://127.0.0.1:8080
+[dev-lazy] Mode: lazy+prewarm
+[dev-lazy] dispatch: /dispatch -> 127.0.0.1:8092
+[dev-lazy] analytics: /analytics -> 127.0.0.1:8088
+[dev-lazy] assets: /assets -> 127.0.0.1:8100
+[dev-lazy] brain: /brain -> 127.0.0.1:8102
+[dev-lazy] calendar: /calendar -> 127.0.0.1:8082
+[dev-lazy] chat: /chat -> 127.0.0.1:8089
+[dev-lazy] clips: /clips -> 127.0.0.1:8094
+[dev-lazy] content: /content -> 127.0.0.1:8083
+[dev-lazy] design: /design -> 127.0.0.1:8099
+[dev-lazy] forms: /forms -> 127.0.0.1:8084
+[dev-lazy] mail: /mail -> 127.0.0.1:8085
+[dev-lazy] plan: /plan -> 127.0.0.1:8105
+[dev-lazy] slides: /slides -> 127.0.0.1:8086
+[dev-lazy] Prewarming 12 template(s) in the background (concurrency 2; pass --no-prewarm to disable)
+[33m[core][0m [[90m16:57:02[0m] Starting compilation in watch mode...
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_middleware` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_middleware` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_middleware` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_middleware` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[34m[dispatch][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[34m[dispatch][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[34m[dispatch][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_middleware` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_middleware` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_middleware` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_middleware` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[35m[analytics][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[35m[analytics][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[35m[analytics][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_middleware` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_middleware` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_middleware` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_middleware` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[36m[assets][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[36m[assets][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[36m[assets][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[33m[core][0m [[90m16:57:14[0m] Found 0 errors. Watching for file changes.
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_middleware` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_middleware` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_middleware` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_middleware` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[32m[brain][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[32m[brain][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[32m[brain][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_middleware` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_middleware` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_middleware` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_middleware` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[94m[chat][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[94m[chat][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[94m[chat][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_middleware` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_middleware` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_middleware` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_middleware` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[93m[design][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[93m[design][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[93m[design][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_middleware` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[96m[clips][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[96m[clips][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[96m[clips][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_middleware` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[95m[calendar][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[95m[calendar][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[95m[calendar][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route middleware support is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_middleware` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_middleware[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Route module splitting behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_splitRouteModules` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_splitRouteModules[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Request handling behavior is changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_passThroughRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_passThroughRequests[39m
+[92m[content][0m [33m  ⚠️  Future Flag Warning: Data request URL formats are changing in React Router v8.
+[92m[content][0m      You can use the `future.v8_trailingSlashAwareDataRequests` flag to opt in early.
+[92m[content][0m      -> https://reactrouter.com/upgrading/future-flags#v8_trailingSlashAwareDataRequests[39m
