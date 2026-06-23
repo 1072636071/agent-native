@@ -128,6 +128,5 @@ extract_canvas.bat
 .idea/
 
 # Temp files
-temp/
 pnpm_install_fix_summary.md
 translate-status.js
