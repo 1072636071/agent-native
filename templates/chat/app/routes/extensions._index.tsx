@@ -1,10 +1,13 @@
 import { ExtensionsListPage } from "@agent-native/core/client/extensions";
-import { APP_TITLE } from "@/lib/app-config";
+import { useI18n } from "@agent-native/i18n";
+import { useSetPageTitle } from "@/components/layout/HeaderActions";
 
 export function meta() {
-  return [{ title: `Extensions — ${APP_TITLE}` }];
+  return [{ title: "chat.extensions.title" }];
 }
 
 export default function ExtensionsRoute() {
+  const { t } = useI18n();
+  useSetPageTitle(t("chat.extensions.title"));
   return <ExtensionsListPage />;
 }

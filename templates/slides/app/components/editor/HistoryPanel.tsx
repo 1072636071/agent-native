@@ -5,6 +5,7 @@ import {
   IconLoader2,
   IconRestore,
 } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 import type { Slide } from "@/context/DeckContext";
 import SlideRenderer from "@/components/deck/SlideRenderer";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,7 @@ export default function HistoryPanel({
   onOpenChange,
   canRestore = true,
 }: HistoryPanelProps) {
+  const { t } = useI18n();
   const [selectedVersionId, setSelectedVersionId] = useState<string | null>(
     null,
   );
@@ -99,17 +101,17 @@ export default function HistoryPanel({
         versionId: selectedVersionId,
       });
       toast({
-        title: "Version restored",
-        description: "The deck was rolled back to the selected snapshot.",
+        title: t("slides.history.versionRestored"),
+        description: t("slides.history.versionRestoredDesc"),
       });
       handleClose(false);
     } catch (error) {
       toast({
-        title: "Restore failed",
+        title: t("slides.history.restoreFailed"),
         description:
           error instanceof Error
             ? error.message
-            : "Could not restore this deck version.",
+            : t("slides.history.restoreFailedDesc"),
         variant: "destructive",
       });
     }
@@ -127,17 +129,17 @@ export default function HistoryPanel({
                 className="inline-flex min-w-0 items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
               >
                 <IconArrowLeft size={15} />
-                <span>Back to saved versions</span>
+                <span>{t("slides.history.backToVersions")}</span>
               </button>
             ) : (
               <>
                 <IconHistory size={16} className="text-[#609FF8]" />
-                <span>Saved versions</span>
+                <span>{t("slides.history.savedVersions")}</span>
               </>
             )}
           </SheetTitle>
           <SheetDescription className="sr-only">
-            Browse saved deck versions and restore a previous snapshot.
+            {t("slides.history.description")}
           </SheetDescription>
         </SheetHeader>
 
@@ -154,12 +156,12 @@ export default function HistoryPanel({
               ) : (
                 <>
                   <p className="truncate text-sm font-medium">
-                    {selectedVersion?.title || "Untitled"}
+                    {selectedVersion?.title || t("slides.common.untitled")}
                   </p>
                   <p className="mt-0.5 text-[11px] text-muted-foreground">
                     {selectedVersion
                       ? `${new Date(selectedVersion.createdAt).toLocaleString()} · ${slideLabel(selectedVersion)}`
-                      : "Snapshot unavailable"}
+                      : t("slides.history.snapshotUnavailable")}
                   </p>
                 </>
               )}
@@ -193,7 +195,7 @@ export default function HistoryPanel({
                   ))
                 ) : (
                   <div className="col-span-full py-12 text-center text-xs text-muted-foreground">
-                    No slides in this snapshot.
+                    {t("slides.history.noSlides")}
                   </div>
                 )}
               </div>
@@ -212,7 +214,7 @@ export default function HistoryPanel({
                   ) : (
                     <IconRestore size={15} className="mr-1.5" />
                   )}
-                  Restore this version
+                  {t("slides.history.restore")}
                 </Button>
               </div>
             ) : null}
@@ -241,7 +243,7 @@ export default function HistoryPanel({
                         <div className="min-w-0 flex-1">
                           <div className="flex min-w-0 items-center gap-2">
                             <p className="truncate text-sm font-medium">
-                              {version.title || "Untitled"}
+                              {version.title || t("slides.common.untitled")}
                             </p>
                             <span className="flex-shrink-0 text-[10px] text-muted-foreground">
                               {slideLabel(version)}
@@ -268,9 +270,9 @@ export default function HistoryPanel({
                   size={24}
                   className="mx-auto mb-3 text-muted-foreground/60"
                 />
-                <p className="text-sm font-medium">No saved versions yet</p>
+                <p className="text-sm font-medium">{t("slides.history.noVersions")}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Versions are saved automatically before future deck edits.
+                  {t("slides.history.noVersionsDesc")}
                 </p>
               </div>
             )}

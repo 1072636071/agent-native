@@ -7,6 +7,7 @@ import {
 import { IconPlus } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { PromptComposer, useSendToAgentChat } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 
 type NewCompositionPopoverProps = {
   isNew: boolean;
@@ -19,6 +20,7 @@ export function NewCompositionPopover({
   onNavigate,
   onGeneratingChange,
 }: NewCompositionPopoverProps) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -152,7 +154,7 @@ export function NewCompositionPopover({
             )}
           >
             <IconPlus size={14} />
-            New Composition
+            {t("newComposition.popoverButton")}
           </button>
         </PopoverTrigger>
         <PopoverContent
@@ -163,16 +165,16 @@ export function NewCompositionPopover({
         >
           <div className="mb-2 px-1">
             <h3 className="text-sm font-semibold text-foreground">
-              New composition
+              {t("newComposition.popoverTitle")}
             </h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Describe the video you want to create
+              {t("newComposition.popoverDesc")}
             </p>
           </div>
           <PromptComposer
             autoFocus
             attachmentsEnabled
-            placeholder="Describe the video you want to create..."
+            placeholder={t("newComposition.placeholder")}
             draftScope="videos:new-composition"
             onSubmit={handleSubmit}
           />

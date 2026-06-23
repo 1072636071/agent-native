@@ -16,6 +16,7 @@ import {
   useAppearanceSync,
 } from "@agent-native/core/client";
 import { InvitationBanner } from "@agent-native/core/client/org";
+import { useI18n } from "@agent-native/i18n";
 import { Sidebar } from "./Sidebar";
 import { AddCalendarDialog } from "@/components/calendar/AddCalendarDialog";
 import { GoogleConnectBanner } from "@/components/calendar/GoogleConnectBanner";
@@ -132,6 +133,7 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const { t } = useI18n();
   const isMobile = useIsMobile();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -259,11 +261,11 @@ export function AppLayout({ children }: AppLayoutProps) {
         <AgentSidebar
           position="right"
           defaultOpen
-          emptyStateText="Ask me anything about your calendar"
+          emptyStateText={t("calendar.agent.emptyState")}
           suggestions={[
-            "What's on my calendar today?",
-            "Find a 30-min slot with Alice next week",
-            "Schedule a Zoom with the team Friday",
+            t("calendar.agent.suggestion1"),
+            t("calendar.agent.suggestion2"),
+            t("calendar.agent.suggestion3"),
           ]}
         >
           <div className="flex flex-1 flex-col overflow-hidden">
@@ -275,13 +277,13 @@ export function AppLayout({ children }: AppLayoutProps) {
                     size="icon"
                     className="h-10 w-10 shrink-0 lg:hidden"
                     onClick={() => setSidebarOpen(true)}
-                    aria-label="Open navigation"
+                    aria-label={t("calendar.a11y.openNav")}
                   >
                     <IconMenu className="h-5 w-5" />
                   </Button>
                   {headerControls?.left ?? (
                     <span className="text-sm font-semibold lg:hidden">
-                      Calendar
+                      {t("calendar.appName")}
                     </span>
                   )}
                 </div>

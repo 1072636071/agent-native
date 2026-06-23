@@ -6,10 +6,11 @@ import {
   ScrollRestoration,
   useLocation,
 } from "react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigationState } from "@/hooks/use-navigation-state";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDbSync } from "@agent-native/core/client";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import {
   AppProviders,
   CommandMenu,
@@ -38,6 +39,14 @@ export const links: LinksFunction = () => [
 ];
 
 const THEME_INIT_SCRIPT = getThemeInitScript();
+
+function HtmlLangSync() {
+  const { lang } = useI18n();
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+  return null;
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -99,13 +108,14 @@ function DbSyncSetup() {
 function ThemeToggleItem() {
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
+  const { t } = useI18n();
   return (
     <CommandMenu.Item
       onSelect={() => setTheme(isDark ? "light" : "dark")}
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle theme
+      {t("clips.command.toggleTheme")}
     </CommandMenu.Item>
   );
 }
@@ -130,6 +140,7 @@ function AppContent() {
   const location = useLocation();
   const standalonePublic = isStandalonePublicPath(location.pathname);
   const [cmdkOpen, setCmdkOpen] = useState(false);
+  const { t } = useI18n();
   useCommandMenuShortcut(
     useCallback(() => {
       if (!standalonePublic) setCmdkOpen(true);
@@ -141,10 +152,10 @@ function AppContent() {
       {standalonePublic ? null : <DbSyncSetup />}
       {standalonePublic ? null : (
         <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-          <CommandMenu.Group heading="Actions">
-            <CommandMenu.Item onSelect={() => {}}>Search</CommandMenu.Item>
+          <CommandMenu.Group heading={t("clips.command.group.actions")}>
+            <CommandMenu.Item onSelect={() => {}}>{t("clips.command.search")}</CommandMenu.Item>
           </CommandMenu.Group>
-          <CommandMenu.Group heading="Appearance">
+          <CommandMenu.Group heading={t("clips.command.group.appearance")}>
             <ThemeToggleItem />
           </CommandMenu.Group>
         </CommandMenu>
@@ -166,12 +177,15 @@ export default function Root() {
   const location = useLocation();
   const [queryClient] = useState(() => createAgentNativeQueryClient());
   return (
-    <AppProviders
-      queryClient={queryClient}
-      isPublicPath={isStandalonePublicPath(location.pathname)}
-    >
-      <AppContent />
-    </AppProviders>
+    <I18nProvider defaultLang="en">
+      <AppProviders
+        queryClient={queryClient}
+        isPublicPath={isStandalonePublicPath(location.pathname)}
+      >
+        <HtmlLangSync />
+        <AppContent />
+      </AppProviders>
+    </I18nProvider>
   );
 }
 

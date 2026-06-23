@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconAlertTriangle,
   IconChecks,
@@ -51,14 +52,14 @@ const queueStatuses: Array<BrainDistillationQueueStatus | "all"> = [
   "done",
 ];
 
-const queueIssues = [
-  { value: "all", label: "All queue items" },
-  { value: "retryable", label: "Retryable" },
-  { value: "failed", label: "Failed" },
-  { value: "stale", label: "Stale processing" },
+const queueIssues = (t: (key: string, options?: Record<string, unknown>) => string) => [
+  { value: "all", label: t("brain.ops.issue.all") },
+  { value: "retryable", label: t("brain.ops.issue.retryable") },
+  { value: "failed", label: t("brain.ops.issue.failed") },
+  { value: "stale", label: t("brain.ops.issue.stale") },
 ] as const;
 
-type QueueIssue = (typeof queueIssues)[number]["value"];
+type QueueIssue = ReturnType<typeof queueIssues>[number]["value"];
 
 const emptySummary = {
   total: 0,
@@ -109,9 +110,10 @@ type RetryDistillationRequest = {
 };
 
 export default function OpsRoute() {
+  const { t } = useI18n();
   const [params, setParams] = useSearchParams();
   const status = params.get("status") ?? "all";
-  const issue = queueIssueFromParams(params);
+  const issue = queueIssueFromParams(params, t);
   const [selectedQueueIds, setSelectedQueueIds] = useState<Set<string>>(
     () => new Set(),
   );
@@ -167,7 +169,7 @@ export default function OpsRoute() {
   }
 
   function updateIssue(value: string) {
-    const nextIssue = queueIssues.some((option) => option.value === value)
+    const nextIssue = queueIssues(t).some((option) => option.value === value)
       ? (value as QueueIssue)
       : "all";
     const next = new URLSearchParams(params);
@@ -275,15 +277,15 @@ export default function OpsRoute() {
   const pendingRetry = retryDistillation.isPending;
   const filteredDetail =
     visibleSummary.total === summary.total
-      ? `${summary.total.toLocaleString()} accessible`
-      : `${visibleSummary.total.toLocaleString()} shown of ${summary.total.toLocaleString()}`;
+      ? `${summary.total.toLocaleString()} ${t("brain.ops.accessible")}`
+      : `${visibleSummary.total.toLocaleString()} ${t("brain.ops.shown")} ${t("brain.ops.of")} ${summary.total.toLocaleString()}`;
 
   return (
     <div className="min-h-full bg-background">
       <PageHeader
-        eyebrow="Ops"
-        title="Distillation operations"
-        description="Monitor Brain distillation handoffs, stale workers, and retryable failures from one compact queue view."
+        eyebrow={t("brain.nav.ops")}
+        title={t("brain.ops.title")}
+        description={t("brain.ops.description")}
         actions={
           <div className="flex flex-wrap gap-2">
             <Select value={status} onValueChange={updateStatus}>
@@ -293,17 +295,17 @@ export default function OpsRoute() {
               <SelectContent>
                 {queueStatuses.map((option) => (
                   <SelectItem key={option} value={option}>
-                    {option === "all" ? "All statuses" : statusLabel(option)}
+                    {option === "all" ? t("brain.ops.status.all") : statusLabel(option)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={issue} onValueChange={updateIssue}>
               <SelectTrigger className="w-44">
-                <SelectValue placeholder="Queue issue" />
+                <SelectValue placeholder={t("brain.ops.issue.all")} />
               </SelectTrigger>
               <SelectContent>
-                {queueIssues.map((option) => (
+                {queueIssues(t).map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -321,7 +323,7 @@ export default function OpsRoute() {
               ) : (
                 <IconRefresh className="size-4" />
               )}
-              Retry all retryable
+              {t("brain.ops.retryAll")}
             </Button>
           </div>
         }
@@ -330,38 +332,36 @@ export default function OpsRoute() {
       <div className="grid gap-5 p-5 lg:p-7">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <MetricCard
-            label="Queued"
+            label={t("brain.ops.metricQueued")}
             value={summary.queued}
             detail={filteredDetail}
           />
           <MetricCard
-            label="Processing"
+            label={t("brain.ops.metricProcessing")}
             value={summary.processing}
-            detail={`${summary.staleProcessing.toLocaleString()} stale`}
+            detail={`${summary.staleProcessing.toLocaleString()} ${t("brain.ops.stale")}`}
             tone={summary.staleProcessing ? "warning" : "neutral"}
           />
           <MetricCard
-            label="Failed"
+            label={t("brain.ops.metricFailed")}
             value={summary.failed}
-            detail={`${summary.retryable.toLocaleString()} retryable`}
+            detail={`${summary.retryable.toLocaleString()} ${t("brain.ops.retryableCount")}`}
             tone={summary.failed ? "danger" : "neutral"}
           />
-          <MetricCard label="Done" value={summary.done} detail="Completed" />
+          <MetricCard label={t("brain.ops.metricDone")} value={summary.done} detail={t("brain.ops.completed")} />
           <MetricCard
-            label="Visible"
+            label={t("brain.ops.metricVisible")}
             value={visibleSummary.total}
-            detail={`${selectedRetryableIds.length.toLocaleString()} selected`}
+            detail={`${selectedRetryableIds.length.toLocaleString()} ${t("brain.ops.selected")}`}
             tone={selectedRetryableIds.length ? "warning" : "good"}
           />
         </div>
 
         <div className="flex flex-col gap-3 rounded-md border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <p className="text-sm font-medium">Retry controls</p>
+            <p className="text-sm font-medium">{t("brain.ops.retryControls")}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {visibleSummary.retryable.toLocaleString()} retryable in this
-              view, {summary.retryable.toLocaleString()} across accessible
-              queues.
+              {t("brain.ops.retryControlsDetail", { visible: visibleSummary.retryable.toLocaleString(), total: summary.retryable.toLocaleString() })}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -372,7 +372,7 @@ export default function OpsRoute() {
               onClick={toggleAllRetryable}
             >
               <IconChecks className="size-4" />
-              {allRetryableSelected ? "Unselect retryable" : "Select retryable"}
+              {allRetryableSelected ? t("brain.ops.unselectAll") : t("brain.ops.selectAll")}
             </Button>
             <Button
               size="sm"
@@ -384,7 +384,7 @@ export default function OpsRoute() {
               ) : (
                 <IconRefresh className="size-4" />
               )}
-              Retry selected
+              {t("brain.ops.retrySelected")}
             </Button>
             {selectedQueueIds.size ? (
               <Button
@@ -392,7 +392,7 @@ export default function OpsRoute() {
                 variant="ghost"
                 onClick={() => setSelectedQueueIds(new Set())}
               >
-                Clear
+                {t("brain.ops.clear")}
               </Button>
             ) : null}
           </div>
@@ -402,8 +402,8 @@ export default function OpsRoute() {
           <LoadingRows rows={5} />
         ) : queueQuery.isError ? (
           <EmptyActionState
-            title="Queue unavailable"
-            detail="Brain could not load accessible distillation queue items."
+            title={t("brain.ops.queueUnavailable")}
+            detail={t("brain.ops.queueUnavailableDetail")}
           />
         ) : items.length ? (
           <Card className="overflow-hidden">
@@ -413,14 +413,14 @@ export default function OpsRoute() {
                   <TableHead className="w-10">
                     <span className="sr-only">Select</span>
                   </TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Capture</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead className="text-right">Attempts</TableHead>
-                  <TableHead>Run after</TableHead>
-                  <TableHead>Updated</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead>{t("brain.ops.table.status")}</TableHead>
+                  <TableHead>{t("brain.ops.tableCapture")}</TableHead>
+                  <TableHead>{t("brain.ops.table.source")}</TableHead>
+                  <TableHead className="text-right">{t("brain.ops.table.attempts")}</TableHead>
+                  <TableHead>{t("brain.ops.table.runtime")}</TableHead>
+                  <TableHead>{t("brain.ops.tableUpdated")}</TableHead>
+                  <TableHead>{t("brain.ops.table.error")}</TableHead>
+                  <TableHead className="text-right">{t("brain.ops.tableAction")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -437,7 +437,7 @@ export default function OpsRoute() {
                         className="size-4 rounded border-border accent-primary disabled:cursor-not-allowed disabled:opacity-50"
                         checked={selectedQueueIds.has(item.id)}
                         disabled={!item.retryable || pendingRetry}
-                        aria-label={`Select ${item.capture.title}`}
+                        aria-label={t("brain.ops.selectAria", { title: item.capture.title })}
                         onChange={(event) =>
                           toggleQueueSelection(item.id, event.target.checked)
                         }
@@ -451,7 +451,7 @@ export default function OpsRoute() {
                             variant="outline"
                             className="border-amber-500/35 bg-amber-500/10 text-amber-700 dark:text-amber-300"
                           >
-                            stale
+                            {t("brain.ops.stale")}
                           </Badge>
                         ) : null}
                       </div>
@@ -488,7 +488,7 @@ export default function OpsRoute() {
                         {item.reason ??
                           item.retryBlockedReason ??
                           item.lastError ??
-                          "No issue recorded"}
+                          t("brain.ops.noIssueRecorded")}
                       </p>
                     </TableCell>
                     <TableCell className="text-right">
@@ -503,7 +503,7 @@ export default function OpsRoute() {
                         ) : (
                           <IconRefresh className="size-4" />
                         )}
-                        Retry
+                        {t("brain.ops.retry")}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -513,15 +513,15 @@ export default function OpsRoute() {
           </Card>
         ) : (
           <EmptyActionState
-            title="No queue items match this view"
-            detail="Change the status or issue filter, or wait for new captures to enter distillation."
+            title={t("brain.ops.emptyFiltered.title")}
+            detail={t("brain.ops.emptyFiltered.detail")}
           />
         )}
 
         {retryDistillation.isError ? (
           <EmptyActionState
-            title="Retry failed"
-            detail="The queue item may already be done, active, or no longer accessible."
+            title={t("brain.ops.retryFailed")}
+            detail={t("brain.ops.retryFailedDetail")}
           />
         ) : null}
       </div>
@@ -529,9 +529,9 @@ export default function OpsRoute() {
   );
 }
 
-function queueIssueFromParams(params: URLSearchParams): QueueIssue {
+function queueIssueFromParams(params: URLSearchParams, t: (key: string, options?: Record<string, unknown>) => string): QueueIssue {
   const value = params.get("issue");
-  if (queueIssues.some((option) => option.value === value)) {
+  if (queueIssues(t).some((option) => option.value === value)) {
     return value as QueueIssue;
   }
   return params.get("stale") === "true" ? "stale" : "all";

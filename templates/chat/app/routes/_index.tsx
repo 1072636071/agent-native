@@ -3,29 +3,32 @@ import {
   AgentChatSurface,
   markAgentChatHomeHandoff,
 } from "@agent-native/core/client";
-import { APP_TITLE } from "@/lib/app-config";
+import { useI18n } from "@agent-native/i18n";
 import { TAB_ID } from "@/lib/tab-id";
-
-const SEO_TITLE = `${APP_TITLE} - Open Source AI app starter with actions`;
-const SEO_DESCRIPTION =
-  "Open Source starter for agent-native apps with durable chat, shared actions, UI state, tools, and a backend your agent can extend.";
 
 export function meta() {
   return [
-    { title: SEO_TITLE },
+    { title: "chat.seo.title" },
     {
       name: "description",
-      content: SEO_DESCRIPTION,
+      content: "chat.seo.description",
     },
-    { property: "og:title", content: SEO_TITLE },
-    { property: "og:description", content: SEO_DESCRIPTION },
+    { property: "og:title", content: "chat.seo.title" },
+    {
+      property: "og:description",
+      content: "chat.seo.description",
+    },
     { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: SEO_TITLE },
-    { name: "twitter:description", content: SEO_DESCRIPTION },
+    { name: "twitter:title", content: "chat.seo.title" },
+    {
+      name: "twitter:description",
+      content: "chat.seo.description",
+    },
   ];
 }
 
 export default function ChatRoute() {
+  const { t } = useI18n();
   useEffect(() => {
     function handleChatRunning(event: Event) {
       const detail = (event as CustomEvent).detail;
@@ -50,23 +53,22 @@ export default function ChatRoute() {
         showTabBar={false}
         dynamicSuggestions={false}
         suggestions={[
-          "What can you do?",
-          "Help me customize this chat app",
-          "Show me the actions and pages I can add",
+          t("chat.index.suggestion1"),
+          t("chat.index.suggestion2"),
+          t("chat.index.suggestion3"),
         ]}
-        emptyStateText="Ask anything, then customize the app when you need more."
+        emptyStateText={t("chat.index.emptyState")}
         emptyStateDisplay="hidden"
         centerComposerWhenEmpty
         composerLayoutVariant="hero"
-        composerPlaceholder="Message the agent..."
+        composerPlaceholder={t("chat.index.composerPlaceholder")}
         composerSlot={
           <div className="mx-auto mb-5 max-w-xl px-4 text-center">
             <h1 className="text-2xl font-semibold tracking-normal text-foreground sm:text-3xl">
-              How can I help?
+              {t("chat.index.introTitle")}
             </h1>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Chat about anything. Add actions, components, pages, jobs, or your
-              own agent backend when you want this app to do more.
+              {t("chat.index.introDesc")}
             </p>
           </div>
         }

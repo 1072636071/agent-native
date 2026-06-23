@@ -56,3 +56,44 @@
 - 月份/星期缩写硬编码，应使用 date-fns locale
 - `<html lang="en">` 硬编码
 - 建议优先处理导航和日历视图（最高频使用）
+
+## 完成情况
+
+### 已完成改造的文件
+
+| 文件 | 状态 | 说明 |
+|------|------|------|
+| `app/root.tsx` | 已完成 | 添加 I18nProvider、HtmlLangSync、命令菜单文本替换 |
+| `app/components/layout/Sidebar.tsx` | 已完成 | 导航标签、月份选择器 aria-labels、Google 连接文本、日历分类标签、工具栏提示全部替换 |
+| `app/components/layout/AppLayout.tsx` | 已完成 | AgentSidebar 空状态与建议、移动端导航按钮 aria-label、header 文字替换 |
+
+### 新增的翻译键（`calendar.*` 命名空间）
+
+已在 `packages/i18n/src/locales/en.ts` 和 `packages/i18n/src/locales/zh-CN.ts` 中同步添加以下键：
+
+- `calendar.appName` — 应用名称
+- `calendar.metaTitle` — meta 标题
+- `calendar.toggleTheme` — 切换主题
+- `calendar.nav.*` — 导航（Calendar, Booking Links, Team, Settings）
+- `calendar.prevYear` / `calendar.nextYear` — 年份切换 aria-label
+- `calendar.cmdGroup.*` — 命令菜单分组
+- `calendar.google.*` — Google 日历连接
+- `calendar.sidebar.*` — 侧边栏各分类标签与工具栏提示
+- `calendar.agent.*` — AgentSidebar 空状态与建议
+- `calendar.a11y.openNav` — 打开导航 aria-label
+
+### 待继续改造的文件
+
+由于文件规模较大（共 114 个 .tsx 文件），以下文件中的硬编码字符串尚未替换：
+
+- `app/pages/CalendarView.tsx` (53KB) — 视图标签、事件提示、Toast 消息
+- `app/pages/BookingLinksPage.tsx` (90KB) — Booking Link 页面全部文字
+- `app/pages/Settings.tsx` — 设置页面
+- `app/pages/AvailabilitySettings.tsx` — 可用性设置
+- `app/pages/ManageBookingPage.tsx` — 预约管理
+- `app/pages/BookingPage.tsx` — 预约页面
+- `app/pages/BookingsList.tsx` — 预约列表
+- `app/pages/NotFound.tsx` — 404 页面
+- `app/pages/Team.tsx` — 团队页面
+- `app/components/calendar/*.tsx` (20+ 文件) — 日历组件
+- `app/components/booking/*.tsx` — 预约组件

@@ -22,6 +22,7 @@ import {
 } from "@agent-native/core/client";
 import { ExtensionsSidebarSection } from "@agent-native/core/client/extensions";
 import { OrgSwitcher } from "@agent-native/core/client/org";
+import { useI18n } from "@agent-native/i18n";
 import { cn } from "@/lib/utils";
 import { APP_TITLE } from "@/lib/app-config";
 import {
@@ -37,21 +38,24 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const navItems = [
-  { icon: IconMessageCircle, label: "Chat", href: "/", view: "chat" },
-  {
-    icon: IconActivity,
-    label: "Observability",
-    href: "/observability",
-    view: "observability",
-  },
-  {
-    icon: IconDatabase,
-    label: "Database",
-    href: "/database",
-    view: "database",
-  },
-];
+function useNavItems() {
+  const { t } = useI18n();
+  return [
+    { icon: IconMessageCircle, label: t("chat.sidebar.navChat"), href: "/", view: "chat" },
+    {
+      icon: IconActivity,
+      label: t("chat.sidebar.navObservability"),
+      href: "/observability",
+      view: "observability",
+    },
+    {
+      icon: IconDatabase,
+      label: t("chat.sidebar.navDatabase"),
+      href: "/database",
+      view: "database",
+    },
+  ];
+}
 
 const CHAT_STORAGE_KEY = "chat";
 const CHAT_ACTIVE_THREAD_KEY = `agent-chat-active-thread:${CHAT_STORAGE_KEY}`;
@@ -62,23 +66,23 @@ interface SidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-function formatThreadAge(updatedAt: number) {
+function formatThreadAge(updatedAt: number, t: (key: string, params?: any) => string) {
   const diffMs = Math.max(0, Date.now() - updatedAt);
   const minutes = Math.floor(diffMs / 60_000);
-  if (minutes < 1) return "now";
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 1) return t("chat.sidebar.threadAgeNow");
+  if (minutes < 60) return t("chat.sidebar.threadAgeMinutes", { n: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h`;
+  if (hours < 24) return t("chat.sidebar.threadAgeHours", { n: hours });
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
+  if (days < 7) return t("chat.sidebar.threadAgeDays", { n: days });
   return new Date(updatedAt).toLocaleDateString([], {
     month: "short",
     day: "numeric",
   });
 }
 
-function threadTitle(thread: ChatThreadSummary) {
-  return thread.title || thread.preview || "Untitled chat";
+function threadTitle(thread: ChatThreadSummary, t: (key: string, params?: any) => string) {
+  return thread.title || thread.preview || t("chat.sidebar.untitledChat");
 }
 
 function threadUpdatedAt(thread: ChatThreadSummary) {
@@ -106,6 +110,7 @@ function persistedActiveThreadId() {
 
 function ChatThreadsSection() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const {
     threads,
     activeThreadId,
@@ -182,7 +187,7 @@ function ChatThreadsSection() {
       threadId === activeThreadId || threadId === persistedActiveThreadId();
     const archived = await archiveThread(threadId);
     if (!archived) {
-      toast.error("Could not archive chat.");
+      toast.error(t("chat.sidebar.errorArchive"));
       return;
     }
     if (wasActive) {
@@ -212,7 +217,7 @@ function ChatThreadsSection() {
     setRenameDraft("");
     if (title) {
       const renamed = await renameThread(threadId, title);
-      if (!renamed) toast.error("Could not rename chat.");
+      if (!renamed) toast.error(t("chat.sidebar.errorRename"));
     }
     committingRenameRef.current = false;
   }
@@ -226,7 +231,7 @@ function ChatThreadsSection() {
     <div className="mt-2 border-l border-sidebar-border/70 pl-3">
       <div className="mb-1 flex h-7 items-center gap-2 pr-1">
         <div className="min-w-0 flex-1 text-xs font-medium text-sidebar-foreground/70">
-          Chats
+          {t("chat.sidebar.chatsLabel")}
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -234,12 +239,12 @@ function ChatThreadsSection() {
               type="button"
               onClick={handleNewChat}
               className="flex size-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              aria-label="New chat"
+              aria-label={t("chat.sidebar.newChat")}
             >
               <IconPlus className="size-3.5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent>New chat</TooltipContent>
+          <TooltipContent>{t("chat.sidebar.newChat")}</TooltipContent>
         </Tooltip>
       </div>
       <div className="grid gap-0.5">
@@ -273,7 +278,7 @@ function ChatThreadsSection() {
                       }
                     }}
                     maxLength={160}
-                    aria-label={`Rename ${threadTitle(thread)}`}
+                    aria-label={t("chat.sidebar.ariaRename", { title: threadTitle(thread) })}
                     className="h-6 min-w-0 rounded-sm border-sidebar-border bg-background px-1.5 text-xs"
                   />
                 </form>
@@ -296,7 +301,7 @@ function ChatThreadsSection() {
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
-                          aria-label={`Chat options for ${threadTitle(thread)}`}
+                          aria-label={t("chat.sidebar.chatOptionsFor")}
                           className="absolute right-1 flex size-6 items-center justify-center rounded-md text-sidebar-foreground/65 opacity-0 transition-opacity hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:opacity-100"
                         >
                           <IconDots className="size-4" />
@@ -311,7 +316,7 @@ function ChatThreadsSection() {
                           onSelect={() => startRenameThread(thread)}
                         >
                           <IconEdit className="size-4" />
-                          Rename chat
+                          {t("chat.sidebar.renameChat")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onSelect={() =>
@@ -319,14 +324,14 @@ function ChatThreadsSection() {
                           }
                         >
                           <IconPin className="size-4" />
-                          {thread.pinnedAt ? "Unpin chat" : "Pin chat"}
+                          {thread.pinnedAt ? t("chat.sidebar.unpinChat") : t("chat.sidebar.pinChat")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
                           onSelect={() => void handleArchiveThread(thread.id)}
                         >
                           <IconArchive className="size-4" />
-                          Archive chat
+                          {t("chat.sidebar.archiveChat")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -346,6 +351,7 @@ export function Sidebar({
   collapsible = true,
   onCollapsedChange,
 }: SidebarProps) {
+  const { t } = useI18n();
   const location = useLocation();
   const navigate = useNavigate();
   const isChatRoute = location.pathname === "/";
@@ -376,13 +382,13 @@ export function Sidebar({
             "flex shrink-0 items-center justify-center rounded-md text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             collapsed ? "size-8" : "size-7",
           )}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? t("chat.sidebar.ariaExpand") : t("chat.sidebar.ariaCollapse")}
         >
           <ToggleIcon className="size-4" />
         </button>
       </TooltipTrigger>
       <TooltipContent side="right">
-        {collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        {collapsed ? t("chat.sidebar.tooltipExpand") : t("chat.sidebar.tooltipCollapse")}
       </TooltipContent>
     </Tooltip>
   ) : null;

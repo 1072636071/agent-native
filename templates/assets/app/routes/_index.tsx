@@ -3,6 +3,7 @@ import {
   AgentChatSurface,
   markAgentChatHomeHandoff,
 } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { IconPhoto, IconSparkles, IconVideo } from "@tabler/icons-react";
 import { ASSETS_CHAT_STORAGE_KEY } from "@/lib/chat";
 import { TAB_ID } from "@/lib/tab-id";
@@ -25,6 +26,7 @@ export function meta() {
 }
 
 export default function CreatePage() {
+  const { t } = useI18n();
   useEffect(() => {
     function handleChatRunning(event: Event) {
       const detail = (event as CustomEvent).detail;
@@ -51,30 +53,29 @@ export default function CreatePage() {
         showTabBar={false}
         dynamicSuggestions={false}
         suggestions={[]}
-        emptyStateText="Ask Assets what to create."
+        emptyStateText={t("assets.index.emptyState")}
         emptyStateDisplay="hidden"
         centerComposerWhenEmpty
         composerLayoutVariant="hero"
-        composerPlaceholder="Describe the asset - attach images or text context with +"
+        composerPlaceholder={t("assets.index.composerPlaceholder")}
         composerSlot={
           <div className="assets-create-chat-intro">
-            <h1>What asset should we make?</h1>
+            <h1>{t("assets.index.introTitle")}</h1>
             <p>
-              Start with a hero image, product reveal, reference edit, or a
-              direction you want to explore.
+              {t("assets.index.introDesc")}
             </p>
             <div className="assets-create-chat-pill-row" aria-hidden="true">
               <span>
                 <IconPhoto className="size-3.5" />
-                image
+                {t("assets.index.labelImage")}
               </span>
               <span>
                 <IconVideo className="size-3.5" />
-                video
+                {t("assets.index.labelVideo")}
               </span>
               <span>
                 <IconSparkles className="size-3.5" />
-                refine
+                {t("assets.index.labelRefine")}
               </span>
             </div>
           </div>

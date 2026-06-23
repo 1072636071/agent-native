@@ -2,6 +2,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import {
   AppProviders,
   CommandMenu,
@@ -31,9 +32,10 @@ export const links: LinksFunction = () => [
 
 const THEME_INIT_SCRIPT = getThemeInitScript();
 
-export function Layout({ children }: { children: React.ReactNode }) {
+function HtmlDocument({ children }: { children: React.ReactNode }) {
+  const { lang } = useI18n();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -66,6 +68,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nProvider>
+      <HtmlDocument>{children}</HtmlDocument>
+    </I18nProvider>
+  );
+}
+
 const TAB_ID = Math.random().toString(36).slice(2, 10);
 
 function DbSyncSetup() {
@@ -80,6 +90,7 @@ function DbSyncSetup() {
 
 function ThemeToggleItem() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { t } = useI18n();
   const isDark = resolvedTheme === "dark";
   return (
     <CommandMenu.Item
@@ -87,7 +98,7 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle {isDark ? "light" : "dark"} mode
+      {t("design.command.toggleTheme")}
     </CommandMenu.Item>
   );
 }
@@ -95,16 +106,17 @@ function ThemeToggleItem() {
 export default function Root() {
   const [queryClient] = useState(() => createAgentNativeQueryClient());
   const [cmdkOpen, setCmdkOpen] = useState(false);
+  const { t } = useI18n();
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
   return (
     <AppProviders queryClient={queryClient}>
       <DbSyncSetup />
       <Toaster richColors position="bottom-left" />
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Actions">
-          <CommandMenu.Item onSelect={() => {}}>Search</CommandMenu.Item>
+        <CommandMenu.Group heading={t("design.command.groupActions")}>
+          <CommandMenu.Item onSelect={() => {}}>{t("design.command.search")}</CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("design.command.groupAppearance")}>
           <ThemeToggleItem />
         </CommandMenu.Group>
       </CommandMenu>

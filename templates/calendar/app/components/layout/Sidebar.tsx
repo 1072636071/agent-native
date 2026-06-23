@@ -82,12 +82,13 @@ import { useCalendarContext } from "./AppLayout";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { OrgSwitcher } from "@agent-native/core/client/org";
 import { ExtensionsSidebarSection } from "@agent-native/core/client/extensions";
+import { useI18n } from "@agent-native/i18n";
 
 const navItems = [
-  { path: "/", label: "Calendar", icon: IconCalendar },
-  { path: "/booking-links", label: "Booking Links", icon: IconLink },
-  { path: "/team", label: "Team", icon: IconUsers },
-  { path: "/settings", label: "Settings", icon: IconSettings },
+  { path: "/", labelKey: "calendar.nav.calendar" as const, icon: IconCalendar },
+  { path: "/booking-links", labelKey: "calendar.nav.bookingLinks" as const, icon: IconLink },
+  { path: "/team", labelKey: "calendar.nav.team" as const, icon: IconUsers },
+  { path: "/settings", labelKey: "calendar.nav.settings" as const, icon: IconSettings },
 ];
 
 interface SidebarProps {
@@ -119,6 +120,7 @@ function MonthYearPicker({
   onPick: (date: Date) => void;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const [year, setYearState] = useState(() => getYear(viewMonth));
   const today = new Date();
   const todayMonth = getMonth(today);
@@ -133,7 +135,7 @@ function MonthYearPicker({
           type="button"
           onClick={() => setYearState(year - 1)}
           className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Previous year"
+          aria-label={t("calendar.prevYear")}
         >
           <IconChevronLeft className="h-3.5 w-3.5" />
         </button>
@@ -142,7 +144,7 @@ function MonthYearPicker({
           type="button"
           onClick={() => setYearState(year + 1)}
           className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Next year"
+          aria-label={t("calendar.nextYear")}
         >
           <IconChevronRight className="h-3.5 w-3.5" />
         </button>
@@ -303,6 +305,7 @@ function MiniCalendar({
 }
 
 function GoogleConnectSidebarButton() {
+  const { t } = useI18n();
   const [wantAuthUrl, setWantAuthUrl] = useState(false);
   const authUrl = useGoogleAuthUrl(wantAuthUrl);
 
@@ -316,10 +319,10 @@ function GoogleConnectSidebarButton() {
     <div className="border-t border-border p-3">
       <div className="rounded-lg bg-primary/10 p-3">
         <p className="mb-1 text-xs font-semibold text-foreground">
-          Connect Google Calendar
+          {t("calendar.google.connectTitle")}
         </p>
         <p className="mb-2.5 text-[11px] leading-relaxed text-muted-foreground">
-          Sync your events and manage everything in one place.
+          {t("calendar.google.connectDesc")}
         </p>
         <Button
           size="sm"
@@ -328,7 +331,7 @@ function GoogleConnectSidebarButton() {
           disabled={authUrl.isLoading || authUrl.isFetching}
         >
           <IconExternalLink className="h-3 w-3" />
-          {authUrl.isLoading ? "Connecting..." : "Connect"}
+          {authUrl.isLoading ? t("calendar.google.connecting") : t("calendar.google.connect")}
         </Button>
       </div>
     </div>
@@ -391,6 +394,7 @@ function GoogleAccountsSection({
   accounts: Array<{ email: string }>;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const { toggleHiddenCalendar, isHiddenCalendar } = useCalendarContext();
   const {
     prefs: { colorMode, singleColor },
@@ -418,7 +422,7 @@ function GoogleAccountsSection({
       <div className="mb-1 flex min-h-8 items-center justify-between px-3">
         <div className="flex items-center">
           <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            My Calendars
+            {t("calendar.sidebar.myCalendars")}
           </span>
         </div>
         <div className="flex items-center">
@@ -432,7 +436,7 @@ function GoogleAccountsSection({
                 <IconSettings className="h-3.5 w-3.5" />
               </Link>
             </TooltipTrigger>
-            <TooltipContent>Google Calendar settings</TooltipContent>
+            <TooltipContent>{t("calendar.sidebar.googleSettings")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -444,7 +448,7 @@ function GoogleAccountsSection({
                 <IconPlus className="h-3.5 w-3.5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent>Add Google account</TooltipContent>
+            <TooltipContent>{t("calendar.sidebar.addGoogleAccount")}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -497,7 +501,7 @@ function GoogleAccountsSection({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-[160px] text-xs">
-                    Color by meeting type (external, internal, 1:1, group, etc.)
+                    {t("calendar.sidebar.colorByType")}
                   </TooltipContent>
                 </Tooltip>
                 {/* Single color options */}
@@ -547,6 +551,7 @@ function GoogleAccountsSection({
 export function Sidebar({ open, onClose }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useI18n();
   const {
     selectedDate,
     setSelectedDate,
@@ -626,7 +631,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               className="hidden h-4 w-auto shrink-0 dark:block"
             />
             <span className="text-base font-semibold tracking-tight">
-              Calendar
+              {t("calendar.appName")}
             </span>
           </Link>
         </div>
@@ -659,7 +664,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   )}
                 >
                   <item.icon className="h-4 w-4" />
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               );
             })}
@@ -681,9 +686,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <div className="border-t border-border px-1.5 py-1.5">
             <div className="flex min-h-8 items-center justify-between px-3">
               <div className="flex items-center gap-1">
-                <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                  Other Calendars
-                </span>
+              <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                {t("calendar.sidebar.otherCalendars")}
+              </span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="flex items-center text-muted-foreground/40 hover:text-muted-foreground cursor-default">
@@ -691,10 +696,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                     </span>
                   </TooltipTrigger>
                   <TooltipContent side="right">
-                    <p>
-                      Add a teammate's calendar or subscribe to a public
-                      calendar URL
-                    </p>
+                    <p>{t("calendar.sidebar.otherCalendarsTooltip")}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -726,7 +728,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                         ) : (
                           <IconChevronRight className="h-3 w-3" />
                         )}
-                        <span className="min-w-0 flex-1 text-left">People</span>
+                        <span className="min-w-0 flex-1 text-left">{t("calendar.sidebar.people")}</span>
                         <span className="text-[10px]">
                           {overlayPeople.length}
                         </span>
@@ -790,8 +792,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                               </TooltipTrigger>
                               <TooltipContent side="right">
                                 {isHiddenCalendar("people", person.email)
-                                  ? "Show calendar"
-                                  : "Hide calendar"}
+                                  ? t("calendar.sidebar.showCalendar")
+                                  : t("calendar.sidebar.hideCalendar")}
                               </TooltipContent>
                             </Tooltip>
                             <button
@@ -823,7 +825,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                         ) : (
                           <IconChevronRight className="h-3 w-3" />
                         )}
-                        <span className="min-w-0 flex-1 text-left">Feeds</span>
+                        <span className="min-w-0 flex-1 text-left">{t("calendar.sidebar.feeds")}</span>
                         <span className="text-[10px]">
                           {externalCalendars.length}
                         </span>
@@ -884,8 +886,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                               </TooltipTrigger>
                               <TooltipContent side="right">
                                 {isHiddenCalendar("external", cal.id)
-                                  ? "Show calendar"
-                                  : "Hide calendar"}
+                                  ? t("calendar.sidebar.showCalendar")
+                                  : t("calendar.sidebar.hideCalendar")}
                               </TooltipContent>
                             </Tooltip>
                             <button
@@ -935,7 +937,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </TooltipTrigger>
               <TooltipContent side="top">
                 <p>
-                  Keyboard shortcuts{" "}
+                  {t("calendar.sidebar.keyboardShortcuts")}{" "}
                   <kbd className="ml-1 rounded border border-border bg-muted px-1 font-mono text-[10px]">
                     ?
                   </kbd>

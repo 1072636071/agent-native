@@ -905,21 +905,24 @@ export interface SettingsResponse {
 export const navItems: Array<{
   view: BrainView;
   label: string;
+  i18nKey: string;
   href: string;
   icon: Icon;
 }> = [
-  { view: "ask", label: "Ask", href: "/", icon: IconMessageQuestion },
-  { view: "sources", label: "Sources", href: "/sources", icon: IconDatabase },
-  { view: "review", label: "Review", href: "/review", icon: IconChecks },
+  { view: "ask", label: "Ask", i18nKey: "brain.nav.ask", href: "/", icon: IconMessageQuestion },
+  { view: "sources", label: "Sources", i18nKey: "brain.nav.sources", href: "/sources", icon: IconDatabase },
+  { view: "review", label: "Review", i18nKey: "brain.nav.review", href: "/review", icon: IconChecks },
   {
     view: "knowledge",
     label: "Knowledge",
+    i18nKey: "brain.nav.knowledge",
     href: "/knowledge",
     icon: IconBook2,
   },
   {
     view: "settings",
     label: "Settings",
+    i18nKey: "brain.nav.settings",
     href: "/settings",
     icon: IconSettings,
   },

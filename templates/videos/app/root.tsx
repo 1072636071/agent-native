@@ -1,5 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useNavigationState } from "@/hooks/use-navigation-state";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -10,6 +10,7 @@ import {
   useCommandMenuShortcut,
   useDbSync,
 } from "@agent-native/core/client";
+import { I18nProvider, useI18n, useLocale } from "@agent-native/i18n";
 import { Layout as AppLayout } from "@/components/layout/Layout";
 import { IconSun, IconMoon } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
@@ -34,8 +35,9 @@ export const links: LinksFunction = () => [
 const THEME_INIT_SCRIPT = getThemeInitScript("dark", true);
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { locale } = useLocale();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -80,22 +82,23 @@ function AppContent() {
   const isDark = resolvedTheme === "dark";
   const [cmdkOpen, setCmdkOpen] = useState(false);
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
+  const { t } = useI18n();
 
   return (
     <>
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Videos">
+        <CommandMenu.Group heading={t("command.videos")}>
           <CommandMenu.Item onSelect={() => {}}>
-            Search compositions
+            {t("command.searchCompositions")}
           </CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("command.appearance")}>
           <CommandMenu.Item
             onSelect={() => setTheme(isDark ? "light" : "dark")}
             keywords={["theme", "dark", "light", "mode"]}
           >
             {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-            Toggle {isDark ? "light" : "dark"} mode
+            {isDark ? t("command.toggleLight") : t("command.toggleDark")}
           </CommandMenu.Item>
         </CommandMenu.Group>
       </CommandMenu>
@@ -110,7 +113,9 @@ export default function Root() {
   const [queryClient] = useState(() => createAgentNativeQueryClient());
   return (
     <AppProviders queryClient={queryClient} defaultTheme="dark">
-      <AppContent />
+      <I18nProvider>
+        <AppContent />
+      </I18nProvider>
     </AppProviders>
   );
 }

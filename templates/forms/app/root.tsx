@@ -26,6 +26,7 @@ import {
   navigateWithAgentChatViewTransition,
   setClientAppState,
 } from "@agent-native/core/client";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import type { LinksFunction } from "react-router";
 import stylesheet from "./global.css?url";
 import { TAB_ID } from "@/lib/tab-id";
@@ -43,9 +44,10 @@ export const links: LinksFunction = () => [
 
 const THEME_INIT_SCRIPT = getThemeInitScript();
 
-export function Layout({ children }: { children: React.ReactNode }) {
+function HtmlDocument({ children }: { children: React.ReactNode }) {
+  const { lang } = useI18n();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -75,6 +77,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  );
+}
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nProvider>
+      <HtmlDocument>{children}</HtmlDocument>
+    </I18nProvider>
   );
 }
 
@@ -176,6 +186,7 @@ function OpenLinkInterceptor() {
 
 function ThemeToggleItem() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { t } = useI18n();
   const isDark = resolvedTheme === "dark";
   return (
     <CommandMenu.Item
@@ -183,7 +194,7 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle theme
+      {t("forms.command.toggleTheme")}
     </CommandMenu.Item>
   );
 }
@@ -191,6 +202,7 @@ function ThemeToggleItem() {
 export default function Root() {
   const [queryClient] = useState(() => createAgentNativeQueryClient());
   const [cmdkOpen, setCmdkOpen] = useState(false);
+  const { t } = useI18n();
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
   return (
     <AppProviders queryClient={queryClient}>
@@ -199,8 +211,8 @@ export default function Root() {
       <UrlStateSync />
       <OpenLinkInterceptor />
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Forms">
-          <CommandMenu.Item onSelect={() => {}}>Search forms</CommandMenu.Item>
+        <CommandMenu.Group heading={t("forms.nav.forms")}>
+          <CommandMenu.Item onSelect={() => {}}>{t("forms.command.searchForms")}</CommandMenu.Item>
         </CommandMenu.Group>
         <CommandMenu.Group heading="Appearance">
           <ThemeToggleItem />

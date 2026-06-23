@@ -13,16 +13,18 @@ import {
   appPath,
 } from "@agent-native/core/client";
 import { OrgSwitcher } from "@agent-native/core/client/org";
-
-const navItems = [
-  { icon: IconVideo, label: "Animations", href: "/" },
-  { icon: IconComponents, label: "Components", href: "/components" },
-  { icon: IconPalette, label: "Design Systems", href: "/design-systems" },
-  { icon: IconUsers, label: "Team", href: "/team" },
-];
+import { useI18n } from "@agent-native/i18n";
 
 export function NavSidebar() {
   const location = useLocation();
+  const { t } = useI18n();
+
+  const navItems = [
+    { icon: IconVideo, label: t("nav.animations"), href: "/" },
+    { icon: IconComponents, label: t("nav.components"), href: "/components" },
+    { icon: IconPalette, label: t("nav.designSystems"), href: "/design-systems" },
+    { icon: IconUsers, label: t("nav.team"), href: "/team" },
+  ];
 
   return (
     <aside className="flex h-full w-56 shrink-0 flex-col border-r border-border bg-sidebar text-sidebar-foreground">
@@ -39,7 +41,7 @@ export function NavSidebar() {
           aria-hidden="true"
           className="hidden h-4 w-auto shrink-0 dark:block"
         />
-        <span className="text-sm font-semibold tracking-tight">Videos</span>
+        <span className="text-sm font-semibold tracking-tight">{t("app.title")}</span>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-1">

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconBook,
   IconCheck,
@@ -68,6 +69,7 @@ const typeOptions = [
 ];
 
 export default function KnowledgeRoute() {
+  const { t } = useI18n();
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
   const status = params.get("status") ?? "all";
@@ -148,13 +150,13 @@ export default function KnowledgeRoute() {
   return (
     <div className="min-h-full bg-background">
       <PageHeader
-        eyebrow="Knowledge"
-        title="Cited company knowledge"
-        description="Browse approved, stale, and review-bound memories with the source and confidence signal visible."
+        eyebrow={t("brain.nav.knowledge")}
+        title={t("brain.knowledge.title")}
+        description={t("brain.knowledge.description")}
         actions={
           <Badge variant="outline" className="gap-2">
             <IconTable className="size-4" />
-            {filteredRows.length} rows
+            {filteredRows.length} {t("brain.knowledge.table.rows")}
           </Badge>
         }
       />
@@ -167,7 +169,7 @@ export default function KnowledgeRoute() {
               <Input
                 value={query}
                 onChange={(event) => updateParam("q", event.target.value)}
-                placeholder="Search memories, topics, source names..."
+                placeholder={t("brain.search.placeholder")}
                 className="pl-9"
               />
             </div>
@@ -177,7 +179,7 @@ export default function KnowledgeRoute() {
                 onValueChange={(value) => updateParam("status", value)}
               >
                 <SelectTrigger className="w-full sm:w-44">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t("brain.search.filters.status")} />
                 </SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((option) => (
@@ -192,12 +194,12 @@ export default function KnowledgeRoute() {
                 onValueChange={(value) => updateParam("type", value)}
               >
                 <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Source type" />
+                  <SelectValue placeholder={t("brain.knowledge.filters.typeAll")} />
                 </SelectTrigger>
                 <SelectContent>
                   {typeOptions.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option === "all" ? "All types" : option}
+                      {option === "all" ? t("brain.knowledge.filters.typeAll") : option}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -213,12 +215,12 @@ export default function KnowledgeRoute() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Knowledge</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Company context</TableHead>
-                  <TableHead className="text-right">Confidence</TableHead>
-                  <TableHead className="text-right">Cites</TableHead>
+                  <TableHead>{t("brain.knowledge.table.title")}</TableHead>
+                  <TableHead>{t("brain.knowledge.table.source")}</TableHead>
+                  <TableHead>{t("brain.knowledge.table.status")}</TableHead>
+                  <TableHead>{t("brain.knowledge.table.companyContext")}</TableHead>
+                  <TableHead className="text-right">{t("brain.knowledge.table.confidence")}</TableHead>
+                  <TableHead className="text-right">{t("brain.knowledge.table.citations")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -233,21 +235,21 @@ export default function KnowledgeRoute() {
                           ) : null}
                         </div>
                         <p className="mt-1 line-clamp-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-                          {row.summary ?? row.body ?? "No summary yet."}
+                          {row.summary ?? row.body ?? t("brain.knowledge.noSummary")}
                         </p>
                         {row.owner ? (
                           <p className="mt-2 text-xs text-muted-foreground">
-                            Owner: {row.owner}
+                            {t("brain.knowledge.table.owner")}: {row.owner}
                           </p>
                         ) : null}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        {row.sourceName ?? row.sourceId ?? "Source"}
+                        {row.sourceName ?? row.sourceId ?? t("brain.knowledge.table.source")}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {row.sourceType ?? "source"}
+                        {row.sourceType ?? t("brain.knowledge.table.sourceType")}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -279,39 +281,38 @@ export default function KnowledgeRoute() {
           <EmptyActionState
             title={
               hasActiveFilters
-                ? "No knowledge matches these filters"
-                : "No company knowledge yet"
+                ? t("brain.knowledge.emptyFiltered.title")
+                : t("brain.knowledge.empty.title")
             }
             detail={
               hasActiveFilters
-                ? "Clear the search or filters to broaden the knowledge set."
-                : "Connect a source or approve review proposals to build company knowledge."
+                ? t("brain.knowledge.emptyFiltered.detail")
+                : t("brain.knowledge.empty.detail")
             }
           />
         )}
 
         {setCanonical.isError || previewCanonical.isError ? (
           <EmptyActionState
-            title="Company context update failed"
+            title={t("brain.knowledge.publishError")}
             detail={
               setCanonical.error?.message ??
               previewCanonical.error?.message ??
-              "Brain could not update the workspace context resource."
+              t("brain.knowledge.publishErrorDetail")
             }
           />
         ) : null}
 
         {knowledgeQuery.isError ? (
           <EmptyActionState
-            title="Waiting on search-knowledge"
-            detail="Brain could not load reviewed company knowledge yet."
+            title={t("brain.knowledge.loadError")}
+            detail={t("brain.knowledge.loadErrorDetail")}
           />
         ) : null}
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <IconFilter className="size-4" />
-          View state is mirrored to application-state as query, status, and
-          source type filters.
+          {t("brain.knowledge.viewStateNote")}
         </div>
       </div>
       <CanonicalPreviewSheet
@@ -323,8 +324,8 @@ export default function KnowledgeRoute() {
         error={previewCanonical.error?.message ?? null}
         primaryLabel={
           previewOperation === "publish"
-            ? "Publish company context"
-            : "Unpublish company context"
+            ? t("brain.knowledge.canonical.publish")
+            : t("brain.knowledge.canonical.unpublish")
         }
         primaryDisabled={!previewRow || setCanonical.isPending}
         onPrimaryAction={() => void confirmCanonicalChange()}

@@ -15,6 +15,7 @@ import {
 } from "@agent-native/core/client";
 import { ExtensionsSidebarSection } from "@agent-native/core/client/extensions";
 import { OrgSwitcher } from "@agent-native/core/client/org";
+import { useI18n } from "@agent-native/i18n";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import {
@@ -36,15 +37,16 @@ import { Header } from "./Header";
 import { HeaderActionsProvider } from "./HeaderActions";
 
 const navItems = [
-  { icon: IconFlame, label: "Entry", href: "/" },
-  { icon: IconChartBar, label: "Analytics", href: "/analytics" },
-  { icon: IconSettings, label: "Settings", href: "/settings" },
+  { icon: IconFlame, label: "macros.nav.entry", href: "/" },
+  { icon: IconChartBar, label: "macros.nav.analytics", href: "/analytics" },
+  { icon: IconSettings, label: "macros.nav.settings", href: "/settings" },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useI18n();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(() => {
@@ -119,11 +121,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         position="right"
         defaultOpen={false}
         animateMobile
-        emptyStateText="Just tell me what you ate — I'll estimate the macros"
+        emptyStateText={t("macros.agentSidebar.emptyState")}
         suggestions={[
-          "Chicken burrito bowl for lunch",
-          "What are my macros today?",
-          "I ran 30 minutes this morning",
+          t("macros.agentSidebar.suggestion1"),
+          t("macros.agentSidebar.suggestion2"),
+          t("macros.agentSidebar.suggestion3"),
         ]}
       >
         <div className="flex flex-1 overflow-hidden">
@@ -146,7 +148,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Mobile sidebar sheet */}
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetContent side="left" className="w-56 p-0">
-              <SheetTitle className="sr-only">Navigation</SheetTitle>
+              <SheetTitle className="sr-only">{t("macros.sidebar.navTitle")}</SheetTitle>
               <SidebarContent pathname={location.pathname} />
             </SheetContent>
           </Sheet>
@@ -175,6 +177,7 @@ function SidebarContent({
   const ToggleIcon = collapsed
     ? IconLayoutSidebarLeftExpand
     : IconLayoutSidebarLeftCollapse;
+  const { t } = useI18n();
 
   return (
     <div className="flex h-full flex-col">
@@ -199,7 +202,7 @@ function SidebarContent({
               className="hidden h-4 w-auto shrink-0 dark:block"
             />
             <span className="font-logo truncate text-sm font-bold tracking-tight text-foreground">
-              Macros
+              {t("macros.sidebar.brand")}
             </span>
           </div>
         )}
@@ -211,7 +214,7 @@ function SidebarContent({
                 variant="ghost"
                 size="icon"
                 aria-label={
-                  collapsed ? "Expand left sidebar" : "Collapse left sidebar"
+                  collapsed ? t("macros.sidebar.expand") : t("macros.sidebar.collapse")
                 }
                 className={cn(
                   "hidden h-8 w-8 text-muted-foreground hover:text-foreground md:inline-flex",
@@ -223,7 +226,7 @@ function SidebarContent({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              {collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              {collapsed ? t("macros.sidebar.expandTooltip") : t("macros.sidebar.collapseTooltip")}
             </TooltipContent>
           </Tooltip>
         )}
@@ -236,11 +239,12 @@ function SidebarContent({
             item.href === "/"
               ? pathname === "/" || pathname === "/entry"
               : pathname.startsWith(item.href);
+          const label = t(item.label);
           const link = (
             <Link
               key={item.href}
               to={item.href}
-              aria-label={collapsed ? item.label : undefined}
+              aria-label={collapsed ? label : undefined}
               className={cn(
                 "flex h-9 items-center rounded-lg text-sm transition-colors",
                 collapsed ? "justify-center px-0" : "gap-3 px-3",
@@ -250,13 +254,13 @@ function SidebarContent({
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {!collapsed && item.label}
+              {!collapsed && label}
             </Link>
           );
           return collapsed ? (
             <Tooltip key={item.href}>
               <TooltipTrigger asChild>{link}</TooltipTrigger>
-              <TooltipContent side="right">{item.label}</TooltipContent>
+              <TooltipContent side="right">{label}</TooltipContent>
             </Tooltip>
           ) : (
             link
@@ -288,6 +292,7 @@ function SyncIndicator({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
   });
   const mutatingActions = useIsMutating();
   const [agentToolRuns, setAgentToolRuns] = useState(0);
+  const { t } = useI18n();
 
   useEffect(() => {
     const trackedTools = new Set(["log-meal", "log-exercise", "log-weight"]);
@@ -326,7 +331,7 @@ function SyncIndicator({ sidebarCollapsed }: { sidebarCollapsed: boolean }) {
       )}
     >
       <IconLoader2 className="h-3.5 w-3.5 animate-spin" />
-      Syncing…
+      {t("macros.syncIndicator.syncing")}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useI18n } from "@agent-native/i18n";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import {
   IconAdjustments,
@@ -39,51 +40,27 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyActionState, PageHeader } from "@/components/brain/Surface";
 
-const toneOptions = [
-  {
-    value: "direct",
-    label: "Direct",
-    description: "Concise, concrete, and decision-oriented.",
-  },
-  {
-    value: "friendly",
-    label: "Friendly",
-    description: "Warm and plainspoken without losing precision.",
-  },
-  {
-    value: "formal",
-    label: "Formal",
-    description: "Careful, policy-ready, and executive-facing.",
-  },
-  {
-    value: "technical",
-    label: "Technical",
-    description: "Detailed, source-heavy, and implementation-aware.",
-  },
-] as const;
 
-const sourcePolicyOptions = [
-  {
-    value: "strict",
-    label: "Strict",
-    description: "Answer from approved knowledge and citations only.",
-  },
-  {
-    value: "balanced",
-    label: "Balanced",
-    description: "Prefer approved knowledge, then identify source gaps.",
-  },
-  {
-    value: "exploratory",
-    label: "Exploratory",
-    description: "Use weaker signals but label uncertainty clearly.",
-  },
-] as const;
-
-type ToneValue = (typeof toneOptions)[number]["value"];
-type SourcePolicyValue = (typeof sourcePolicyOptions)[number]["value"];
 
 export default function SettingsRoute() {
+  const { t } = useI18n();
+
+  const toneOptions = [
+    { value: "direct", label: t("brain.settings.tone.direct"), description: t("brain.settings.tone.directDesc") },
+    { value: "friendly", label: t("brain.settings.tone.friendly"), description: t("brain.settings.tone.friendlyDesc") },
+    { value: "formal", label: t("brain.settings.tone.formal"), description: t("brain.settings.tone.formalDesc") },
+    { value: "technical", label: t("brain.settings.tone.technical"), description: t("brain.settings.tone.technicalDesc") },
+  ] as const;
+
+  const sourcePolicyOptions = [
+    { value: "strict", label: t("brain.settings.sourcePolicy.strict"), description: t("brain.settings.sourcePolicy.strictDesc") },
+    { value: "balanced", label: t("brain.settings.sourcePolicy.balanced"), description: t("brain.settings.sourcePolicy.balancedDesc") },
+    { value: "exploratory", label: t("brain.settings.sourcePolicy.exploratory"), description: t("brain.settings.sourcePolicy.exploratoryDesc") },
+  ] as const;
+
+  type ToneValue = (typeof toneOptions)[number]["value"];
+  type SourcePolicyValue = (typeof sourcePolicyOptions)[number]["value"];
+
   const settingsQuery = useActionQuery<SettingsResponse>(
     "get-brain-settings" as any,
     {} as any,
@@ -124,9 +101,9 @@ export default function SettingsRoute() {
   return (
     <div className="min-h-full bg-background">
       <PageHeader
-        eyebrow="Customize"
-        title="Customize Brain"
-        description="Name the assistant, shape its voice, and set the policies it follows when turning company sources into knowledge."
+        eyebrow={t("brain.settings.eyebrow")}
+        title={t("brain.settings.title")}
+        description={t("brain.settings.description")}
         actions={
           <Button
             size="sm"
@@ -136,10 +113,10 @@ export default function SettingsRoute() {
           >
             <IconDeviceFloppy className="size-4" />
             {saveSettings.isPending
-              ? "Saving"
+              ? t("brain.settings.saving")
               : isDirty
-                ? "Save changes"
-                : "Saved"}
+                ? t("brain.settings.saveChanges")
+                : t("brain.settings.saved")}
           </Button>
         }
       />
@@ -150,26 +127,25 @@ export default function SettingsRoute() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <IconBuilding className="size-4 text-primary" />
-                Identity
+                {t("brain.settings.identity")}
               </CardTitle>
               <CardDescription>
-                The names Brain uses when it describes itself and the workspace
-                it is protecting.
+                {t("brain.settings.identityDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-5 md:grid-cols-2">
               <TextField
                 id="company-name"
-                label="Company name"
+                label={t("brain.settings.companyName")}
                 value={settings.companyName ?? ""}
-                placeholder="Acme"
+                placeholder={t("brain.settings.companyNamePlaceholder")}
                 onChange={(value) => update("companyName", value)}
               />
               <TextField
                 id="assistant-name"
-                label="Assistant name"
+                label={t("brain.settings.assistantName")}
                 value={settings.assistantName ?? ""}
-                placeholder="Brain"
+                placeholder={t("brain.settings.assistantNamePlaceholder")}
                 onChange={(value) => update("assistantName", value)}
               />
             </CardContent>
@@ -179,25 +155,24 @@ export default function SettingsRoute() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <IconMessageCircle className="size-4 text-primary" />
-                Assistant Behavior
+                {t("brain.settings.assistantBehavior")}
               </CardTitle>
               <CardDescription>
-                The default voice and source posture for answers and distilled
-                knowledge proposals.
+                {t("brain.settings.assistantBehaviorDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
               <div className="grid gap-5 md:grid-cols-2">
                 <SelectField
                   id="assistant-tone"
-                  label="Tone"
+                  label={t("brain.settings.tone")}
                   value={(settings.assistantTone ?? "direct") as ToneValue}
                   options={toneOptions}
                   onChange={(value) => update("assistantTone", value)}
                 />
                 <SelectField
                   id="source-policy"
-                  label="Source policy"
+                  label={t("brain.settings.sourcePolicy")}
                   value={
                     (settings.sourcePolicy ?? "balanced") as SourcePolicyValue
                   }
@@ -216,7 +191,7 @@ export default function SettingsRoute() {
               <Separator />
               <div className="grid gap-2">
                 <Label htmlFor="distillation-instructions">
-                  Core instructions
+                  {t("brain.settings.distillationInstructions")}
                 </Label>
                 <Textarea
                   id="distillation-instructions"
@@ -227,8 +202,7 @@ export default function SettingsRoute() {
                   className="min-h-36 resize-y leading-6"
                 />
                 <p className="text-xs leading-5 text-muted-foreground">
-                  Guidance for turning raw captures into durable institutional
-                  knowledge.
+                  {t("brain.settings.distillationInstructionsPlaceholder")}
                 </p>
               </div>
             </CardContent>
@@ -238,16 +212,16 @@ export default function SettingsRoute() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <IconAdjustments className="size-4 text-primary" />
-                Publishing And Review
+                {t("brain.settings.publishingReview")}
               </CardTitle>
               <CardDescription>
-                Defaults for visibility, approval, and connector cadence.
+                {t("brain.settings.publishingReviewDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="grid gap-2">
-                  <Label htmlFor="publish-tier">Default publish tier</Label>
+                  <Label htmlFor="publish-tier">{t("brain.settings.publishTier")}</Label>
                   <Select
                     value={settings.defaultPublishTier}
                     onValueChange={(value) =>
@@ -262,25 +236,26 @@ export default function SettingsRoute() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="private">Private</SelectItem>
-                        <SelectItem value="team">Team</SelectItem>
-                        <SelectItem value="company">Company</SelectItem>
+                        <SelectItem value="private">{t("brain.settings.publishTierPrivate")}</SelectItem>
+                        <SelectItem value="team">{t("brain.settings.publishTierTeam")}</SelectItem>
+                        <SelectItem value="company">{t("brain.settings.publishTierCompany")}</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    Sets the default visibility for newly distilled knowledge.
+                    {t("brain.settings.publishTierDesc")}
                   </p>
                 </div>
 
                 <NumberField
                   id="connector-poll-minutes"
-                  label="Connector poll interval"
+                  label={t("brain.settings.pollInterval")}
                   value={settings.connectorPollMinutes ?? 60}
                   min={5}
                   max={1440}
-                  suffix="min"
+                  suffix={t("brain.settings.minSuffix")}
                   onChange={(value) => update("connectorPollMinutes", value)}
+                  t={t}
                 />
               </div>
 
@@ -288,16 +263,16 @@ export default function SettingsRoute() {
 
               <div className="grid gap-4">
                 <SettingSwitch
-                  label="Require approval for company knowledge"
-                  description="Queue company-wide knowledge candidates for human review before publishing."
+                  label={t("brain.settings.approvalRequired")}
+                  description={t("brain.settings.approvalRequiredDesc")}
                   checked={Boolean(settings.requireApprovalForCompanyKnowledge)}
                   onChange={(checked) =>
                     update("requireApprovalForCompanyKnowledge", checked)
                   }
                 />
                 <SettingSwitch
-                  label="Auto-archive resolved review items"
-                  description="Remove approved or rejected queue items from the active review lane."
+                  label={t("brain.settings.autoArchiveDesc")}
+                  description={t("brain.settings.autoArchiveResolvedDesc")}
                   checked={Boolean(settings.autoArchiveResolved)}
                   onChange={(checked) => update("autoArchiveResolved", checked)}
                 />
@@ -309,17 +284,16 @@ export default function SettingsRoute() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <IconShieldCheck className="size-4 text-primary" />
-                Safety And Evidence
+                {t("brain.settings.safetyEvidence")}
               </CardTitle>
               <CardDescription>
-                Redaction and citation rules for answers that leave the review
-                queue.
+                {t("brain.settings.safetyEvidenceDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <SettingSwitch
-                label="Sanitize transcript captures before storage"
-                description="Filter Granola, Clips, webhook, and manual transcript imports down to company-relevant content before saving."
+                label={t("brain.settings.sanitizePII")}
+                description={t("brain.settings.sanitizePIIDesc")}
                 checked={settings.captureSanitizationEnabled !== false}
                 onChange={(checked) =>
                   update("captureSanitizationEnabled", checked)
@@ -329,23 +303,23 @@ export default function SettingsRoute() {
                 <div className="grid gap-4 rounded-md border border-border p-4">
                   <div className="grid gap-2">
                     <Label htmlFor="capture-sanitization-model">
-                      Sanitization model
+                      {t("brain.settings.sanitizationModel")}
                     </Label>
                     <Input
                       id="capture-sanitization-model"
                       value={settings.captureSanitizationModel ?? ""}
-                      placeholder="Default agent model or a cheaper flash model"
+                      placeholder={t("brain.settings.sanitizationModelPlaceholder")}
                       onChange={(event) =>
                         update("captureSanitizationModel", event.target.value)
                       }
                     />
                     <p className="text-xs leading-5 text-muted-foreground">
-                      Optional override for the pre-save filtering pass.
+                      {t("brain.settings.sanitizationModelDesc")}
                     </p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="capture-sanitization-instructions">
-                      Sanitization instructions
+                      {t("brain.settings.sanitizationInstructions")}
                     </Label>
                     <Textarea
                       id="capture-sanitization-instructions"
@@ -362,20 +336,20 @@ export default function SettingsRoute() {
                 </div>
               ) : null}
               <SettingSwitch
-                label="Auto-redact emails"
-                description="Remove email addresses from distilled knowledge unless they are essential evidence."
+                label={t("brain.settings.redactConfidential")}
+                description={t("brain.settings.redactConfidentialDesc")}
                 checked={Boolean(settings.autoRedactEmails)}
                 onChange={(checked) => update("autoRedactEmails", checked)}
               />
               <SettingSwitch
-                label="Require citations"
-                description="Ask Brain must cite approved source rows for factual answers."
+                label={t("brain.settings.citationRequired")}
+                description={t("brain.settings.citationRequiredDesc")}
                 checked={Boolean(settings.requireCitations)}
                 onChange={(checked) => update("requireCitations", checked)}
               />
               <SettingSwitch
-                label="Notify on source errors"
-                description="Surface degraded or failing connectors in the review flow."
+                label={t("brain.settings.sourceErrorNotification")}
+                description={t("brain.settings.sourceErrorNotificationDesc")}
                 checked={Boolean(settings.notifyOnSourceErrors)}
                 onChange={(checked) => update("notifyOnSourceErrors", checked)}
               />
@@ -388,51 +362,51 @@ export default function SettingsRoute() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <IconFileText className="size-4 text-primary" />
-                Current Policy
+                {t("brain.settings.currentPolicy")}
               </CardTitle>
               <CardDescription>
-                The effective settings saved for this Brain workspace.
+                {t("brain.settings.currentPolicyDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 text-sm">
               <PolicyRow
-                label="Assistant"
+                label={t("brain.settings.policyRowAssistant")}
                 value={settings.assistantName || "Brain"}
               />
               <PolicyRow
-                label="Company"
-                value={settings.companyName || "Not set"}
+                label={t("brain.settings.policyRowCompany")}
+                value={settings.companyName || t("brain.settings.policyNotSet")}
               />
               <PolicyRow
-                label="Tone"
+                label={t("brain.settings.policyRowTone")}
                 value={settings.assistantTone ?? "direct"}
               />
               <PolicyRow
-                label="Sources"
+                label={t("brain.settings.policyRowSources")}
                 value={settings.sourcePolicy ?? "balanced"}
               />
               <PolicyRow
-                label="Publish tier"
+                label={t("brain.settings.policyRowPublishTier")}
                 value={settings.defaultPublishTier ?? "team"}
               />
               <PolicyRow
-                label="Approval"
+                label={t("brain.settings.policyRowApproval")}
                 value={
                   settings.requireApprovalForCompanyKnowledge
-                    ? "required"
-                    : "not required"
+                    ? t("brain.settings.policyRequired")
+                    : t("brain.settings.policyNotRequired")
                 }
               />
               <PolicyRow
-                label="Redaction"
-                value={settings.autoRedactEmails ? "enabled" : "disabled"}
+                label={t("brain.settings.policyRowRedaction")}
+                value={settings.autoRedactEmails ? t("brain.settings.policyEnabled") : t("brain.settings.policyDisabled")}
               />
               <PolicyRow
-                label="Pre-save filter"
+                label={t("brain.settings.policyRowPreSaveFilter")}
                 value={
                   settings.captureSanitizationEnabled === false
-                    ? "disabled"
-                    : "enabled"
+                    ? t("brain.settings.policyDisabled")
+                    : t("brain.settings.policyEnabled")
                 }
               />
             </CardContent>
@@ -442,32 +416,30 @@ export default function SettingsRoute() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <IconGauge className="size-4 text-primary" />
-                Auto-publish Gate
+                {t("brain.settings.autoPublishGateTitle")}
               </CardTitle>
               <CardDescription>
-                Runtime policy for company-tier knowledge.
+                {t("brain.settings.autoPublishGateDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 text-sm">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-muted-foreground">
-                  Confidence threshold
+                  {t("brain.settings.confidenceThreshold")}
                 </span>
                 <Badge variant="secondary">90%+</Badge>
               </div>
               <Progress value={90} className="h-2" />
               <p className="text-xs leading-5 text-muted-foreground">
-                High-confidence company knowledge can publish automatically when
-                it is new, unredacted, and does not require an explicit
-                proposal.
+                {t("brain.settings.autoPublishDetail")}
               </p>
             </CardContent>
           </Card>
 
           {settingsQuery.isError || saveSettings.isError ? (
             <EmptyActionState
-              title="Settings actions are not available yet"
-              detail="This page is wired to get-brain-settings and update-brain-settings and is using defaults for now."
+              title={t("brain.settings.error")}
+              detail={t("brain.settings.errorDetail")}
             />
           ) : null}
         </aside>
@@ -544,6 +516,7 @@ function NumberField({
   max,
   suffix,
   onChange,
+  t,
 }: {
   id: string;
   label: string;
@@ -552,6 +525,7 @@ function NumberField({
   max: number;
   suffix: string;
   onChange: (value: number) => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   return (
     <div className="grid gap-2">
@@ -571,7 +545,7 @@ function NumberField({
         </div>
       </div>
       <p className="text-xs leading-5 text-muted-foreground">
-        Must be between {min} and {max} minutes.
+        {t("brain.settings.numberFieldHint", { min: String(min), max: String(max) })}
       </p>
     </div>
   );

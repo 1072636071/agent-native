@@ -19,6 +19,7 @@ import {
   callAction,
   captureClientException,
 } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { RequireActiveOrg } from "@agent-native/core/client/org";
 import { useLiveTranscription } from "@agent-native/core/client/transcription/use-live-transcription";
 import { useDesktopPromo } from "@/hooks/use-desktop-promo";
@@ -264,14 +265,16 @@ function getModePermissionLabels(
 function getPreparingSourcesCopy(
   mode: RecordingMode,
   micDeviceId?: string | null,
+  t?: (key: string, params?: Record<string, string>) => string,
 ): string {
   const labels = getModePermissionLabels(mode, micDeviceId);
-  if (labels.length === 0) return "Choose a source before recording starts.";
+  if (labels.length === 0) return t ? t("clips.record.choose_source") : "Choose a source before recording starts.";
   const readable = labels.map((label) =>
     label === "microphone" ? "microphone" : label,
   );
   const last = readable.pop();
-  return `Allow ${readable.length ? `${readable.join(", ")} and ${last}` : last} access before recording starts.`;
+  const joined = readable.length ? `${readable.join(", ")} and ${last}` : last;
+  return t ? t("clips.record.allow_access_template", { labels: joined }) : `Allow ${joined} access before recording starts.`;
 }
 
 function permissionGuidance(

@@ -19,6 +19,7 @@ import {
   getThemeInitScript,
   useCommandMenuShortcut,
 } from "@agent-native/core/client";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import { configureTracking } from "@agent-native/core/client";
 import { Layout as AppLayout } from "@/components/layout/Layout";
 import { useDistillationBridge } from "@/hooks/use-distillation-bridge";
@@ -54,7 +55,16 @@ const THEME_INIT_SCRIPT = getHydrationStableThemeInitScript();
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <I18nProvider>
+      <Document>{children}</Document>
+    </I18nProvider>
+  );
+}
+
+function Document({ children }: { children: React.ReactNode }) {
+  const { lang } = useI18n();
+  return (
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -119,6 +129,7 @@ function DbSyncSetup() {
 
 function ThemeToggleItem() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { t } = useI18n();
   const isDark = resolvedTheme === "dark";
   return (
     <CommandMenu.Item
@@ -126,7 +137,7 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle {isDark ? "light" : "dark"} mode
+      {isDark ? t("brain.theme.toggleLight") : t("brain.theme.toggleDark")}
     </CommandMenu.Item>
   );
 }
@@ -134,37 +145,38 @@ function ThemeToggleItem() {
 function AppContent() {
   const [cmdkOpen, setCmdkOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useI18n();
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
   return (
     <>
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Navigate">
+        <CommandMenu.Group heading={t("brain.navigation")}>
           <CommandMenu.Item onSelect={() => navigate("/")}>
-            Ask Brain
+            {t("brain.nav.ask")}
           </CommandMenu.Item>
           <CommandMenu.Item onSelect={() => navigate("/search")}>
-            Search
+            {t("brain.nav.search")}
           </CommandMenu.Item>
           <CommandMenu.Item onSelect={() => navigate("/knowledge")}>
-            Knowledge
+            {t("brain.nav.knowledge")}
           </CommandMenu.Item>
           <CommandMenu.Item onSelect={() => navigate("/review")}>
-            Review queue
+            {t("brain.nav.review")}
           </CommandMenu.Item>
           <CommandMenu.Item onSelect={() => navigate("/sources")}>
-            Sources
+            {t("brain.nav.sources")}
           </CommandMenu.Item>
           <CommandMenu.Item onSelect={() => navigate("/ops")}>
-            Ops
+            {t("brain.nav.ops")}
           </CommandMenu.Item>
           <CommandMenu.Item onSelect={() => navigate("/extensions")}>
-            Extensions
+            {t("brain.nav.extensions")}
           </CommandMenu.Item>
           <CommandMenu.Item onSelect={() => navigate("/settings")}>
-            Settings
+            {t("brain.nav.settings")}
           </CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("brain.appearance")}>
           <ThemeToggleItem />
         </CommandMenu.Group>
       </CommandMenu>

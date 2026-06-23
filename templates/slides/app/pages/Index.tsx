@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { flushSync } from "react-dom";
 import { useNavigate, useSearchParams } from "react-router";
 import { IconPlus, IconStack2, IconUserCircle } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 import { useDecks } from "@/context/DeckContext";
 import DeckCard from "@/components/deck/DeckCard";
 import PromptPopover from "@/components/editor/PromptDialog";
@@ -126,6 +127,7 @@ function describeUploadedFilesForAgent(
 }
 
 export default function Index() {
+  const { t } = useI18n();
   const {
     decks,
     createDeck,
@@ -315,17 +317,17 @@ export default function Index() {
 
     // One quick, skippable decision so the agent doesn't guess the deck size.
     const deckLength = await askUserQuestion({
-      question: "How long should this deck be?",
-      header: "Deck length",
+      question: t("slides.index.deckLengthQuestion"),
+      header: t("slides.index.deckLength"),
       options: [
-        { label: "Short (3–5 slides)", value: "3–5 slides" },
+        { label: t("slides.index.deckLengthShort"), value: "3–5 slides" },
         {
-          label: "Medium (6–10 slides)",
+          label: t("slides.index.deckLengthMedium"),
           value: "6–10 slides",
           recommended: true,
         },
-        { label: "Long (11+ slides)", value: "11+ slides" },
-        { label: "Just one visual", value: "a single standalone visual slide" },
+        { label: t("slides.index.deckLengthLong"), value: "11+ slides" },
+        { label: t("slides.index.deckLengthSingle"), value: "a single standalone visual slide" },
       ],
       allowFreeText: false,
     });
@@ -402,9 +404,8 @@ export default function Index() {
       setNewDeckRetryFiles(filesForGeneration);
       deleteDeck(deck.id);
       toast({
-        title: "Couldn't start deck generation",
-        description:
-          "The new deck did not finish saving, so the agent was not started against a missing deck. Your prompt was saved so you can try again.",
+        title: t("slides.index.deckGenFailed"),
+        description: t("slides.index.deckGenFailedDesc"),
       });
       setShowNewDeckPrompt(true);
       return;
@@ -452,7 +453,7 @@ export default function Index() {
     [navigate],
   );
 
-  useSetPageTitle("Decks");
+  useSetPageTitle(t("slides.pageTitle.decks"));
 
   // Inject "New Deck" into the global header actions slot.
   useSetHeaderActions(
@@ -460,10 +461,10 @@ export default function Index() {
       () => (
         <Button onClick={openNewDeck} size="sm" className="cursor-pointer">
           <IconPlus className="w-3.5 h-3.5" />
-          New Deck
+          {t("slides.deck.new")}
         </Button>
       ),
-      [openNewDeck],
+      [openNewDeck, t],
     ),
   );
 
@@ -503,19 +504,19 @@ export default function Index() {
             >
               <ToggleGroupItem
                 value="all"
-                aria-label="Show all decks"
+                aria-label={t("slides.index.showAll")}
                 className="h-7 rounded-md px-3 text-xs data-[state=on]:bg-accent"
               >
                 <IconStack2 className="mr-1.5 h-3.5 w-3.5" />
-                All
+                {t("slides.index.all")}
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="mine"
-                aria-label="Show decks created by me"
+                aria-label={t("slides.index.showMine")}
                 className="h-7 rounded-md px-3 text-xs data-[state=on]:bg-accent"
               >
                 <IconUserCircle className="mr-1.5 h-3.5 w-3.5" />
-                Mine
+                {t("slides.index.mine")}
               </ToggleGroupItem>
             </ToggleGroup>
             <span className="text-xs text-muted-foreground/70">
@@ -542,10 +543,10 @@ export default function Index() {
               </div>
               <div className="p-4">
                 <h3 className="font-medium text-sm text-muted-foreground group-hover:text-foreground/70">
-                  New Deck
+                  {t("slides.deck.new")}
                 </h3>
                 <div className="text-xs text-muted-foreground/70 mt-1">
-                  Create a deck or visual
+                  {t("slides.index.createDeckOrVisual")}
                 </div>
               </div>
             </button>
@@ -567,7 +568,7 @@ export default function Index() {
             ))}
             {visibleDecks.length === 0 && (
               <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
-                No decks created by you yet.
+                {t("slides.index.noDecksCreated")}
               </div>
             )}
           </div>
@@ -581,19 +582,18 @@ export default function Index() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Deck?</AlertDialogTitle>
+            <AlertDialogTitle>{t("slides.index.deleteDeck")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this deck and all its slides. This
-              action cannot be undone.
+              {t("slides.index.deleteDeckConfirm")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("slides.common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t("slides.common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -602,10 +602,10 @@ export default function Index() {
       <PromptPopover
         open={showNewDeckPrompt}
         onOpenChange={setNewDeckPromptOpen}
-        title="New deck"
-        placeholder="Describe your deck, visual, or diagram..."
+        title={t("slides.deck.new")}
+        placeholder={t("slides.index.describeDeck")}
         onSkip={handleCreateDeckBlank}
-        skipLabel="Skip prompt"
+        skipLabel={t("slides.index.skipPrompt")}
         onSubmit={handleCreateDeckWithPrompt}
         onBeforeUpload={(prompt, files) => {
           if (session) return true;
@@ -621,21 +621,21 @@ export default function Index() {
         {designSystems.length > 0 && (
           <div className="border-t border-border px-3.5 py-2">
             <label className="mb-1.5 block text-[11px] font-medium text-muted-foreground">
-              Design system
+              {t("slides.index.designSystem")}
             </label>
             <Select
               value={selectedDesignSystemId || "none"}
               onValueChange={setSelectedDesignSystemId}
             >
               <SelectTrigger className="h-8 w-full bg-accent/40 text-xs">
-                <SelectValue placeholder="Choose a design system" />
+                <SelectValue placeholder={t("slides.index.chooseDesignSystem")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="none">{t("slides.index.none")}</SelectItem>
                 {designSystems.map((ds) => (
                   <SelectItem key={ds.id} value={ds.id}>
                     {ds.title}
-                    {ds.isDefault ? " (Default)" : ""}
+                    {ds.isDefault ? t("slides.index.default") : ""}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -650,15 +650,15 @@ export default function Index() {
       <AlertDialog open={showSignInDialog} onOpenChange={setSignInDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Sign in to create a deck</AlertDialogTitle>
+            <AlertDialogTitle>{t("slides.index.signInToCreate")}</AlertDialogTitle>
             <AlertDialogDescription>
               {signInPromptHadFiles
-                ? "You need to sign in before generating a deck. We've saved your prompt; reattach any files once you're back."
-                : "You need to sign in before generating a deck. We've saved your prompt — once you're back, it'll be ready to go."}
+                ? t("slides.index.signInRequiredFiles")
+                : t("slides.index.signInRequired")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("slides.common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 const ret = window.location.pathname + window.location.search;
@@ -667,7 +667,7 @@ export default function Index() {
                   `?return=${encodeURIComponent(ret)}`;
               }}
             >
-              Sign in
+              {t("slides.common.signIn")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -681,17 +681,17 @@ function EmptyState({
 }: {
   onCreateDeck: (e: React.MouseEvent<HTMLElement>) => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#609FF8]/20 to-[#4080E0]/20 border border-[#609FF8]/20 flex items-center justify-center mb-6">
         <IconStack2 className="w-7 h-7 text-[#609FF8]" />
       </div>
       <h2 className="text-xl font-semibold text-foreground mb-2">
-        Create your first deck or visual
+        {t("slides.index.emptyStateTitle")}
       </h2>
       <p className="text-sm text-muted-foreground max-w-sm mb-8 leading-relaxed">
-        Build beautiful presentations, standalone visuals, diagrams, and
-        image-rich stories with AI-powered generation.
+        {t("slides.index.emptyStateDesc")}
       </p>
       <Button
         onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
@@ -699,7 +699,7 @@ function EmptyState({
         }
       >
         <IconPlus className="w-4 h-4" />
-        New Deck
+        {t("slides.deck.new")}
       </Button>
     </div>
   );

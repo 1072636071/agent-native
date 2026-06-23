@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useI18n } from "@agent-native/i18n";
 import { useSearchParams } from "react-router";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import {
@@ -86,6 +87,7 @@ import {
   StatusBadge,
 } from "@/components/brain/Surface";
 
+type I18nT = (key: string, options?: Record<string, unknown>) => string;
 type Provider = "manual" | "generic" | "clips" | "slack" | "granola" | "github";
 type CaptureStatusFilter = BrainCaptureReviewStatus | "all";
 
@@ -116,57 +118,57 @@ const providers: Array<{
 }> = [
   {
     value: "slack",
-    label: "Slack",
-    detail: "Approved public/private channels only",
+    label: (t: I18nT) => t("brain.sources.providerSlack"),
+    detail: (t: I18nT) => t("brain.sources.providerSlackDetail"),
     icon: IconBrandSlack,
   },
   {
     value: "granola",
-    label: "Granola",
-    detail: "Enterprise API Team-space notes",
+    label: (t: I18nT) => t("brain.sources.providerGranola"),
+    detail: (t: I18nT) => t("brain.sources.providerGranolaDetail"),
     icon: IconNotes,
   },
   {
     value: "github",
-    label: "GitHub",
-    detail: "Approved repository issues and PRs",
+    label: (t: I18nT) => t("brain.sources.providerGithub"),
+    detail: (t: I18nT) => t("brain.sources.providerGithubDetail"),
     icon: IconBrandGithub,
   },
   {
     value: "clips",
-    label: "Clips",
-    detail: "Recordings exported into Brain",
+    label: (t: I18nT) => t("brain.sources.providerClips"),
+    detail: (t: I18nT) => t("brain.sources.providerClipsDetail"),
     icon: IconVideo,
   },
   {
     value: "generic",
-    label: "Webhook",
-    detail: "Signed transcript and capture imports",
+    label: (t: I18nT) => t("brain.sources.providerWebhook"),
+    detail: (t: I18nT) => t("brain.sources.providerWebhookDetail"),
     icon: IconWebhook,
   },
   {
     value: "manual",
-    label: "Manual",
-    detail: "Agent/UI imports without remote sync",
+    label: (t: I18nT) => t("brain.sources.providerManual"),
+    detail: (t: I18nT) => t("brain.sources.providerManualDetail"),
     icon: IconFileText,
   },
 ];
 
-function defaultTitle(provider: Provider) {
+function defaultTitle(provider: Provider, t: I18nT) {
   switch (provider) {
     case "slack":
-      return "Slack knowledge channels";
+      return t("brain.sources.defaultTitleSlack");
     case "granola":
-      return "Granola team notes";
+      return t("brain.sources.defaultTitleGranola");
     case "github":
-      return "GitHub product repos";
+      return t("brain.sources.defaultTitleGithub");
     case "clips":
-      return "Clips exports";
+      return t("brain.sources.defaultTitleClips");
     case "generic":
-      return "Generic transcript webhook";
+      return t("brain.sources.defaultTitleWebhook");
     case "manual":
     default:
-      return "Manual imports";
+      return t("brain.sources.defaultTitleManual");
   }
 }
 
@@ -326,43 +328,44 @@ const captureStatusOptions: CaptureStatusFilter[] = [
   "all",
 ];
 
-function captureStatusLabel(status: CaptureStatusFilter) {
+function captureStatusLabel(status: CaptureStatusFilter, t: I18nT) {
   switch (status) {
     case "queued":
-      return "Queued";
+      return t("brain.sources.captureReviewStatusQueued");
     case "distilling":
-      return "Distilling";
+      return t("brain.sources.captureReviewStatusDistilling");
     case "distilled":
-      return "Distilled";
+      return t("brain.sources.captureReviewStatusDistilled");
     case "ignored":
-      return "Ignored";
+      return t("brain.sources.captureReviewStatusIgnored");
     case "all":
     default:
-      return "All captures";
+      return t("brain.sources.captureReviewStatusAll");
   }
 }
 
-function queueStatusLabel(status: string) {
+function queueStatusLabel(status: string, t: I18nT) {
   switch (status) {
     case "processing":
-      return "Processing";
+      return t("brain.sources.queueStatusProcessing");
     case "done":
-      return "Done";
+      return t("brain.sources.queueStatusDone");
     case "failed":
-      return "Failed";
+      return t("brain.sources.queueStatusFailed");
     case "queued":
     default:
-      return "Queued";
+      return t("brain.sources.queueStatusQueued");
   }
 }
 
 function queueActionLabel(
   queue: NonNullable<CapturesResponse["captures"]>[number]["distillationQueue"],
+  t: I18nT,
 ) {
-  if (!queue) return "Queue distill";
-  if (queue.status === "failed") return "Retry distill";
-  if (queue.status === "done") return "Distilled";
-  return "Queued";
+  if (!queue) return t("brain.sources.queueActionQueueDistill");
+  if (queue.status === "failed") return t("brain.sources.queueActionRetryDistill");
+  if (queue.status === "done") return t("brain.sources.queueActionDistilled");
+  return t("brain.sources.queueActionQueued");
 }
 
 function captureCanQueue(capture: BrainCaptureReviewItem) {
@@ -1002,17 +1005,16 @@ function ProviderCatalog({
         <div>
           <div className="flex items-center gap-2">
             <IconDatabaseImport className="size-4 text-muted-foreground" />
-            <h2 className="text-sm font-medium">Connection providers</h2>
+            <h2 className="text-sm font-medium">{t("brain.sources.connectionProviders")}</h2>
           </div>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Reuse workspace integrations, grant Brain access, or add Brain-local
-            sources without exposing credential values.
+            {t("brain.sources.connectionProvidersDesc")}
           </p>
         </div>
         <Badge variant="outline" className="w-fit max-w-full">
           {loading
-            ? "Loading"
-            : `${connectionProviders.length.toLocaleString()} providers`}
+            ? t("brain.sources.loading")
+            : t("brain.sources.providers", { count: connectionProviders.length.toLocaleString() })}
         </Badge>
       </div>
 
@@ -1020,7 +1022,7 @@ function ProviderCatalog({
         <div className="rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <IconLoader2 className="size-4 animate-spin" />
-            Loading provider catalog...
+            {t("brain.sources.loadingProviderCatalog")}
           </div>
         </div>
       ) : connectionProviders.length ? (
@@ -1062,7 +1064,7 @@ function ProviderCatalog({
                       <Icon className="size-4 text-muted-foreground" />
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate font-medium">{provider.label}</p>
+                      <p className="truncate font-medium">{provider.label(t)}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {provider.hasConfiguredSources
                           ? `${provider.configuredSourceCount.toLocaleString()} configured`
@@ -1271,7 +1273,7 @@ function ProviderCatalog({
                                   <p className="mt-1 text-xs text-muted-foreground">
                                     {connection.accountLabel ??
                                       connection.accountId ??
-                                      provider.label}
+                                      provider.label(t)}
                                   </p>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
@@ -1346,13 +1348,13 @@ function ProviderCatalog({
                     }
                   >
                     <IconSettings2 className="size-4" />
-                    {expanded ? "Hide details" : "Details"}
+                    {expanded ? t("brain.sources.hideDetails") : t("brain.sources.details")}
                   </Button>
                   {grantState === "needs_grant" ? (
                     <Button size="sm" variant="outline" asChild>
                       <a href={dispatchIntegrationsHref(provider.id)}>
                         <IconExternalLink className="size-4" />
-                        Grant in Dispatch
+                        {t("brain.sources.grantInDispatch")}
                       </a>
                     </Button>
                   ) : null}
@@ -1363,7 +1365,7 @@ function ProviderCatalog({
                       onClick={() => onAddSource(sourceProvider)}
                     >
                       <IconDatabaseImport className="size-4" />
-                      Add source
+                      {t("brain.sources.addSourceAction")}
                     </Button>
                   ) : null}
                 </div>
@@ -1373,12 +1375,12 @@ function ProviderCatalog({
         </div>
       ) : (
         <div className="rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
-          No Brain connection providers are available from the shared catalog.
+          {t("brain.sources.noProviders")}
         </div>
       )}
       {workspaceError ? (
         <div className="rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
-          Workspace integration status is unavailable: {workspaceError}
+          {t("brain.sources.workspaceError", { error: workspaceError })}
         </div>
       ) : null}
     </section>
@@ -1406,11 +1408,11 @@ function BrainHealthStrip({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <IconReportAnalytics className="size-4 text-muted-foreground" />
-            <h2 className="text-sm font-medium">Brain health</h2>
+            <h2 className="text-sm font-medium">{t("brain.sources.brainHealth")}</h2>
             {loading ? (
               <Badge variant="outline" className="gap-1.5">
                 <IconLoader2 className="size-3 animate-spin" />
-                Checking
+                {t("brain.sources.checking")}
               </Badge>
             ) : null}
           </div>
@@ -1422,23 +1424,23 @@ function BrainHealthStrip({
         <div className="grid gap-2 sm:grid-flow-col sm:auto-cols-max">
           <Badge variant="outline" className="justify-center gap-1.5">
             <IconCircleCheck className="size-3" />
-            {health?.sources.healthy ?? 0}/{health?.sources.total ?? 0} healthy
+            {t("brain.sources.healthy", { healthy: health?.sources.healthy ?? 0, total: health?.sources.total ?? 0 })}
           </Badge>
           {attention ? (
             <Badge variant="outline" className="justify-center gap-1.5">
               <IconAlertTriangle className="size-3" />
-              {attention} attention
+              {t("brain.sources.attention", { count: attention })}
             </Badge>
           ) : null}
           <Badge variant="outline" className="justify-center gap-1.5">
             <IconClock className="size-3" />
             {health?.sources.lastSyncedAt
-              ? `Last sync ${shortDate(health.sources.lastSyncedAt)}`
-              : "No sync yet"}
+              ? t("brain.sources.lastSync", { date: shortDate(health.sources.lastSyncedAt) })
+              : t("brain.sources.noSyncYet")}
           </Badge>
           {lastEval ? (
             <Badge variant="outline" className="justify-center gap-1.5">
-              Eval {Math.round(lastEval.score * 100)}%
+              {t("brain.sources.eval", { pct: Math.round(lastEval.score * 100) })}
             </Badge>
           ) : null}
         </div>
@@ -1503,7 +1505,7 @@ function SourceListItem({
                 </Badge>
                 {nextSync ? (
                   <span className="text-xs text-muted-foreground">
-                    Next sync {nextSync}
+                    {t("brain.sources.syncNotice", { date: nextSync })}
                   </span>
                 ) : null}
               </div>
@@ -1521,20 +1523,20 @@ function SourceListItem({
             }
           >
             <SourceFact
-              label="Captures"
+              label={t("brain.sources.captures")}
               value={(source.recordCount ?? 0).toLocaleString()}
             />
             <SourceFact
-              label="Last sync"
-              value={shortDate(sourceLastSync(source)) ?? "Never"}
+              label={t("brain.sources.lastSync")}
+              value={shortDate(sourceLastSync(source)) ?? t("brain.sources.never")}
             />
-            {coverage ? <SourceFact label="Coverage" value={coverage} /> : null}
+            {coverage ? <SourceFact label={t("brain.sources.coverage")} value={coverage} /> : null}
           </div>
 
           <div className="flex items-center justify-end gap-2">
             <Button size="sm" variant="outline" onClick={onReview}>
               <IconFileSearch className="size-4" />
-              Captures
+              {t("brain.sources.captures")}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -1542,7 +1544,7 @@ function SourceListItem({
                   size="icon"
                   variant="ghost"
                   className="size-9"
-                  aria-label={`More actions for ${sourceName(source)}`}
+                  aria-label={t("brain.sources.sourceAria", { name: sourceName(source) })}
                 >
                   <IconDotsVertical className="size-4" />
                 </Button>
@@ -1550,11 +1552,11 @@ function SourceListItem({
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem disabled={syncPending} onSelect={onSync}>
                   <IconRefresh className="size-4" />
-                  Sync now
+                  {t("brain.sources.syncNow")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={onTune}>
                   <IconSettings2 className="size-4" />
-                  Tune source
+                  {t("brain.sources.tune")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -1582,6 +1584,7 @@ function SourceListItem({
 }
 
 export default function SourcesRoute() {
+  const { t } = useI18n();
   const [params, setParams] = useSearchParams();
   const type = params.get("type") ?? "all";
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -1825,9 +1828,9 @@ export default function SourcesRoute() {
   return (
     <div className="min-h-full bg-muted/20">
       <PageHeader
-        eyebrow="Sources"
-        title="Source configuration"
-        description="Connect approved places Brain can learn from, then sync and review them as needed."
+        eyebrow={t("brain.sources.title")}
+        title={t("brain.sources.title")}
+        description={t("brain.sources.description")}
         actions={
           <div className="grid w-full gap-2 sm:w-auto sm:grid-flow-col sm:auto-cols-max sm:justify-end">
             <Button
@@ -1836,7 +1839,7 @@ export default function SourcesRoute() {
               onClick={() => setAdvancedOpen(true)}
             >
               <IconSettings2 className="size-4" />
-              Advanced
+              {t("brain.sources.advanced")}
             </Button>
             <Button
               size="sm"
@@ -1844,7 +1847,7 @@ export default function SourcesRoute() {
               onClick={() => openCreate()}
             >
               <IconDatabaseImport className="size-4" />
-              Add source
+              {t("brain.sources.addSource")}
             </Button>
           </div>
         }
@@ -1869,8 +1872,8 @@ export default function SourcesRoute() {
         ) : (
           <div>
             <EmptyActionState
-              title="Connect Brain's first source"
-              detail="Add an approved Slack channel, Granola Team-space source, GitHub repo, Clips export, manual import, or signed webhook."
+              title={t("brain.sources.empty.title")}
+              detail={t("brain.sources.empty.detail")}
             />
           </div>
         )}
@@ -1884,8 +1887,8 @@ export default function SourcesRoute() {
         enqueueCapturesDistillation.isError ? (
           <div>
             <EmptyActionState
-              title="Source action failed"
-              detail="Check source credentials, channel allow-lists, and the latest sync error."
+              title={t("brain.sources.error.title")}
+              detail={t("brain.sources.error.detail")}
             />
           </div>
         ) : null}
@@ -1894,10 +1897,9 @@ export default function SourcesRoute() {
       <Sheet open={advancedOpen} onOpenChange={setAdvancedOpen}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-3xl">
           <SheetHeader>
-            <SheetTitle>Advanced source controls</SheetTitle>
+            <SheetTitle>{t("brain.sources.advanced.title")}</SheetTitle>
             <SheetDescription>
-              Filter sources, check connection readiness, and run maintenance
-              syncs when the normal source list is not enough.
+              {t("brain.sources.advanced.description")}
             </SheetDescription>
           </SheetHeader>
 
@@ -1905,15 +1907,15 @@ export default function SourcesRoute() {
             <section className="grid gap-3 rounded-md border border-border bg-card p-4">
               <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
                 <div className="grid gap-2">
-                  <Label htmlFor="source-type-filter">Source type</Label>
+                  <Label htmlFor="source-type-filter">{t("brain.sources.sourceType")}</Label>
                   <Select value={type} onValueChange={updateType}>
                     <SelectTrigger id="source-type-filter">
-                      <SelectValue placeholder="Source type" />
+                      <SelectValue placeholder={t("brain.sources.filterType")} />
                     </SelectTrigger>
                     <SelectContent>
                       {sourceTypes.map((sourceType) => (
                         <SelectItem key={sourceType} value={sourceType}>
-                          {sourceType === "all" ? "All sources" : sourceType}
+                          {sourceType === "all" ? t("brain.sources.allSources") : sourceType}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1926,7 +1928,7 @@ export default function SourcesRoute() {
                   onClick={() => syncDueSources.mutate({ limit: 5 })}
                 >
                   <IconPlayerPlay className="size-4" />
-                  Run due syncs
+                  {t("brain.sources.runDueSyncs")}
                 </Button>
               </div>
             </section>
@@ -1960,18 +1962,18 @@ export default function SourcesRoute() {
       >
         <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
           <SheetHeader>
-            <SheetTitle>Review raw captures</SheetTitle>
+            <SheetTitle>{t("brain.sources.capture.title")}</SheetTitle>
             <SheetDescription>
               {reviewSource
-                ? `${sourceName(reviewSource)} inventory. Raw bodies stay hidden unless a reviewer enables previews.`
-                : "Review imported raw material before distillation."}
+                ? t("brain.sources.capture.sourceDesc", { source: sourceName(reviewSource) })
+                : t("brain.sources.capture.description")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="mt-6 grid gap-4">
             <div className="grid gap-3 rounded-md border border-border bg-muted/25 p-3 sm:grid-cols-[1fr_auto] sm:items-center">
               <div className="grid gap-2 sm:max-w-56">
-                <Label htmlFor="capture-status-filter">Status</Label>
+                <Label htmlFor="capture-status-filter">{t("brain.sources.capture.status")}</Label>
                 <Select
                   value={captureStatus}
                   onValueChange={(value) => {
@@ -1994,9 +1996,9 @@ export default function SourcesRoute() {
               </div>
               <label className="flex items-center justify-between gap-3 text-sm">
                 <span>
-                  Previews
+                  {t("brain.sources.capture.previews")}
                   <span className="block text-xs text-muted-foreground">
-                    Show short snippets for intentional review
+                    {t("brain.sources.capture.previewsDesc")}
                   </span>
                 </span>
                 <Switch
@@ -2010,10 +2012,9 @@ export default function SourcesRoute() {
               <div className="grid gap-3 rounded-md border border-border bg-card p-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm font-medium">Batch distillation</p>
+                    <p className="text-sm font-medium">{t("brain.sources.capture.batchDistillation")}</p>
                     <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                      Select queueable captures and hand them to the Brain
-                      distillation worker together.
+                      {t("brain.sources.capture.batchDesc")}
                     </p>
                   </div>
                   <div className="grid gap-2 sm:flex sm:flex-wrap sm:justify-end">
@@ -2024,7 +2025,7 @@ export default function SourcesRoute() {
                       onClick={toggleAllQueueableCaptures}
                     >
                       <IconChecks className="size-4" />
-                      {allQueueableSelected ? "Unselect all" : "Select all"}
+                      {allQueueableSelected ? t("brain.sources.capture.unselectAll") : t("brain.sources.capture.selectAll")}
                     </Button>
                     <Button
                       size="sm"
@@ -2039,7 +2040,7 @@ export default function SourcesRoute() {
                       ) : (
                         <IconSend className="size-4" />
                       )}
-                      Queue selected
+                      {t("brain.sources.capture.queueSelected")}
                     </Button>
                     {selectedCaptureIds.size ? (
                       <Button
@@ -2047,7 +2048,7 @@ export default function SourcesRoute() {
                         variant="ghost"
                         onClick={() => setSelectedCaptureIds(new Set())}
                       >
-                        Clear
+                        {t("brain.sources.capture.clear")}
                       </Button>
                     ) : null}
                   </div>
@@ -2076,8 +2077,8 @@ export default function SourcesRoute() {
               <LoadingRows rows={3} />
             ) : capturesQuery.isError ? (
               <EmptyActionState
-                title="Capture inventory failed"
-                detail="Check source access and try again."
+                title={t("brain.sources.capture.error.title")}
+                detail={t("brain.sources.capture.error.detail")}
               />
             ) : (capturesQuery.data?.captures ?? []).length ? (
               <div className="grid gap-3">
@@ -2104,7 +2105,7 @@ export default function SourcesRoute() {
                             className="mt-1 size-4 shrink-0 rounded border-border accent-primary disabled:cursor-not-allowed disabled:opacity-50"
                             checked={selected}
                             disabled={!canQueue || isMutating}
-                            aria-label={`Select ${capture.title}`}
+                            aria-label={t("brain.sources.captureSelectAria", { title: capture.title })}
                             onChange={(event) =>
                               toggleCaptureSelection(
                                 capture.id,
@@ -2130,8 +2131,7 @@ export default function SourcesRoute() {
                               </p>
                             ) : (
                               <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                                Raw content hidden. Enable previews or open the
-                                source only when review requires context.
+                                {t("brain.sources.capture.hiddenPreview")}
                               </p>
                             )}
                             {queue ? (
@@ -2144,22 +2144,19 @@ export default function SourcesRoute() {
                                         : "outline"
                                     }
                                   >
-                                    Distillation{" "}
-                                    {queueStatusLabel(queue.status)}
+                                    {t("brain.sources.captureDistillationStatus", { status: queueStatusLabel(queue.status, t) })}
                                   </Badge>
                                   {queue.attempts ? (
                                     <span>
                                       {queue.attempts}{" "}
                                       {queue.attempts === 1
-                                        ? "attempt"
-                                        : "attempts"}
+                                        ? t("brain.sources.attempt")
+                                        : t("brain.sources.attempts")}
                                     </span>
                                   ) : null}
                                   {queue.runAfter ? (
                                     <span>
-                                      Next check{" "}
-                                      {shortDate(queue.runAfter) ??
-                                        queue.runAfter}
+                                      {t("brain.sources.nextCheck", { date: shortDate(queue.runAfter) ?? queue.runAfter })}
                                     </span>
                                   ) : null}
                                 </div>
@@ -2167,9 +2164,7 @@ export default function SourcesRoute() {
                                   <p className="mt-2">{queue.error}</p>
                                 ) : queueIsActive ? (
                                   <p className="mt-2">
-                                    Waiting for the Brain distillation worker to
-                                    write knowledge or send this capture to
-                                    review.
+                                    {t("brain.sources.captureWaiting")}
                                   </p>
                                 ) : null}
                               </div>
@@ -2187,7 +2182,7 @@ export default function SourcesRoute() {
                               rel="noreferrer"
                             >
                               <IconExternalLink className="size-4" />
-                              Source
+                              {t("brain.sources.source")}
                             </a>
                           </Button>
                         ) : null}
@@ -2221,7 +2216,7 @@ export default function SourcesRoute() {
                           }
                         >
                           <IconArchive className="size-4" />
-                          Ignore
+                          {t("brain.sources.capture.ignore")}
                         </Button>
                       </div>
                     </div>
@@ -2230,8 +2225,8 @@ export default function SourcesRoute() {
               </div>
             ) : (
               <EmptyActionState
-                title="No captures match this view"
-                detail="Try another status, run a source sync, or import a transcript."
+                title={t("brain.sources.capture.empty.title")}
+                detail={t("brain.sources.capture.empty.detail")}
               />
             )}
           </div>
@@ -2242,18 +2237,16 @@ export default function SourcesRoute() {
         <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
           <SheetHeader>
             <SheetTitle>
-              {editingSource ? "Tune source" : "Add source"}
+              {editingSource ? t("brain.sources.tuneSource") : t("brain.sources.addSource")}
             </SheetTitle>
             <SheetDescription>
-              Configure what Brain may ingest. Credentials stay in the workspace
-              credential store; this form only saves allow-lists, cursors, and
-              review rules.
+              {t("brain.sources.setup.title")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="mt-6 grid gap-5">
             <div className="grid gap-2">
-              <Label htmlFor="source-title">Name</Label>
+              <Label htmlFor="source-title">{t("brain.sources.setup.name")}</Label>
               <Input
                 id="source-title"
                 value={form.title}
@@ -2262,7 +2255,7 @@ export default function SourcesRoute() {
             </div>
 
             <div className="grid gap-2">
-              <Label>Provider</Label>
+              <Label>{t("brain.sources.setup.provider")}</Label>
               <Select
                 value={form.provider}
                 disabled={!!editingSource}
@@ -2283,7 +2276,7 @@ export default function SourcesRoute() {
                 <SelectContent>
                   {providers.map((provider) => (
                     <SelectItem key={provider.value} value={provider.value}>
-                      {provider.label}
+                      {provider.label(t)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -2293,7 +2286,7 @@ export default function SourcesRoute() {
             {supportsWorkspaceConnectionBinding(form.provider) && (
               <div className="grid gap-2">
                 <Label htmlFor="workspace-connection">
-                  Workspace connection
+                  {t("brain.sources.setup.workspaceConnection")}
                 </Label>
                 <Select
                   value={form.workspaceConnectionId || "__automatic__"}
@@ -2311,7 +2304,7 @@ export default function SourcesRoute() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__automatic__">
-                      Automatic credential selection
+                      {t("brain.sources.setup.autoCredential")}
                     </SelectItem>
                     {formWorkspaceConnections.map((connection) => (
                       <SelectItem key={connection.id} value={connection.id}>
@@ -2325,10 +2318,10 @@ export default function SourcesRoute() {
                 </Select>
                 <p className="text-xs leading-5 text-muted-foreground">
                   {selectedWorkspaceConnection
-                    ? `This source is bound to ${selectedWorkspaceConnection.label}; sync will not fall back to another shared connection.`
+                    ? t("brain.sources.setup.connectionBound", { label: selectedWorkspaceConnection.label })
                     : formWorkspaceConnections.length
-                      ? "Pick a granted connection to pin this source, or leave automatic to use the existing credential fallback."
-                      : "Grant a workspace connection to Brain in Dispatch before pinning this source."}
+                      ? t("brain.sources.setup.autoCredentialDesc")
+                      : t("brain.sources.setup.noConnection")}
                 </p>
               </div>
             )}
@@ -2338,7 +2331,7 @@ export default function SourcesRoute() {
                 <div className="rounded-md border border-border bg-muted/25 p-3">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <IconShieldCheck className="size-4 text-muted-foreground" />
-                    Slack access rules
+                    {t("brain.sources.slack.title")}
                   </div>
                   <div className="mt-2 grid gap-1 text-xs leading-5 text-muted-foreground">
                     <p>
@@ -2353,14 +2346,14 @@ export default function SourcesRoute() {
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="slack-channels">Allowed channels</Label>
+                  <Label htmlFor="slack-channels">{t("brain.sources.slack.allowedChannels")}</Label>
                   <Textarea
                     id="slack-channels"
                     value={form.channelRefs}
                     onChange={(event) =>
                       updateForm({ channelRefs: event.target.value })
                     }
-                    placeholder={"C0123456789\n#product\n#launches"}
+                    placeholder={t("brain.sources.slack.channelPlaceholder")}
                   />
                   <p className="text-xs leading-5 text-muted-foreground">
                     Brain verifies the allow-list, rejects DMs/MPIMs, and never
@@ -2369,7 +2362,7 @@ export default function SourcesRoute() {
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   <div className="grid gap-2">
-                    <Label htmlFor="history-limit">Messages per page</Label>
+                    <Label htmlFor="history-limit">{t("brain.sources.slack.messagesPerPage")}</Label>
                     <Input
                       id="history-limit"
                       type="number"
@@ -2382,7 +2375,7 @@ export default function SourcesRoute() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="poll-minutes">Poll minutes</Label>
+                    <Label htmlFor="poll-minutes">{t("brain.sources.slack.pollMinutes")}</Label>
                     <Input
                       id="poll-minutes"
                       type="number"
@@ -2402,7 +2395,7 @@ export default function SourcesRoute() {
               <div className="grid gap-4 rounded-md border border-border p-4">
                 <div className="grid gap-2 sm:grid-cols-2">
                   <div className="grid gap-2">
-                    <Label htmlFor="granola-page-size">Page size</Label>
+                    <Label htmlFor="granola-page-size">{t("brain.sources.granola.pageSize")}</Label>
                     <Input
                       id="granola-page-size"
                       type="number"
@@ -2415,7 +2408,7 @@ export default function SourcesRoute() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="granola-poll-minutes">Poll minutes</Label>
+                    <Label htmlFor="granola-poll-minutes">{t("brain.sources.granola.pollMinutes")}</Label>
                     <Input
                       id="granola-poll-minutes"
                       type="number"
@@ -2430,7 +2423,7 @@ export default function SourcesRoute() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="granola-updated-after">
-                    Initial updated-after
+                    {t("brain.sources.granola.updatedAfter")}
                   </Label>
                   <Input
                     id="granola-updated-after"
@@ -2441,8 +2434,7 @@ export default function SourcesRoute() {
                     placeholder="2026-05-01T00:00:00.000Z"
                   />
                   <p className="text-xs leading-5 text-muted-foreground">
-                    Granola Enterprise API returns Team-space notes; private
-                    notes are outside the API scope.
+                    {t("brain.sources.granola.updatedAfterDesc")}
                   </p>
                 </div>
               </div>
@@ -2451,23 +2443,22 @@ export default function SourcesRoute() {
             {form.provider === "github" && (
               <div className="grid gap-4 rounded-md border border-border p-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="github-repos">Approved repositories</Label>
+                  <Label htmlFor="github-repos">{t("brain.sources.github.repos")}</Label>
                   <Textarea
                     id="github-repos"
                     value={form.githubRepos}
                     onChange={(event) =>
                       updateForm({ githubRepos: event.target.value })
                     }
-                    placeholder={"owner/repo\nhttps://github.com/owner/repo"}
+                    placeholder={t("brain.sources.github.repoPlaceholder")}
                   />
                   <p className="text-xs leading-5 text-muted-foreground">
-                    Brain imports bounded issue and pull request context from
-                    these repositories using the workspace GitHub credential.
+                    {t("brain.sources.github.repoDesc")}
                   </p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <div className="grid gap-2">
-                    <Label htmlFor="github-state">State</Label>
+                    <Label htmlFor="github-state">{t("brain.sources.github.state")}</Label>
                     <Select
                       value={form.githubState}
                       onValueChange={(githubState) =>
@@ -2481,14 +2472,14 @@ export default function SourcesRoute() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
-                        <SelectItem value="open">Open</SelectItem>
-                        <SelectItem value="closed">Closed</SelectItem>
+                        <SelectItem value="all">{t("brain.sources.github.all")}</SelectItem>
+                        <SelectItem value="open">{t("brain.sources.github.open")}</SelectItem>
+                        <SelectItem value="closed">{t("brain.sources.github.closed")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="github-limit">Items per repo</Label>
+                    <Label htmlFor="github-limit">{t("brain.sources.github.itemsPerRepo")}</Label>
                     <Input
                       id="github-limit"
                       type="number"
@@ -2501,7 +2492,7 @@ export default function SourcesRoute() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="github-poll-minutes">Poll minutes</Label>
+                    <Label htmlFor="github-poll-minutes">{t("brain.sources.github.pollMinutes")}</Label>
                     <Input
                       id="github-poll-minutes"
                       type="number"
@@ -2516,7 +2507,7 @@ export default function SourcesRoute() {
                 </div>
                 <div className="grid gap-3 rounded-md bg-muted/25 p-3">
                   <label className="flex items-center justify-between gap-3 text-sm">
-                    <span>Include issues</span>
+                    <span>{t("brain.sources.github.includeIssues")}</span>
                     <Switch
                       checked={form.githubIncludeIssues}
                       onCheckedChange={(githubIncludeIssues) =>
@@ -2525,7 +2516,7 @@ export default function SourcesRoute() {
                     />
                   </label>
                   <label className="flex items-center justify-between gap-3 text-sm">
-                    <span>Include pull requests</span>
+                    <span>{t("brain.sources.github.includePRs")}</span>
                     <Switch
                       checked={form.githubIncludePullRequests}
                       onCheckedChange={(githubIncludePullRequests) =>
@@ -2540,7 +2531,7 @@ export default function SourcesRoute() {
             {(form.provider === "generic" || form.provider === "clips") && (
               <div className="grid gap-4 rounded-md border border-border p-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="source-key">Webhook source key</Label>
+                  <Label htmlFor="source-key">{t("brain.sources.webhook.sourceKey")}</Label>
                   <Input
                     id="source-key"
                     value={form.sourceKey}
@@ -2550,8 +2541,7 @@ export default function SourcesRoute() {
                     placeholder={form.provider}
                   />
                   <p className="text-xs leading-5 text-muted-foreground">
-                    New sources receive a one-time ingest token. Existing
-                    sources keep their token unless rotated separately.
+                    {t("brain.sources.webhook.sourceKeyDesc")}
                   </p>
                 </div>
               </div>
@@ -2560,9 +2550,9 @@ export default function SourcesRoute() {
             <div className="grid gap-3 rounded-md border border-border bg-muted/25 p-4">
               <label className="flex items-center justify-between gap-3 text-sm">
                 <span>
-                  Auto-sync
+                  {t("brain.sources.setup.autoSync")}
                   <span className="block text-xs text-muted-foreground">
-                    Background polling uses this source when due
+                    {t("brain.sources.setup.autoSyncDesc")}
                   </span>
                 </span>
                 <Switch
@@ -2572,9 +2562,9 @@ export default function SourcesRoute() {
               </label>
               <label className="flex items-center justify-between gap-3 text-sm">
                 <span>
-                  Review required
+                  {t("brain.sources.setup.reviewRequired")}
                   <span className="block text-xs text-muted-foreground">
-                    Queue extracted knowledge before approval
+                    {t("brain.sources.setup.reviewRequiredDesc")}
                   </span>
                 </span>
                 <Switch
@@ -2593,7 +2583,7 @@ export default function SourcesRoute() {
               className="w-full sm:w-auto"
               onClick={() => setSetupOpen(false)}
             >
-              Cancel
+              {t("brain.sources.setup.cancel")}
             </Button>
             <Button
               className="w-full sm:w-auto"
@@ -2604,7 +2594,7 @@ export default function SourcesRoute() {
                 !form.title.trim()
               }
             >
-              {editingSource ? "Save source" : "Create source"}
+              {editingSource ? t("brain.sources.setup.saveSource") : t("brain.sources.setup.createSource")}
             </Button>
           </SheetFooter>
         </SheetContent>

@@ -33,6 +33,7 @@ import { useFolders } from "@/hooks/use-folders";
 import { ExtensionsSidebarSection } from "@agent-native/core/client/extensions";
 import { DevDatabaseLink, FeedbackButton } from "@agent-native/core/client";
 import { OrgSwitcher } from "@agent-native/core/client/org";
+import { useI18n } from "@agent-native/i18n";
 import {
   Tooltip,
   TooltipContent,
@@ -224,11 +225,12 @@ export function Sidebar({
   }, [compSettingsTrigger]);
 
   const location = useLocation();
+  const { t } = useI18n();
 
   const navItems = [
     {
       icon: IconVideo,
-      label: "Animations",
+      label: t("nav.animations"),
       href: "/",
       active:
         !location.pathname.startsWith("/components") &&
@@ -237,19 +239,19 @@ export function Sidebar({
     },
     {
       icon: IconComponents,
-      label: "Components",
+      label: t("nav.components"),
       href: "/components",
       active: location.pathname.startsWith("/components"),
     },
     {
       icon: IconPalette,
-      label: "Design Systems",
+      label: t("nav.designSystems"),
       href: "/design-systems",
       active: location.pathname.startsWith("/design-systems"),
     },
     {
       icon: IconUsers,
-      label: "Team",
+      label: t("nav.team"),
       href: "/team",
       active: location.pathname === "/team",
     },
@@ -268,7 +270,7 @@ export function Sidebar({
       <div className="w-64 lg:w-72 h-full flex flex-col">
         {/* App name */}
         <div className="flex h-10 items-center px-3 border-b border-border shrink-0">
-          <span className="text-xs font-semibold tracking-tight">Videos</span>
+          <span className="text-xs font-semibold tracking-tight">{t("app.title")}</span>
         </div>
 
         {/* Navigation */}
@@ -303,13 +305,13 @@ export function Sidebar({
               value="compositions"
               className="flex-1 px-3 py-1.5 text-xs font-medium rounded-md text-muted-foreground data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-none"
             >
-              Compositions
+              {t("nav.compositions")}
             </TabsTrigger>
             <TabsTrigger
               value="properties"
               className="flex-1 px-3 py-1.5 text-xs font-medium rounded-md text-muted-foreground data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-none"
             >
-              Properties
+              {t("nav.properties")}
               {selectedTrackId && (
                 <span className="ml-1 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               )}
@@ -339,7 +341,7 @@ export function Sidebar({
                       <IconFolderPlus className="h-3.5 w-3.5" />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent>New folder</TooltipContent>
+                  <TooltipContent>{t("sidebar.newFolder")}</TooltipContent>
                 </Tooltip>
               </div>
 
@@ -370,7 +372,7 @@ export function Sidebar({
                 <div className="flex items-center gap-2 px-1 py-0.5">
                   <div className="flex-1 h-px bg-border/40" />
                   <span className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-medium">
-                    Uncategorized
+                    {t("sidebar.uncategorized")}
                   </span>
                   <div className="flex-1 h-px bg-border/40" />
                 </div>
@@ -420,7 +422,7 @@ export function Sidebar({
                   {folders.length > 0 &&
                     uncategorizedCompositions.length === 0 && (
                       <p className="text-[10px] text-center text-muted-foreground/40">
-                        Drop here to remove from folder
+                        {t("sidebar.dropToRemove")}
                       </p>
                     )}
                 </div>
@@ -440,7 +442,7 @@ export function Sidebar({
                     <summary className="cursor-pointer list-none">
                       <div className="flex items-center gap-2 p-2 rounded hover:bg-secondary/50 transition-colors">
                         <IconCamera className="w-3.5 h-3.5 text-blue-400 mr-1 ml-[3px]" />
-                        <span className="text-xs font-medium">Camera</span>
+                        <span className="text-xs font-medium">{t("sidebar.camera")}</span>
                         <IconChevronRight className="w-3 h-3 ml-auto group-open:rotate-90 transition-transform text-muted-foreground" />
                       </div>
                     </summary>
@@ -463,7 +465,7 @@ export function Sidebar({
                   <summary className="cursor-pointer list-none">
                     <div className="flex items-center gap-2 p-2 rounded hover:bg-secondary/50 transition-colors">
                       <IconMouse className="w-3.5 h-3.5 text-sky-400" />
-                      <span className="text-xs font-medium">Cursor</span>
+                      <span className="text-xs font-medium">{t("sidebar.cursor")}</span>
                       <IconChevronRight className="w-3 h-3 ml-auto group-open:rotate-90 transition-transform text-muted-foreground" />
                     </div>
                   </summary>
@@ -495,7 +497,7 @@ export function Sidebar({
                       <div className="flex items-center gap-2 p-2 rounded hover:bg-secondary/50 transition-colors">
                         <IconClick className="w-3.5 h-3.5 text-green-400" />
                         <span className="text-xs font-medium">
-                          Cursor Interactions
+                          {t("sidebar.cursorInteractions")}
                         </span>
                         <IconChevronRight className="w-3 h-3 ml-auto group-open:rotate-90 transition-transform text-muted-foreground" />
                       </div>
@@ -516,7 +518,7 @@ export function Sidebar({
                     <div className="flex items-center gap-2 p-2 rounded hover:bg-secondary/50 transition-colors">
                       <IconAdjustmentsHorizontal className="w-3.5 h-3.5 text-amber-400" />
                       <span className="text-xs font-medium">
-                        Animation Track
+                        {t("sidebar.animationTrack")}
                       </span>
                       {selectedTrack && (
                         <span className="text-[9px] font-mono text-muted-foreground/60 ml-auto mr-2">
@@ -539,10 +541,10 @@ export function Sidebar({
                     ) : (
                       <div className="text-center py-6 px-4 bg-muted/30 rounded-lg border border-dashed border-border">
                         <p className="text-xs text-muted-foreground">
-                          Select a track to edit its properties
+                          {t("sidebar.selectTrack")}
                         </p>
                         <p className="text-xs text-muted-foreground/60 mt-1">
-                          Click any track in the timeline below
+                          {t("sidebar.clickTrack")}
                         </p>
                       </div>
                     )}
@@ -554,7 +556,7 @@ export function Sidebar({
                   <summary className="cursor-pointer list-none">
                     <div className="flex items-center gap-2 p-2 rounded hover:bg-secondary/50 transition-colors">
                       <IconFileText className="w-3.5 h-3.5 text-blue-400" />
-                      <span className="text-xs font-medium">Properties</span>
+                      <span className="text-xs font-medium">{t("sidebar.properties")}</span>
                       <IconChevronRight className="w-3 h-3 ml-auto group-open:rotate-90 transition-transform text-muted-foreground" />
                     </div>
                   </summary>
@@ -573,7 +575,7 @@ export function Sidebar({
                     <summary className="cursor-pointer list-none">
                       <div className="flex items-center gap-2 p-2 rounded hover:bg-secondary/50 transition-colors">
                         <IconSettings className="w-3.5 h-3.5 text-red-400" />
-                        <span className="text-xs font-medium">Composition</span>
+                        <span className="text-xs font-medium">{t("sidebar.composition")}</span>
                         <IconChevronRight className="w-3 h-3 ml-auto group-open:rotate-90 transition-transform text-muted-foreground" />
                       </div>
                     </summary>
@@ -588,7 +590,7 @@ export function Sidebar({
               </div>
             ) : (
               <div className="text-xs text-muted-foreground text-center py-8">
-                Select a composition to edit properties
+                {t("sidebar.selectComposition")}
               </div>
             )}
           </TabsContent>

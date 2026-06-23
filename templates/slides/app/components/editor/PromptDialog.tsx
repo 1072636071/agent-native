@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useI18n } from "@agent-native/i18n";
 import { appBasePath, PromptComposer } from "@agent-native/core/client";
 import { GoogleDocImportHint } from "./GoogleDocImportHint";
 import { toast } from "@/hooks/use-toast";
@@ -36,9 +37,9 @@ export default function PromptPopover({
   open,
   onOpenChange,
   title,
-  placeholder = "Describe what you want...",
+  placeholder,
   onSkip,
-  skipLabel = "Skip prompt",
+  skipLabel,
   onSubmit,
   loading = false,
   anchorRef,
@@ -49,6 +50,9 @@ export default function PromptPopover({
   onBeforeUpload,
   children,
 }: PromptPopoverProps) {
+  const { t } = useI18n();
+  const resolvedPlaceholder = placeholder ?? t("slides.prompt.placeholder");
+  const resolvedSkipLabel = skipLabel ?? t("slides.prompt.skip");
   const [uploading, setUploading] = useState(false);
   const [promptText, setPromptText] = useState("");
   const [googleDocContext, setGoogleDocContext] = useState("");
@@ -149,11 +153,11 @@ export default function PromptPopover({
         onSubmit(enrichedText, uploaded);
       } catch (error) {
         toast({
-          title: "Upload failed",
+          title: t("slides.prompt.uploadFailed"),
           description:
             error instanceof Error
               ? error.message
-              : "Could not upload the attached file.",
+              : t("slides.prompt.uploadFailedDesc"),
           variant: "destructive",
         });
       }
@@ -194,7 +198,7 @@ export default function PromptPopover({
             autoFocus
             attachmentsEnabled
             disabled={loading || uploading}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             onSubmit={handleSubmit}
             onTextChange={setPromptText}
             draftScope={draftScope}
@@ -220,7 +224,7 @@ export default function PromptPopover({
               }}
               className="cursor-pointer text-xs text-[#609FF8] hover:text-[#7AB2FA]"
             >
-              {skipLabel}
+              {resolvedSkipLabel}
             </button>
           </div>
         )}

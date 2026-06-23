@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { IconPlus, IconPalette } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 import { useDesignSystems } from "@/hooks/use-design-systems";
 import { DesignSystemCard } from "@/components/design-system/DesignSystemCard";
 import { DesignSystemSetup } from "@/components/design-system/DesignSystemSetup";
@@ -12,6 +13,7 @@ import { callAction } from "@agent-native/core/client";
 import type { DesignSystemData } from "../../shared/api";
 
 export default function DesignSystems() {
+  const { t } = useI18n();
   const { designSystems, isLoading, refetch } = useDesignSystems();
   const [showSetup, setShowSetup] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -49,7 +51,7 @@ export default function DesignSystems() {
     }
   };
 
-  useSetPageTitle("Design Systems");
+  useSetPageTitle(t("slides.pageTitle.designSystems"));
 
   useSetHeaderActions(
     useMemo(
@@ -63,10 +65,10 @@ export default function DesignSystems() {
           className="cursor-pointer"
         >
           <IconPlus className="w-3.5 h-3.5" />
-          New Design System
+          {t("slides.designSystem.new")}
         </Button>
       ),
-      [],
+      [t],
     ),
   );
 
@@ -119,10 +121,10 @@ export default function DesignSystems() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-medium text-sm text-muted-foreground group-hover:text-foreground/70">
-                    New Design System
+                    {t("slides.designSystem.new")}
                   </h3>
                   <div className="text-xs text-muted-foreground/70 mt-1">
-                    Set up your brand
+                    {t("slides.designSystem.setupBrand")}
                   </div>
                 </div>
               </button>
@@ -161,21 +163,21 @@ export default function DesignSystems() {
 }
 
 function EmptyState({ onCreateNew }: { onCreateNew: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#609FF8]/20 to-[#4080E0]/20 border border-[#609FF8]/20 flex items-center justify-center mb-6">
         <IconPalette className="w-7 h-7 text-[#609FF8]" />
       </div>
       <h2 className="text-xl font-semibold text-foreground mb-2">
-        Set up your brand identity
+        {t("slides.designSystem.emptyTitle")}
       </h2>
       <p className="text-sm text-muted-foreground max-w-sm mb-8 leading-relaxed">
-        Create a design system with your brand colors, typography, and logos.
-        Every new deck will follow your visual identity.
+        {t("slides.designSystem.emptyDesc")}
       </p>
       <Button onClick={onCreateNew} className="cursor-pointer">
         <IconPlus className="w-4 h-4" />
-        New Design System
+        {t("slides.designSystem.new")}
       </Button>
     </div>
   );

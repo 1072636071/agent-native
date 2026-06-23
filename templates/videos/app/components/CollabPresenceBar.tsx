@@ -8,6 +8,7 @@
 import { IconBolt } from "@tabler/icons-react";
 import type { CollabUser } from "@agent-native/core/client";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@agent-native/i18n";
 
 interface CollabPresenceBarProps {
   activeUsers: CollabUser[];
@@ -30,6 +31,7 @@ export function CollabPresenceBar({
   agentPresent,
   className,
 }: CollabPresenceBarProps) {
+  const { t } = useI18n();
   // Filter out the agent from user avatars (handled separately)
   const humanUsers = Array.from(
     new Map(
@@ -63,7 +65,7 @@ export function CollabPresenceBar({
             "flex items-center justify-center w-6 h-6 rounded-full shrink-0",
             agentActive ? "bg-sky-500/20 ring-1 ring-sky-400/50" : "bg-muted",
           )}
-          title={agentActive ? "AI is editing" : "AI agent connected"}
+          title={agentActive ? t("collab.aiEditing") : t("collab.aiConnected")}
         >
           <IconBolt
             size={12}

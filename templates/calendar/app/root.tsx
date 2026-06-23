@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
   useLocation,
 } from "react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { Toaster } from "sonner";
@@ -21,6 +21,7 @@ import {
   useCommandMenuShortcut,
   useDbSync,
 } from "@agent-native/core/client";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import { IconSun, IconMoon } from "@tabler/icons-react";
 import type { LinksFunction } from "react-router";
 import stylesheet from "./global.css?url";
@@ -37,9 +38,17 @@ export const links: LinksFunction = () => [
 
 const THEME_INIT_SCRIPT = getThemeInitScript();
 
+function HtmlLangSync() {
+  const { lang } = useI18n();
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+  return null;
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -104,6 +113,7 @@ function DbSyncSetup() {
 
 function ThemeToggleItem() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { t } = useI18n();
   const isDark = resolvedTheme === "dark";
   return (
     <CommandMenu.Item
@@ -111,7 +121,7 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle theme
+      {t("calendar.toggleTheme")}
     </CommandMenu.Item>
   );
 }
@@ -133,15 +143,18 @@ function isPublicBookingPath(pathname: string): boolean {
 
 function AppContent() {
   const [cmdkOpen, setCmdkOpen] = useState(false);
+  const { t } = useI18n();
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
   return (
     <>
       <DbSyncSetup />
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Actions">
-          <CommandMenu.Item onSelect={() => {}}>Search</CommandMenu.Item>
+        <CommandMenu.Group heading={t("calendar.cmdGroup.actions")}>
+          <CommandMenu.Item onSelect={() => {}}>
+            {t("calendar.cmdGroup.search")}
+          </CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("calendar.cmdGroup.appearance")}>
           <ThemeToggleItem />
         </CommandMenu.Group>
       </CommandMenu>
@@ -175,7 +188,10 @@ export default function Root() {
       clientOnlyFallback={<DefaultSpinner />}
       toaster={<Toaster richColors position="bottom-center" />}
     >
-      <AppContent />
+      <I18nProvider>
+        <HtmlLangSync />
+        <AppContent />
+      </I18nProvider>
     </AppProviders>
   );
 }

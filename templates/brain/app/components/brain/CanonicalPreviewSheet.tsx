@@ -10,6 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { useI18n } from "@agent-native/i18n";
 
 export interface CanonicalPreviewData {
   source: "knowledge" | "proposal";
@@ -46,11 +47,12 @@ export function CanonicalPreviewSheet({
   onPrimaryAction?: () => void | Promise<void>;
   primaryDisabled?: boolean;
 }) {
+  const { t } = useI18n();
   const warnings = preview?.warnings ?? [];
   const intent =
     operation === "unpublish"
-      ? "Review the Markdown Brain manages before removing this workspace context resource."
-      : "Review the exact Markdown Brain will mirror into workspace context.";
+      ? t("brain.canonical.preview.intent.unpublish")
+      : t("brain.canonical.preview.intent.publish");
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -58,7 +60,7 @@ export function CanonicalPreviewSheet({
         <SheetHeader>
           <div className="flex items-center gap-2">
             <IconBook className="size-5 text-muted-foreground" />
-            <SheetTitle>Company context preview</SheetTitle>
+            <SheetTitle>{t("brain.canonical.preview.title")}</SheetTitle>
           </div>
           <SheetDescription>{intent}</SheetDescription>
         </SheetHeader>
@@ -74,16 +76,16 @@ export function CanonicalPreviewSheet({
                   </Badge>
                   {preview.pathExact ? null : (
                     <Badge variant="outline">
-                      Path suffix assigned on approval
+                      {t("brain.canonical.preview.pathSuffix")}
                     </Badge>
                   )}
                   {preview.alreadyPublishedPath ? (
-                    <Badge variant="outline">Currently published</Badge>
+                    <Badge variant="outline">{t("brain.canonical.preview.currentlyPublished")}</Badge>
                   ) : null}
                 </div>
                 <div className="grid gap-1">
                   <div className="text-xs font-medium uppercase text-muted-foreground">
-                    Workspace path
+                    {t("brain.canonical.preview.workspacePath")}
                   </div>
                   <code className="break-all rounded-sm bg-background px-2 py-1 text-xs text-foreground">
                     {preview.path}
@@ -109,14 +111,14 @@ export function CanonicalPreviewSheet({
                 readOnly
                 value={preview.markdown}
                 className="min-h-[22rem] resize-none font-mono text-xs leading-5"
-                aria-label="Canonical company context Markdown preview"
+                aria-label={t("brain.canonical.preview.title")}
               />
             </>
           ) : (
             <div className="rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
               {loading
-                ? "Building Markdown preview..."
-                : "Open a proposal or knowledge item to preview its canonical Markdown."}
+                ? t("brain.canonical.preview.loading")
+                : t("brain.canonical.preview.empty")}
             </div>
           )}
 
@@ -133,7 +135,7 @@ export function CanonicalPreviewSheet({
             variant="outline"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {t("brain.canonical.preview.cancel")}
           </Button>
           <Button
             type="button"

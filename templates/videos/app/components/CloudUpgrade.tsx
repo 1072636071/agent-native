@@ -8,6 +8,7 @@ import {
   IconChevronRight,
 } from "@tabler/icons-react";
 import { agentNativePath } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 
 interface CloudUpgradeProps {
   title?: string;
@@ -85,10 +86,13 @@ const PROVIDERS: Provider[] = [
 ];
 
 export function CloudUpgrade({
-  title = "Share Publicly",
-  description = "To share content publicly, connect a cloud database.",
+  title,
+  description,
   onClose,
 }: CloudUpgradeProps) {
+  const { t } = useI18n();
+  const resolvedTitle = title ?? t("cloud.title");
+  const resolvedDescription = description ?? t("cloud.description");
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [dbUrl, setDbUrl] = useState("");
   const [authToken, setAuthToken] = useState("");
@@ -105,7 +109,7 @@ export function CloudUpgrade({
     connectingRef.current = true;
 
     if (!dbUrl.trim()) {
-      setErrorMsg("Database URL is required");
+      setErrorMsg(t("cloud.urlRequired"));
       setStatus("error");
       connectingRef.current = false;
       return;
@@ -179,13 +183,13 @@ export function CloudUpgrade({
         <div className="flex items-center gap-2">
           <IconCloud className="h-5 w-5 text-blue-500" />
           <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            {title}
+            {resolvedTitle}
           </h3>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("common.close")}
             className="rounded-md p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
           >
             <IconX className="h-4 w-4" />
@@ -194,7 +198,7 @@ export function CloudUpgrade({
       </div>
 
       <p className="mb-5 text-sm text-zinc-500 dark:text-zinc-400">
-        {description}
+        {resolvedDescription}
       </p>
 
       {/* Provider selection */}
@@ -229,7 +233,7 @@ export function CloudUpgrade({
       {provider && (
         <div className="mb-5 rounded-lg border border-zinc-100 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            Setup steps
+            {t("cloud.setupSteps")}
           </p>
           <ol className="space-y-1">
             {provider.steps.map((step, i) => (
@@ -249,7 +253,7 @@ export function CloudUpgrade({
       <div className="space-y-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-            DATABASE_URL
+            {t("cloud.databaseUrl")}
           </label>
           <input
             type="text"
@@ -268,14 +272,14 @@ export function CloudUpgrade({
         {(!provider || provider.needsAuthToken) && (
           <div>
             <label className="mb-1 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-              DATABASE_AUTH_TOKEN
+              {t("cloud.authToken")}
               {provider && !provider.needsAuthToken && (
-                <span className="ml-1 text-zinc-400">(optional)</span>
+                <span className="ml-1 text-zinc-400">{t("common.optional")}</span>
               )}
             </label>
             <input
               type="password"
-              placeholder="Auth token"
+              placeholder={t("cloud.authTokenPlaceholder")}
               value={authToken}
               onChange={(e) => setAuthToken(e.target.value)}
               disabled={isConnecting}
@@ -296,7 +300,7 @@ export function CloudUpgrade({
       {status === "success" && (
         <div className="mt-3 flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
           <IconCheck className="h-3.5 w-3.5" />
-          <span>Connected successfully. Reloading...</span>
+          <span>{t("cloud.connected")}</span>
         </div>
       )}
 
@@ -311,14 +315,14 @@ export function CloudUpgrade({
             <IconLoader2 className="h-4 w-4 animate-spin" />
             <span>
               {status === "saving"
-                ? "Saving credentials..."
-                : "Testing connection..."}
+                ? t("cloud.saving")
+                : t("cloud.testing")}
             </span>
           </>
         ) : (
           <>
             <IconDatabase className="h-4 w-4" />
-            <span>Test & Connect</span>
+            <span>{t("cloud.testAndConnect")}</span>
           </>
         )}
       </button>

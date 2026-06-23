@@ -1,4 +1,5 @@
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { subDays } from "date-fns";
 import {
   LineChart,
@@ -29,34 +30,29 @@ import { useSetHeaderActions } from "@/components/layout/HeaderActions";
 const GOAL_CALORIES = 2000;
 
 export function meta() {
-  const description =
-    "Open Source AI macro tracker for reviewing calorie, macro, exercise, and weight trends.";
-
   return [
-    { title: "Macro analytics - Open Source Agent-Native Macros" },
-    {
-      name: "description",
-      content: description,
-    },
-    { property: "og:description", content: description },
-    { name: "twitter:description", content: description },
+    { title: "macros.analytics.metaTitle" },
+    { name: "description", content: "macros.app.metaDescription" },
+    { property: "og:description", content: "macros.app.metaDescription" },
+    { name: "twitter:description", content: "macros.app.metaDescription" },
   ];
 }
 
 export default function AnalyticsPage() {
+  const { t } = useI18n();
   const [timeRange, setTimeRange] = useState("30");
 
   useSetHeaderActions(
     <Select value={timeRange} onValueChange={setTimeRange}>
       <SelectTrigger className="w-[130px] sm:w-[140px] bg-card/40 border-border/30 h-8 text-xs shrink-0">
         <IconCalendar className="w-3.5 h-3.5 mr-1.5 sm:mr-2 opacity-50" />
-        <SelectValue placeholder="Select range" />
+        <SelectValue placeholder={t("macros.analytics.selectRange")} />
       </SelectTrigger>
       <SelectContent className="bg-zinc-900 border-white/10">
-        <SelectItem value="7">Last 7 Days</SelectItem>
-        <SelectItem value="30">Last 30 Days</SelectItem>
-        <SelectItem value="90">Last 90 Days</SelectItem>
-        <SelectItem value="all">All Time</SelectItem>
+        <SelectItem value="7">{t("macros.analytics.last7Days")}</SelectItem>
+        <SelectItem value="30">{t("macros.analytics.last30Days")}</SelectItem>
+        <SelectItem value="90">{t("macros.analytics.last90Days")}</SelectItem>
+        <SelectItem value="all">{t("macros.analytics.allTimeShort")}</SelectItem>
       </SelectContent>
     </Select>,
   );
@@ -145,10 +141,10 @@ export default function AnalyticsPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
-            { label: "Average", value: stats.average },
-            { label: "Lowest", value: stats.lowest },
-            { label: "Highest", value: stats.highest },
-            { label: "Days Tracked", value: stats.total, unit: "days" },
+            { label: t("macros.analytics.stats.average"), value: stats.average },
+            { label: t("macros.analytics.stats.lowest"), value: stats.lowest },
+            { label: t("macros.analytics.stats.highest"), value: stats.highest },
+            { label: t("macros.analytics.stats.daysTracked"), value: stats.total, unit: t("macros.analytics.stats.days") },
           ].map((stat) => (
             <div
               key={stat.label}
@@ -162,7 +158,7 @@ export default function AnalyticsPage() {
                   {stat.value}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {stat.unit || "kcal"}
+                  {stat.unit || t("macros.analytics.stats.kcal")}
                 </span>
               </div>
             </div>
@@ -173,16 +169,16 @@ export default function AnalyticsPage() {
         <Card className="border-border/40 bg-card/60 backdrop-blur-md overflow-hidden">
           <CardHeader className="pb-4">
             <CardTitle className="text-base font-medium">
-              Calorie Trend (
-              {timeRange === "all" ? "All Time" : `Last ${timeRange} Days`})
+              {t("macros.analytics.calorieTrend")} (
+              {timeRange === "all" ? t("macros.analytics.allTime") : t("macros.analytics.lastDays", { days: timeRange })})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="net" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 bg-secondary/40">
-                <TabsTrigger value="net">Net</TabsTrigger>
-                <TabsTrigger value="consumed">Consumed</TabsTrigger>
-                <TabsTrigger value="burned">Burned</TabsTrigger>
+                <TabsTrigger value="net">{t("macros.analytics.net")}</TabsTrigger>
+                <TabsTrigger value="consumed">{t("macros.analytics.consumed")}</TabsTrigger>
+                <TabsTrigger value="burned">{t("macros.analytics.burned")}</TabsTrigger>
               </TabsList>
               {["net", "consumed", "burned"].map((tab) => (
                 <TabsContent key={tab} value={tab} className="mt-0">
@@ -222,12 +218,12 @@ export default function AnalyticsPage() {
                             marginBottom: "4px",
                           }}
                           formatter={(value: any) => [
-                            `${value} kcal`,
+                            `${value} ${t("macros.analytics.stats.kcal")}`,
                             tab === "net"
-                              ? "Net Calories"
+                              ? t("macros.analytics.netCalories")
                               : tab === "consumed"
-                                ? "Consumed"
-                                : "Burned",
+                                ? t("macros.analytics.consumed")
+                                : t("macros.analytics.burned"),
                           ]}
                         />
                         {tab !== "burned" && (
@@ -267,7 +263,7 @@ export default function AnalyticsPage() {
                     </ResponsiveContainer>
                   ) : (
                     <div className="h-[250px] flex flex-col items-center justify-center text-muted-foreground rounded-xl border border-dashed border-border/50 bg-secondary/20">
-                      <p className="text-sm">No data available yet</p>
+                      <p className="text-sm">{t("macros.analytics.noData")}</p>
                     </div>
                   )}
                 </TabsContent>
@@ -280,8 +276,8 @@ export default function AnalyticsPage() {
         <Card className="border-border/40 bg-card/60 backdrop-blur-md overflow-hidden">
           <CardHeader className="pb-4">
             <CardTitle className="text-base font-medium">
-              Weekly Net Calories vs Goal (
-              {timeRange === "all" ? "All Time" : `Last ${timeRange} Days`})
+              {t("macros.analytics.weeklyNet")} (
+              {timeRange === "all" ? t("macros.analytics.allTime") : t("macros.analytics.lastDays", { days: timeRange })})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -297,21 +293,21 @@ export default function AnalyticsPage() {
         <Card className="border-border/40 bg-card/60 backdrop-blur-md overflow-hidden">
           <CardHeader className="pb-4">
             <CardTitle className="text-base font-medium">
-              Weight Trend (
-              {timeRange === "all" ? "All Time" : `Last ${timeRange} Days`})
+              {t("macros.analytics.weightTrend")} (
+              {timeRange === "all" ? t("macros.analytics.allTime") : t("macros.analytics.lastDays", { days: timeRange })})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
               {[
-                { label: "Current", value: weightStats.current },
+                { label: t("macros.analytics.stats.current"), value: weightStats.current },
                 {
-                  label: "Change",
+                  label: t("macros.analytics.stats.change"),
                   value: weightStats.change,
                   colored: true,
                 },
-                { label: "Lowest", value: weightStats.lowest },
-                { label: "Highest", value: weightStats.highest },
+                { label: t("macros.analytics.stats.lowest"), value: weightStats.lowest },
+                { label: t("macros.analytics.stats.highest"), value: weightStats.highest },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -335,7 +331,7 @@ export default function AnalyticsPage() {
                       {stat.colored && stat.value > 0 ? "+" : ""}
                       {stat.value}
                     </span>
-                    <span className="text-xs text-muted-foreground">lbs</span>
+                    <span className="text-xs text-muted-foreground">{t("macros.analytics.stats.lbs")}</span>
                   </div>
                 </div>
               ))}
@@ -343,8 +339,8 @@ export default function AnalyticsPage() {
 
             <Tabs defaultValue="trend" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 bg-secondary/40">
-                <TabsTrigger value="trend">Trend View</TabsTrigger>
-                <TabsTrigger value="actual">Actual Weight</TabsTrigger>
+                <TabsTrigger value="trend">{t("macros.analytics.trendView")}</TabsTrigger>
+                <TabsTrigger value="actual">{t("macros.analytics.actualWeight")}</TabsTrigger>
               </TabsList>
               {["trend", "actual"].map((tab) => (
                 <TabsContent key={tab} value={tab} className="mt-0">
@@ -354,8 +350,7 @@ export default function AnalyticsPage() {
                     <div className="space-y-2">
                       {tab === "trend" && (
                         <p className="text-xs text-muted-foreground">
-                          The blue trend line smooths out daily fluctuations to
-                          show your overall progress.
+                          {t("macros.analytics.trendLineDesc")}
                         </p>
                       )}
                       <ResponsiveContainer width="100%" height={250}>
@@ -397,12 +392,12 @@ export default function AnalyticsPage() {
                               marginBottom: "4px",
                             }}
                             formatter={(value: any, name: any) => [
-                              `${value} lbs`,
+                              `${value} ${t("macros.analytics.stats.lbs")}`,
                               tab === "trend"
                                 ? name === "trendWeight"
-                                  ? "Trend"
-                                  : "Actual"
-                                : "Weight",
+                                  ? t("macros.analytics.trendView")
+                                  : t("macros.analytics.actualWeight")
+                                : t("macros.dailyProgress.weight"),
                             ]}
                           />
                           {tab === "trend" ? (
@@ -453,9 +448,9 @@ export default function AnalyticsPage() {
                     </div>
                   ) : (
                     <div className="h-[250px] flex flex-col items-center justify-center text-muted-foreground rounded-xl border border-dashed border-border/50 bg-secondary/20">
-                      <p className="text-sm">No weight data available yet</p>
+                      <p className="text-sm">{t("macros.analytics.noWeightData")}</p>
                       <p className="text-xs mt-1">
-                        Start logging your weight to see trends
+                        {t("macros.analytics.startLoggingWeight")}
                       </p>
                     </div>
                   )}

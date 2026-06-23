@@ -12,6 +12,7 @@ import {
   getThemeInitScript,
   useCommandMenuShortcut,
 } from "@agent-native/core/client";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { IconSun, IconMoon } from "@tabler/icons-react";
 import { Layout as AppLayout } from "@/components/layout/Layout";
@@ -32,9 +33,10 @@ export const links: LinksFunction = () => [
 
 const THEME_INIT_SCRIPT = getThemeInitScript();
 
-export function Layout({ children }: { children: React.ReactNode }) {
+function Document({ children }: { children: React.ReactNode }) {
+  const { lang } = useI18n();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -67,6 +69,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nProvider>
+      <Document>{children}</Document>
+    </I18nProvider>
+  );
+}
+
 function DbSyncSetup() {
   const qc = useQueryClient();
   useDbSync({
@@ -86,6 +96,7 @@ function DbSyncSetup() {
 
 function ThemeToggleItem() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { t } = useI18n();
   const isDark = resolvedTheme === "dark";
   return (
     <CommandMenu.Item
@@ -93,12 +104,13 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle {isDark ? "light" : "dark"} mode
+      {isDark ? t("assets.root.toggleDark") : t("assets.root.toggleLight")}
     </CommandMenu.Item>
   );
 }
 
 export default function Root() {
+  const { t } = useI18n();
   const [queryClient] = useState(() => createAgentNativeQueryClient());
   const [cmdkOpen, setCmdkOpen] = useState(false);
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
@@ -107,10 +119,10 @@ export default function Root() {
       <DbSyncSetup />
       <Toaster richColors position="bottom-left" />
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Actions">
-          <CommandMenu.Item onSelect={() => {}}>Search</CommandMenu.Item>
+        <CommandMenu.Group heading={t("assets.root.actions")}>
+          <CommandMenu.Item onSelect={() => {}}>{t("assets.root.search")}</CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("assets.root.appearance")}>
           <ThemeToggleItem />
         </CommandMenu.Group>
       </CommandMenu>

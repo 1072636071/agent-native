@@ -9,6 +9,7 @@ import {
   NotificationsBell,
   ShareButton,
 } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { useDbStatus } from "@/hooks/use-db-status";
 import { CloudUpgrade } from "@/components/CloudUpgrade";
 import {
@@ -32,6 +33,7 @@ export function StudioHeader({
   shareComposition,
 }: StudioHeaderProps) {
   const { isLocal } = useDbStatus();
+  const { t } = useI18n();
   const [shareOpen, setShareOpen] = useState(false);
 
   return (
@@ -39,7 +41,7 @@ export function StudioHeader({
       <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
         <button
           onClick={onToggleSidebar}
-          aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+          aria-label={sidebarOpen ? t("sidebar.collapse") : t("sidebar.expand")}
           className="p-2 sm:p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary cursor-pointer"
         >
           {sidebarOpen ? (
@@ -52,7 +54,7 @@ export function StudioHeader({
         <div className="w-px h-5 bg-border hidden sm:block" />
 
         <h1 className="text-sm font-semibold tracking-tight hidden sm:block">
-          Videos
+          {t("app.title")}
         </h1>
       </div>
 
@@ -61,11 +63,11 @@ export function StudioHeader({
           <Popover open={shareOpen} onOpenChange={setShareOpen}>
             <PopoverTrigger asChild>
               <button
-                aria-label="Share"
+                aria-label={t("common.share")}
                 className="p-2 sm:px-3 sm:py-1.5 text-xs font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 flex items-center gap-1.5 cursor-pointer"
               >
                 <IconShare2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                <span className="hidden sm:inline">Share</span>
+                <span className="hidden sm:inline">{t("common.share")}</span>
               </button>
             </PopoverTrigger>
             <PopoverContent
@@ -74,8 +76,8 @@ export function StudioHeader({
               className="w-auto p-0 border-none bg-transparent shadow-none"
             >
               <CloudUpgrade
-                title="Share Videos"
-                description="To share or export videos, connect a cloud database so your compositions can be accessed from anywhere."
+                title={t("studio.shareVideos")}
+                description={t("studio.shareVideosDesc")}
                 onClose={() => setShareOpen(false)}
               />
             </PopoverContent>
@@ -88,12 +90,12 @@ export function StudioHeader({
           />
         ) : (
           <button
-            aria-label="Share"
+            aria-label={t("common.share")}
             disabled
             className="p-2 sm:px-3 sm:py-1.5 text-xs font-medium rounded-md text-muted-foreground/50 flex items-center gap-1.5 cursor-not-allowed"
           >
             <IconShare2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Share</span>
+            <span className="hidden sm:inline">{t("common.share")}</span>
           </button>
         )}
         <NotificationsBell />

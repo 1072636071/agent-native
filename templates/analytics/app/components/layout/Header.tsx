@@ -8,21 +8,23 @@ import {
 } from "./HeaderActions";
 import { AgentToggleButton } from "@agent-native/core/client";
 import { RunsTray } from "@agent-native/core/client/progress";
+import { useI18n } from "@agent-native/i18n";
 
 const pageTitles: Record<string, string> = {
-  "/": "Overview",
-  "/data-sources": "Data Sources",
-  "/data-dictionary": "Data Dictionary",
-  "/catalog": "Template Catalog",
-  "/analyses": "Analyses",
-  "/adhoc/explorer": "Explorer",
-  "/team": "Team",
-  "/settings": "Settings",
-  "/about": "About",
+  "/": "analytics.header.overview",
+  "/data-sources": "analytics.header.dataSources",
+  "/data-dictionary": "analytics.header.dataDictionary",
+  "/catalog": "analytics.header.templateCatalog",
+  "/analyses": "analytics.header.analyses",
+  "/adhoc/explorer": "analytics.header.explorer",
+  "/team": "analytics.header.team",
+  "/settings": "analytics.header.settings",
+  "/about": "analytics.header.about",
 };
 
-function resolveTitle(pathname: string): ReactNode {
-  if (pageTitles[pathname]) return pageTitles[pathname];
+function resolveTitle(pathname: string, t: (key: string) => string): ReactNode {
+  const key = pageTitles[pathname];
+  if (key) return t(key);
 
   const adhocMatch = pathname.match(/^\/adhoc\/(.+)$/);
   if (adhocMatch) {
@@ -31,16 +33,17 @@ function resolveTitle(pathname: string): ReactNode {
     return dash?.name || <DashboardTitleSkeleton />;
   }
 
-  if (pathname.startsWith("/analyses/")) return "Analyses";
+  if (pathname.startsWith("/analyses/")) return t("analytics.header.analyses");
 
-  return "Analytics";
+  return t("analytics.title");
 }
 
 export function Header() {
+  const { t } = useI18n();
   const location = useLocation();
   const title = useHeaderTitle();
   const actions = useHeaderActions();
-  const fallbackTitle = resolveTitle(location.pathname);
+  const fallbackTitle = resolveTitle(location.pathname, t);
 
   return (
     <header className="flex h-12 items-center gap-3 border-b border-border bg-background px-4 lg:px-6 shrink-0">

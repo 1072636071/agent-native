@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@agent-native/core": "workspace:*",
+    "@agent-native/i18n": "workspace:*",
     "@agent-native/pinpoint": "workspace:*",
     "@fontsource-variable/inter": "^5.2.8",
     "@libsql/client": "^0.15.8",

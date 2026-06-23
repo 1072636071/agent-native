@@ -9,9 +9,11 @@ import {
   useSetPageTitle,
 } from "@/components/layout/HeaderActions";
 import { useActionMutation } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import type { DesignSystemData } from "../../shared/api";
 
 export default function DesignSystems() {
+  const { t } = useI18n();
   const { designSystems, isLoading, refetch } = useDesignSystems();
   const setDefaultMutation = useActionMutation("set-default-design-system");
   const [showSetup, setShowSetup] = useState(false);
@@ -50,7 +52,7 @@ export default function DesignSystems() {
     }
   };
 
-  useSetPageTitle("Design Systems");
+  useSetPageTitle(t("pageTitle.designSystems"));
 
   useSetHeaderActions(
     <Button
@@ -62,7 +64,7 @@ export default function DesignSystems() {
       className="cursor-pointer"
     >
       <IconPlus className="w-3.5 h-3.5" />
-      New Design System
+      {t("designSystem.new")}
     </Button>,
   );
 
@@ -115,10 +117,10 @@ export default function DesignSystems() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-medium text-sm text-muted-foreground group-hover:text-foreground/70">
-                    New Design System
+                    {t("designSystem.new")}
                   </h3>
                   <div className="text-xs text-muted-foreground/70 mt-1">
-                    Set up your brand
+                    {t("designSystem.setupBrand")}
                   </div>
                 </div>
               </button>
@@ -162,15 +164,14 @@ function EmptyState({ onCreateNew }: { onCreateNew: () => void }) {
         <IconPalette className="w-7 h-7 text-[#609FF8]" />
       </div>
       <h2 className="text-xl font-semibold text-foreground/90 mb-2">
-        Set up your brand identity
+        {t("designSystem.emptyTitle")}
       </h2>
       <p className="text-sm text-muted-foreground max-w-sm mb-8 leading-relaxed">
-        Create a design system with your brand colors, typography, and logos.
-        Every new composition will follow your visual identity.
+        {t("designSystem.emptyDesc")}
       </p>
       <Button onClick={onCreateNew} className="cursor-pointer">
         <IconPlus className="w-4 h-4" />
-        New Design System
+        {t("designSystem.new")}
       </Button>
     </div>
   );

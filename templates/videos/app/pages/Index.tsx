@@ -20,6 +20,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuestionFlow } from "@/hooks/use-question-flow";
 import { useCompositionCollab } from "@/hooks/use-composition-collab";
 import { useDatabaseCompositions } from "@/hooks/use-database-compositions";
+import { useI18n } from "@agent-native/i18n";
 
 function StudioContent({
   collab,
@@ -27,6 +28,7 @@ function StudioContent({
   collab: ReturnType<typeof useCompositionCollab>;
 }) {
   const isMobile = useIsMobile();
+  const { t } = useI18n();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const initialSidebarSet = useRef(false);
   const {
@@ -72,11 +74,11 @@ function StudioContent({
       <AgentSidebar
         position="right"
         defaultOpen
-        emptyStateText="Ask me anything about your videos"
+        emptyStateText={t("studio.askPrompt")}
         suggestions={[
-          "Make a logo reveal for Acme",
-          "Add a camera zoom on this scene",
-          "Slow down the intro animation",
+          t("studio.suggestionLogoReveal"),
+          t("studio.suggestionCameraZoom"),
+          t("studio.suggestionSlowDown"),
         ]}
       >
         <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
@@ -197,11 +199,11 @@ export default function Studio() {
                 <AgentSidebar
                   position="right"
                   defaultOpen
-                  emptyStateText="Ask me anything about your videos"
+                  emptyStateText={t("studio.askPrompt")}
                   suggestions={[
-                    "Make a logo reveal for Acme",
-                    "Add a camera zoom on this scene",
-                    "Slow down the intro animation",
+                    t("studio.suggestionLogoReveal"),
+                    t("studio.suggestionCameraZoom"),
+                    t("studio.suggestionSlowDown"),
                   ]}
                 >
                   <div className="flex flex-1 min-h-0 flex-col overflow-hidden">

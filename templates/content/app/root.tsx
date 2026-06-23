@@ -1,3 +1,4 @@
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import {
   Links,
   Meta,
@@ -90,7 +91,16 @@ function nextTheme(theme: ThemeOption): ThemeOption {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <I18nProvider>
+      <HtmlDocument>{children}</HtmlDocument>
+    </I18nProvider>
+  );
+}
+
+function HtmlDocument({ children }: { children: React.ReactNode }) {
+  const { lang } = useI18n();
+  return (
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -130,6 +140,7 @@ function AppSetup() {
 }
 
 function ThemeToggleItem() {
+  const { t } = useI18n();
   const { theme, setTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState<ThemeOption>("system");
 
@@ -155,15 +166,27 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "system", "mode"]}
     >
       <ActiveIcon size={16} />
-      Toggle theme
+      {t("content.command.toggleTheme")}
       <span className="ml-auto text-xs text-muted-foreground">
-        {activeOption.label}
+        {activeOption.value === "system"
+          ? t("content.theme.system")
+          : activeOption.value === "light"
+            ? t("content.theme.light")
+            : t("content.theme.dark")}
       </span>
     </CommandMenu.Item>
   );
 }
 
-function PublicAgentShell({ children }: { children: React.ReactNode }) {
+function PublicAgentShell({
+  children,
+  emptyStateText,
+  suggestions,
+}: {
+  children: React.ReactNode;
+  emptyStateText: string;
+  suggestions: string[];
+}) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -194,12 +217,8 @@ function PublicAgentShell({ children }: { children: React.ReactNode }) {
       position="right"
       defaultOpen
       defaultSidebarWidth={420}
-      emptyStateText="Ask me anything about this document"
-      suggestions={[
-        "Summarize this document",
-        "What are the key takeaways?",
-        "Turn this into an action plan",
-      ]}
+      emptyStateText={emptyStateText}
+      suggestions={suggestions}
     >
       {content}
     </AgentSidebar>
@@ -207,6 +226,7 @@ function PublicAgentShell({ children }: { children: React.ReactNode }) {
 }
 
 export default function Root() {
+  const { t } = useI18n();
   const [queryClient] = useState(() => createAgentNativeQueryClient());
   const [cmdkOpen, setCmdkOpen] = useState(false);
   const location = useLocation();
@@ -232,7 +252,14 @@ export default function Root() {
         toaster={contentToaster}
       >
         <Toaster />
-        <PublicAgentShell>
+        <PublicAgentShell
+          emptyStateText={t("content.agent.placeholder")}
+          suggestions={[
+            t("content.agent.suggestion.summarize"),
+            t("content.agent.suggestion.keyTakeaways"),
+            t("content.agent.suggestion.actionPlan"),
+          ]}
+        >
           <Outlet />
         </PublicAgentShell>
       </AppProviders>
@@ -248,12 +275,12 @@ export default function Root() {
       <AppSetup />
       <Toaster />
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Content">
+        <CommandMenu.Group heading={t("content.command.group.content")}>
           <CommandMenu.Item onSelect={() => {}}>
-            Search documents
+            {t("content.command.searchDocuments")}
           </CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("content.command.group.appearance")}>
           <ThemeToggleItem />
         </CommandMenu.Group>
       </CommandMenu>
@@ -262,17 +289,17 @@ export default function Root() {
   );
 }
 
-function ContentErrorBoundaryBody() {
-  const error = useRouteError();
-  let title = "Something went wrong";
-  let details = "An unexpected error occurred.";
+function ContentErrorBoundaryBody({ error }: { error: unknown }) {
+  const { t } = useI18n();
+  let title = t("content.error.somethingWrong");
+  let details = t("content.error.unexpected");
 
   if (isRouteErrorResponse(error)) {
     if (error.status === 404) {
-      title = "Page not found";
-      details = "We couldn't find this page.";
+      title = t("content.error.notFound");
+      details = t("content.error.notFoundDesc");
     } else {
-      title = `${error.status} Error`;
+      title = t("content.error.statusTitle", { status: error.status });
       details = error.statusText || details;
     }
   } else if (error instanceof Error && error.message) {
@@ -294,14 +321,14 @@ function ContentErrorBoundaryBody() {
           href={appPath("/page")}
           className="mt-6 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
         >
-          Go to page list
+          {t("content.nav.goToPageList")}
         </a>
         <button
           type="button"
           onClick={() => window.location.reload()}
           className="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent"
         >
-          Reload
+          {t("content.common.reload")}
         </button>
       </div>
     </main>
@@ -309,5 +336,10 @@ function ContentErrorBoundaryBody() {
 }
 
 export function ErrorBoundary() {
-  return <ContentErrorBoundaryBody />;
+  const error = useRouteError();
+  return (
+    <I18nProvider>
+      <ContentErrorBoundaryBody error={error} />
+    </I18nProvider>
+  );
 }

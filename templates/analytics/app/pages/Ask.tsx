@@ -3,9 +3,11 @@ import {
   AgentChatSurface,
   markAgentChatHomeHandoff,
 } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { TAB_ID } from "@/lib/tab-id";
 
 export default function AskPage() {
+  const { t } = useI18n();
   useEffect(() => {
     function handleChatRunning(event: Event) {
       const detail = (event as CustomEvent).detail;
@@ -30,15 +32,15 @@ export default function AskPage() {
         showTabBar={false}
         dynamicSuggestions={false}
         suggestions={[]}
-        emptyStateText="Ask Analytics about your data."
+        emptyStateText={t("analytics.ask.emptyState")}
         emptyStateDisplay="hidden"
         centerComposerWhenEmpty
         composerLayoutVariant="hero"
-        composerPlaceholder="Ask about data, dashboards, metrics, or sources..."
+        composerPlaceholder={t("analytics.ask.composerPlaceholder")}
         composerSlot={
           <div className="analytics-chat-intro">
-            <h1>What would you like to explore?</h1>
-            <p>Ask about data, dashboards, metrics, or sources.</p>
+            <h1>{t("analytics.ask.introTitle")}</h1>
+            <p>{t("analytics.ask.introDesc")}</p>
           </div>
         }
       />

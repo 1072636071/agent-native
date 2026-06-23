@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useActionMutation } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { formatLocalDate } from "@/lib/utils";
 import {
   Dialog,
@@ -54,6 +55,7 @@ export function AddExerciseDialog({
       ? (v: boolean) => onOpenChange?.(v)
       : setUncontrolledOpen;
   const isEditing = !!editingExercise;
+  const { t } = useI18n();
 
   const form = useForm<FormData>({
     // zod resolves at multiple minor versions across the workspace; cast the
@@ -70,20 +72,20 @@ export function AddExerciseDialog({
 
   const createMutation = useActionMutation("log-exercise", {
     onSuccess: () => {
-      toast.success("Exercise logged");
+      toast.success(t("macros.addExerciseDialog.exerciseLogged"));
       setOpen(false);
       form.reset();
     },
-    onError: () => toast.error("Failed to log exercise"),
+    onError: () => toast.error(t("macros.addExerciseDialog.failedLogExercise")),
   });
 
   const updateMutation = useActionMutation("update-exercise", {
     onSuccess: () => {
-      toast.success("Exercise updated");
+      toast.success(t("macros.addExerciseDialog.exerciseUpdated"));
       setOpen(false);
       form.reset();
     },
-    onError: () => toast.error("Failed to update exercise"),
+    onError: () => toast.error(t("macros.addExerciseDialog.failedUpdateExercise")),
   });
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -134,28 +136,28 @@ export function AddExerciseDialog({
       {!isEditing && (
         <DialogTrigger asChild>
           <Button size="sm" className="gap-1.5 h-8 rounded-md shadow-sm">
-            <IconPlus className="h-3.5 w-3.5" /> Log Exercise
+            <IconPlus className="h-3.5 w-3.5" /> {t("macros.addExerciseDialog.logExercise")}
           </Button>
         </DialogTrigger>
       )}
       <DialogContent className="sm:max-w-[425px] gap-6">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? "Edit Exercise" : "Log Exercise"}
+            {isEditing ? t("macros.addExerciseDialog.editTitle") : t("macros.addExerciseDialog.title")}
           </DialogTitle>
           <DialogDescription className="sr-only">
             {isEditing
-              ? "Update the selected exercise entry."
-              : "Log an exercise with calories burned."}
+              ? t("macros.addExerciseDialog.editDesc")
+              : t("macros.addExerciseDialog.desc")}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="exercise-name">Exercise</Label>
+            <Label htmlFor="exercise-name">{t("macros.addExerciseDialog.exercise")}</Label>
             <Input
               id="exercise-name"
               {...form.register("name")}
-              placeholder="e.g., Running, Cycling"
+              placeholder={t("macros.addExerciseDialog.exercisePlaceholder")}
               autoFocus
               autoComplete="off"
             />
@@ -166,13 +168,13 @@ export function AddExerciseDialog({
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="calories-burned">Calories Burned</Label>
+            <Label htmlFor="calories-burned">{t("macros.addExerciseDialog.caloriesBurned")}</Label>
             <Input
               id="calories-burned"
               type="number"
               inputMode="numeric"
               {...form.register("calories_burned")}
-              placeholder="kcal"
+              placeholder={t("macros.addExerciseDialog.caloriesBurnedPlaceholder")}
             />
             {form.formState.errors.calories_burned && (
               <p className="text-sm text-destructive">
@@ -186,10 +188,10 @@ export function AddExerciseDialog({
             disabled={createMutation.isPending || updateMutation.isPending}
           >
             {createMutation.isPending || updateMutation.isPending
-              ? "Saving..."
+              ? t("macros.addExerciseDialog.saving")
               : isEditing
-                ? "Save Changes"
-                : "Log Exercise"}
+                ? t("macros.addExerciseDialog.saveChanges")
+                : t("macros.addExerciseDialog.logExercise")}
           </Button>
         </form>
       </DialogContent>

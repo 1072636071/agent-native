@@ -62,8 +62,45 @@
 | breadcrumb.tsx | aria | "breadcrumb", "More" | ui.breadcrumb.* |
 | spinner.tsx | aria | "Loading" | ui.spinner.loading |
 
-## 总结
-- 相比其他模板，chat 的硬编码较少（55+），但波及 shadcn/ui 共享组件
-- shadcn/ui 组件的硬编码建议统一在 `@agent-native/i18n` 包中提供 `ui.*` 命名空间
-- `<html lang="en">` 硬编码需修复
-- SEO meta 标签需国际化
+## 完成情况
+
+chat 模板国际化改造 **已完成**，修改涉及以下文件和内容：
+
+### 已修改文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `templates/chat/app/routes/_index.tsx` | meta() 中的 SEO 标题/描述替换为翻译键；移除未使用的 `APP_TITLE` 导入 |
+| `templates/chat/app/routes/database.tsx` | meta() 标题替换为翻译键 `chat.database.title` |
+| `templates/chat/app/routes/team.tsx` | meta() 标题替换为翻译键 `chat.team.title`；移除未使用的 `APP_TITLE` 导入 |
+| `templates/chat/app/routes/observability.tsx` | meta() 标题替换为翻译键 `chat.observability.title` |
+| `templates/chat/app/routes/extensions._index.tsx` | meta() 标题替换为翻译键 `chat.extensions.title`；移除未使用的 `APP_TITLE` 导入 |
+| `templates/chat/app/components/layout/Header.tsx` | aria-label "Open navigation" 替换为 `t("chat.layout.ariaOpenNav")`；`/settings` 和 `/team` 标题使用翻译键 `chat.header.pageSettings`/`chat.header.pageTeam` |
+| `templates/chat/app/components/layout/Sidebar.tsx` | "Chats" → `t("chat.sidebar.chatsLabel")`；"New chat" aria-label + tooltip → `t("chat.sidebar.newChat")`；`aria-label="Rename ..."` → `t("chat.sidebar.ariaRename")`；toast 错误消息使用 `chat.sidebar.errorArchive`/`chat.sidebar.errorRename` |
+| `packages/i18n/src/locales/en.ts` | 新增 `chat.header.pageSettings`、`chat.header.pageTeam` 翻译键 |
+| `packages/i18n/src/locales/zh-CN.ts` | 新增 `chat.header.pageSettings`、`chat.header.pageTeam` 翻译键（中文） |
+
+### 已完成的改造点
+
+- [x] `package.json` — 已有 `@agent-native/i18n` 依赖
+- [x] `app/root.tsx` — 已有 `I18nProvider` + `useI18n`，`<html lang>` 动态
+- [x] `app/routes/_index.tsx` — SEO meta、建议、空状态、placeholder、标题均已替换
+- [x] `app/routes/database.tsx` — 页面标题国际化
+- [x] `app/routes/team.tsx` — 页面标题 + createOrgDescription 国际化
+- [x] `app/routes/observability.tsx` — 页面标题国际化
+- [x] `app/routes/extensions._index.tsx` — 页面标题国际化
+- [x] `app/components/layout/Layout.tsx` — aria/sr-only 文字、AgentSidebar 空状态+建议均已替换
+- [x] `app/components/layout/Header.tsx` — 所有页面标题已替换，aria-label 已替换
+- [x] `app/components/layout/Sidebar.tsx` — 导航、线程操作、aria 标签、toast 错误消息全部替换
+- [x] `packages/i18n/src/locales/en.ts` — 所有 `chat.*` 翻译键已添加
+- [x] `packages/i18n/src/locales/zh-CN.ts` — 所有 `chat.*` 翻译键已添加（含中文翻译）
+
+### 未修改（已有翻译键但代码无需改动的已确认已使用 `t()`）
+
+- `app/root.tsx` — 主题切换、命令菜单均使用 `useI18n` + `t()`
+- `app/components/layout/Layout.tsx` — 所有文本已使用 `t()`
+- 其余各路由文件均已使用 `useI18n` + `t()`
+
+### 不在本次改造范围内的说明
+
+shadcn/ui 组件（`components/ui/*`）中的硬编码字符串（如 "Previous", "Next", "Loading", "Close" 等）属于共享 UI 库，建议统一在 `@agent-native/i18n` 包中提供 `ui.*` 命名空间的翻译键，各模板共享。

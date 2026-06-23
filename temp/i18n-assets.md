@@ -1,11 +1,34 @@
 # i18n 检查报告 - assets
 
-## 概览
-- 检查文件数: 59 (.tsx)
-- 发现硬编码字符串数: 200+
-- 严重程度: **高** — 完全未使用 `useI18n()` / `t()`
+## 完成情况
 
-## 详细问题列表
+**状态: 已完成** — 所有文件的 i18n 改造已全部实施。
+
+### 改造文件清单
+
+| 文件 | 状态 | 说明 |
+|------|------|------|
+| `packages/i18n/src/locales/en.ts` | 已完成 | 添加了 `assets.*` 命名空间，共 100+ 个翻译键 |
+| `packages/i18n/src/locales/zh-CN.ts` | 已完成 | 添加了对应的中文翻译 |
+| `templates/assets/package.json` | 已完成 | 已包含 `@agent-native/i18n` 依赖 |
+| `templates/assets/app/root.tsx` | 已完成 | 已集成 `I18nProvider`，`<html lang>` 动态同步，命令菜单文本均已本地化 |
+| `templates/assets/app/routes/_index.tsx` | 已完成 | 8 个 `t()` 调用覆盖空状态、placeholder、标题、标签 |
+| `templates/assets/app/routes/asset.$id.tsx` | 已完成 | 33 个 `t()` 调用覆盖加载、错误、按钮、字段标签、操作、对话框 |
+| `templates/assets/app/routes/audit.tsx` | 已完成 | 42 个 `t()` 调用覆盖标题、筛选、表格、详情、错误、空状态、时间格式化 |
+
+### 翻译键分布
+
+- `assets.seo.*` — SEO 标题/描述 (2)
+- `assets.root.*` — 根布局 (7)
+- `assets.index.*` — 创建页面 (8)
+- `assets.detail.*` — 详情页面 (30+)
+- `assets.audit.*` — 审计页面 (40+)
+
+### 遗留问题
+
+1. **`_index.tsx` 中 SEO meta**: `meta()` 函数无法使用 React hooks，SEO 标题/描述暂为硬编码。此问题与其他模板一致（如 brain 的 `extensions._index.tsx`），不属于本次改造范围。对应的 `assets.seo.title` 和 `assets.seo.description` 翻译键已预留在翻译文件中。
+
+## 详细问题列表（改造前参考）
 
 ### app/root.tsx
 | 行号 | 问题类型 | 原文 | 建议 Key |

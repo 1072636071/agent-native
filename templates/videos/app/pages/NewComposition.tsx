@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { IconMovie, IconLoader2 } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 
 type NewCompositionProps = {
   isGenerating?: boolean;
 };
 
 export default function NewComposition({ isGenerating }: NewCompositionProps) {
+  const { t } = useI18n();
   const [storedGenerating, setStoredGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,7 +69,7 @@ export default function NewComposition({ isGenerating }: NewCompositionProps) {
       <div className="flex-1 flex flex-col items-center justify-center p-6 lg:p-8 min-w-0 bg-background h-full">
         <div className="flex flex-col items-center gap-4">
           <IconLoader2 size={32} className="text-primary animate-spin" />
-          <p className="text-sm text-muted-foreground">Generating...</p>
+          <p className="text-sm text-muted-foreground">{t("newComposition.generating")}</p>
         </div>
       </div>
     );
@@ -81,12 +83,12 @@ export default function NewComposition({ isGenerating }: NewCompositionProps) {
         </div>
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground/90">
-            Create a New Composition
+            {t("newComposition.title")}
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
             {error
               ? error
-              : "Use the New Composition button in the sidebar to describe the video you want to create."}
+              : t("newComposition.description")}
           </p>
         </div>
       </div>

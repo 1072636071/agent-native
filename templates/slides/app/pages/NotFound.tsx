@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router";
 import { useEffect } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 
 export default function NotFound() {
+  const { t } = useI18n();
   const location = useLocation();
 
   useEffect(() => {
@@ -16,14 +18,14 @@ export default function NotFound() {
           404
         </h1>
         <p className="text-sm text-muted-foreground mb-6">
-          This page doesn't exist yet.
+          {t("slides.notFound.message")}
         </p>
         <Link
           to="/"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent text-sm text-foreground/70 transition-colors"
         >
           <IconArrowLeft className="w-4 h-4" />
-          Back to Decks
+          {t("slides.notFound.backToDecks")}
         </Link>
       </div>
     </div>

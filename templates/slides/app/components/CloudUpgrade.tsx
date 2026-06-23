@@ -7,6 +7,7 @@ import {
   IconCloud,
   IconChevronRight,
 } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 import { agentNativePath } from "@agent-native/core/client";
 
 interface CloudUpgradeProps {
@@ -27,8 +28,8 @@ interface Provider {
 const PROVIDERS: Provider[] = [
   {
     id: "turso",
-    name: "Turso",
-    description: "SQLite at the edge",
+    name: "turso",
+    description: "turso",
     urlPrefix: "libsql://",
     needsAuthToken: true,
     steps: [
@@ -41,8 +42,8 @@ const PROVIDERS: Provider[] = [
   },
   {
     id: "neon",
-    name: "Neon",
-    description: "Serverless Postgres",
+    name: "neon",
+    description: "neon",
     urlPrefix: "postgres://",
     needsAuthToken: false,
     steps: [
@@ -55,8 +56,8 @@ const PROVIDERS: Provider[] = [
   },
   {
     id: "supabase",
-    name: "Supabase",
-    description: "Open source Firebase alternative",
+    name: "supabase",
+    description: "supabase",
     urlPrefix: "postgres://",
     needsAuthToken: false,
     steps: [
@@ -69,8 +70,8 @@ const PROVIDERS: Provider[] = [
   },
   {
     id: "d1",
-    name: "Cloudflare D1",
-    description: "SQLite on Cloudflare's edge",
+    name: "d1",
+    description: "d1",
     urlPrefix: "d1://",
     needsAuthToken: true,
     steps: [
@@ -85,10 +86,13 @@ const PROVIDERS: Provider[] = [
 ];
 
 export function CloudUpgrade({
-  title = "Share Publicly",
-  description = "To share content publicly, connect a cloud database.",
+  title,
+  description,
   onClose,
 }: CloudUpgradeProps) {
+  const { t } = useI18n();
+  const resolvedTitle = title ?? t("slides.cloud.title");
+  const resolvedDescription = description ?? t("slides.cloud.description");
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [dbUrl, setDbUrl] = useState("");
   const [authToken, setAuthToken] = useState("");
@@ -105,7 +109,7 @@ export function CloudUpgrade({
     connectingRef.current = true;
 
     if (!dbUrl.trim()) {
-      setErrorMsg("Database URL is required");
+      setErrorMsg(t("slides.cloud.urlRequired"));
       setStatus("error");
       connectingRef.current = false;
       return;
@@ -154,7 +158,7 @@ export function CloudUpgrade({
 
       if (!ok) {
         throw new Error(
-          "Database connection failed after 30 attempts. Check your credentials.",
+          t("slides.cloud.connectionFailed"),
         );
       }
 
@@ -179,7 +183,7 @@ export function CloudUpgrade({
         <div className="flex items-center gap-2">
           <IconCloud className="h-5 w-5 text-blue-500" />
           <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            {title}
+            {resolvedTitle}
           </h3>
         </div>
         {onClose && (
@@ -193,7 +197,7 @@ export function CloudUpgrade({
       </div>
 
       <p className="mb-5 text-sm text-zinc-500 dark:text-zinc-400">
-        {description}
+        {resolvedDescription}
       </p>
 
       {/* Provider selection */}
@@ -215,10 +219,10 @@ export function CloudUpgrade({
                   : "text-zinc-900 dark:text-zinc-100"
               }`}
             >
-              {p.name}
+              {t(`slides.cloud.providers.${p.name}`)}
             </span>
             <span className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-              {p.description}
+              {t(`slides.cloud.providers.${p.description}Desc`)}
             </span>
           </button>
         ))}
@@ -228,7 +232,7 @@ export function CloudUpgrade({
       {provider && (
         <div className="mb-5 rounded-lg border border-zinc-100 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            Setup steps
+            {t("slides.cloud.setupSteps")}
           </p>
           <ol className="space-y-1">
             {provider.steps.map((step, i) => (
@@ -248,7 +252,7 @@ export function CloudUpgrade({
       <div className="space-y-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-            DATABASE_URL
+            {t("slides.cloud.databaseUrl")}
           </label>
           <input
             type="text"
@@ -267,14 +271,14 @@ export function CloudUpgrade({
         {(!provider || provider.needsAuthToken) && (
           <div>
             <label className="mb-1 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-              DATABASE_AUTH_TOKEN
+              {t("slides.cloud.authToken")}
               {provider && !provider.needsAuthToken && (
-                <span className="ml-1 text-zinc-400">(optional)</span>
+                <span className="ml-1 text-zinc-400">{t("slides.common.optional")}</span>
               )}
             </label>
             <input
               type="password"
-              placeholder="Auth token"
+              placeholder={t("slides.cloud.authTokenPlaceholder")}
               value={authToken}
               onChange={(e) => setAuthToken(e.target.value)}
               disabled={isConnecting}
@@ -295,7 +299,7 @@ export function CloudUpgrade({
       {status === "success" && (
         <div className="mt-3 flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
           <IconCheck className="h-3.5 w-3.5" />
-          <span>Connected successfully. Reloading...</span>
+          <span>{t("slides.cloud.connected")}</span>
         </div>
       )}
 
@@ -310,14 +314,14 @@ export function CloudUpgrade({
             <IconLoader2 className="h-4 w-4 animate-spin" />
             <span>
               {status === "saving"
-                ? "Saving credentials..."
-                : "Testing connection..."}
+                ? t("slides.cloud.saving")
+                : t("slides.cloud.testing")}
             </span>
           </>
         ) : (
           <>
             <IconDatabase className="h-4 w-4" />
-            <span>Test & Connect</span>
+            <span>{t("slides.cloud.testAndConnect")}</span>
           </>
         )}
       </button>

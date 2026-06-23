@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigationState } from "@/hooks/use-navigation-state";
 import { DeckProvider } from "@/context/DeckContext";
 import { Toaster } from "@/components/ui/toaster";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import {
   AppProviders,
   CommandMenu,
@@ -91,6 +92,14 @@ function useExitSelectionOnOutsideClick() {
 
 const THEME_INIT_SCRIPT = getThemeInitScript("dark", true);
 
+function HtmlLangSync() {
+  const { lang } = useI18n();
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+  return null;
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -112,7 +121,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
-        <meta name="apple-mobile-web-app-title" content="Slides" />
+        <meta name="apple-mobile-web-app-title" content={t("slides.app.title")} />
         <link rel="apple-touch-icon" href={appPath("/icon-180.svg")} />
         <Meta />
         <Links />
@@ -130,6 +139,7 @@ function AppContent() {
   useExitSelectionOnOutsideClick();
   useNavigationState();
   const qc = useQueryClient();
+  const { t } = useI18n();
   useDbSync({
     queryClient: qc,
     queryKeys: [
@@ -163,16 +173,16 @@ function AppContent() {
   return (
     <>
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Presentations">
-          <CommandMenu.Item onSelect={() => {}}>Search decks</CommandMenu.Item>
+        <CommandMenu.Group heading={t("slides.command.presentations")}>
+          <CommandMenu.Item onSelect={() => {}}>{t("slides.command.searchDecks")}</CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("slides.command.appearance")}>
           <CommandMenu.Item
             onSelect={() => setTheme(isDark ? "light" : "dark")}
             keywords={["theme", "dark", "light", "mode"]}
           >
             {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-            Toggle {isDark ? "light" : "dark"} mode
+            {t("slides.command.toggleTheme")}
           </CommandMenu.Item>
         </CommandMenu.Group>
       </CommandMenu>
@@ -194,13 +204,16 @@ export default function Root() {
   }
 
   return (
-    <AppProviders queryClient={queryClient} defaultTheme="dark">
-      <AppContent />
-      {/* useToast-based Toaster — separate from AppProviders' sonner Toaster.
-          Components throughout the app call toast() from @/hooks/use-toast,
-          which requires this Toaster to be mounted. */}
-      <Toaster />
-    </AppProviders>
+    <I18nProvider defaultLang="en">
+      <AppProviders queryClient={queryClient} defaultTheme="dark">
+        <HtmlLangSync />
+        <AppContent />
+        {/* useToast-based Toaster — separate from AppProviders' sonner Toaster.
+            Components throughout the app call toast() from @/hooks/use-toast,
+            which requires this Toaster to be mounted. */}
+        <Toaster />
+      </AppProviders>
+    </I18nProvider>
   );
 }
 

@@ -5,6 +5,7 @@ import {
   IconLoader2,
   IconScale,
 } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -35,6 +36,7 @@ export function WeightCard({
   isPending,
 }: WeightCardProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { t } = useI18n();
 
   return (
     <div className="group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:bg-white/[0.04]">
@@ -46,17 +48,17 @@ export function WeightCard({
           <span className="text-xl font-bold text-foreground">
             {weight.weight}
           </span>
-          <span className="text-xs font-medium text-muted-foreground">lbs</span>
+          <span className="text-xs font-medium text-muted-foreground">{t("macros.weightCard.lbs")}</span>
         </div>
         <p className="text-xs text-muted-foreground/50">
-          {weight.notes || "Weight entry"}
+          {weight.notes || t("macros.weightCard.weightEntry")}
         </p>
       </div>
       <div className="flex gap-0.5 md:opacity-0 md:group-hover:opacity-100">
         {isPending ? (
           <div
             className="flex h-9 w-9 items-center justify-center text-muted-foreground/60 md:h-7 md:w-7"
-            aria-label="Saving weight"
+            aria-label={t("macros.weightCard.savingWeight")}
           >
             <IconLoader2 className="h-4 w-4 animate-spin md:h-3.5 md:w-3.5" />
           </div>
@@ -65,7 +67,7 @@ export function WeightCard({
             <Button
               variant="ghost"
               size="icon"
-              aria-label={`Edit weight ${weight.weight} lbs`}
+              aria-label={t("macros.weightCard.editWeight", { weight: weight.weight })}
               className="h-9 w-9 md:h-7 md:w-7 text-muted-foreground/50 hover:text-foreground hover:bg-white/5"
               onClick={() => onEdit(weight)}
             >
@@ -79,7 +81,7 @@ export function WeightCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label={`Delete weight ${weight.weight} lbs`}
+                  aria-label={t("macros.weightCard.deleteWeight", { weight: weight.weight })}
                   className="h-9 w-9 md:h-7 md:w-7 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10"
                   disabled={isDeleting}
                 >
@@ -92,19 +94,18 @@ export function WeightCard({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete weight entry?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("macros.weightCard.deleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently delete this weight entry (
-                    {weight.weight} lbs).
+                    {t("macros.weightCard.deleteDescription", { weight: weight.weight })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{t("macros.weightCard.cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => onDelete(weight)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Delete
+                    {t("macros.weightCard.delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

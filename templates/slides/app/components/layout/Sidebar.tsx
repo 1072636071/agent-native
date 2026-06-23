@@ -6,6 +6,7 @@ import {
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
 } from "@tabler/icons-react";
+import { useI18n } from "@agent-native/i18n";
 import { cn } from "@/lib/utils";
 import { ExtensionsSidebarSection } from "@agent-native/core/client/extensions";
 import {
@@ -20,12 +21,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const navItems = [
-  { icon: IconStack2, label: "Decks", href: "/" },
-  { icon: IconPalette, label: "Design Systems", href: "/design-systems" },
-  { icon: IconUsers, label: "Team", href: "/team" },
-];
-
 interface SidebarProps {
   collapsed: boolean;
   /** Omit to hide the collapse/expand toggle (e.g. inside the mobile drawer,
@@ -33,7 +28,14 @@ interface SidebarProps {
   onToggleCollapsed?: () => void;
 }
 
+const navItems = [
+  { icon: IconStack2, labelKey: "slides.nav.decks", href: "/" },
+  { icon: IconPalette, labelKey: "slides.nav.designSystems", href: "/design-systems" },
+  { icon: IconUsers, labelKey: "slides.nav.team", href: "/team" },
+];
+
 export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
+  const { t } = useI18n();
   const location = useLocation();
 
   const isItemActive = (href: string) =>
@@ -49,13 +51,13 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
             <TooltipTrigger asChild>
               <button
                 onClick={onToggleCollapsed}
-                aria-label="Expand sidebar"
+                aria-label={t("slides.sidebar.expand")}
                 className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground"
               >
                 <IconLayoutSidebarLeftExpand className="h-4 w-4" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right">Expand sidebar</TooltipContent>
+            <TooltipContent side="right">{t("slides.sidebar.expand")}</TooltipContent>
           </Tooltip>
         )}
         <nav className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto pt-1">
@@ -67,7 +69,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                 <TooltipTrigger asChild>
                   <Link
                     to={item.href}
-                    aria-label={item.label}
+                    aria-label={t(item.labelKey)}
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-md transition-colors",
                       isActive
@@ -78,7 +80,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                     <Icon className="h-4 w-4" />
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{item.label}</TooltipContent>
+                <TooltipContent side="right">{t(item.labelKey)}</TooltipContent>
               </Tooltip>
             );
           })}
@@ -103,20 +105,20 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
             aria-hidden="true"
             className="hidden h-4 w-auto dark:block"
           />
-          <span className="text-sm font-semibold tracking-tight">Slides</span>
+          <span className="text-sm font-semibold tracking-tight">{t("slides.app.title")}</span>
         </div>
         {onToggleCollapsed && (
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 onClick={onToggleCollapsed}
-                aria-label="Collapse sidebar"
+                aria-label={t("slides.sidebar.collapse")}
                 className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground"
               >
                 <IconLayoutSidebarLeftCollapse className="h-4 w-4" />
               </button>
             </TooltipTrigger>
-            <TooltipContent>Collapse sidebar</TooltipContent>
+            <TooltipContent>{t("slides.sidebar.collapse")}</TooltipContent>
           </Tooltip>
         )}
       </div>
@@ -138,7 +140,7 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}

@@ -1,5 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
@@ -13,6 +13,7 @@ import {
   getThemeInitScript,
   useCommandMenuShortcut,
 } from "@agent-native/core/client";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import { IconSun, IconMoon } from "@tabler/icons-react";
 import { TAB_ID } from "@/lib/tab-id";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -35,7 +36,10 @@ const THEME_INIT_SCRIPT = getThemeInitScript("dark", true);
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <I18nProvider>
+      {(lang) => {
+        return (
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -57,6 +61,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+        );
+      }}
+    </I18nProvider>
   );
 }
 
@@ -86,6 +93,7 @@ function DbSyncSetup() {
 
 function ThemeToggleItem() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { t } = useI18n();
   const isDark = resolvedTheme === "dark";
   return (
     <CommandMenu.Item
@@ -93,7 +101,7 @@ function ThemeToggleItem() {
       keywords={["theme", "dark", "light", "mode"]}
     >
       {isDark ? <IconSun size={16} /> : <IconMoon size={16} />}
-      Toggle theme
+      {t("macros.header.toggleTheme")}
     </CommandMenu.Item>
   );
 }
@@ -115,6 +123,7 @@ export default function Root() {
   );
   const [cmdkOpen, setCmdkOpen] = useState(false);
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
+  const { t } = useI18n();
 
   return (
     <AppProviders
@@ -125,10 +134,10 @@ export default function Root() {
     >
       <DbSyncSetup />
       <CommandMenu open={cmdkOpen} onOpenChange={setCmdkOpen}>
-        <CommandMenu.Group heading="Actions">
-          <CommandMenu.Item onSelect={() => {}}>Search</CommandMenu.Item>
+        <CommandMenu.Group heading={t("macros.commandMenu.actions")}>
+          <CommandMenu.Item onSelect={() => {}}>{t("macros.commandMenu.search")}</CommandMenu.Item>
         </CommandMenu.Group>
-        <CommandMenu.Group heading="Appearance">
+        <CommandMenu.Group heading={t("macros.commandMenu.appearance")}>
           <ThemeToggleItem />
         </CommandMenu.Group>
       </CommandMenu>

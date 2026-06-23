@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { cn, formatLocalDate } from "@/lib/utils";
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { subDays } from "date-fns";
 import { Link } from "react-router";
 import {
@@ -64,6 +65,7 @@ export function DailyProgress({
   fat,
 }: DailyProgressProps) {
   const [activeChart, setActiveChart] = useState(readActiveChart);
+  const { t } = useI18n();
 
   useEffect(() => {
     writeActiveChart(activeChart);
@@ -110,12 +112,12 @@ export function DailyProgress({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">
-                Daily Summary
+                {t("macros.dailyProgress.title")}
               </p>
             </div>
             <div className="px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.05] flex items-center">
               <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-none">
-                Goal: {goalCalories}
+                {t("macros.dailyProgress.goal")}: {goalCalories}
               </span>
             </div>
           </div>
@@ -144,7 +146,7 @@ export function DailyProgress({
                   <span className="font-semibold text-emerald-400">
                     {totalCalories}
                   </span>{" "}
-                  eaten
+                  {t("macros.dailyProgress.eaten")}
                 </span>
               </div>
               {totalBurnedCalories > 0 && (
@@ -154,7 +156,7 @@ export function DailyProgress({
                     <span className="font-semibold text-orange-400">
                       {totalBurnedCalories}
                     </span>{" "}
-                    burned
+                    {t("macros.dailyProgress.burned")}
                   </span>
                 </div>
               )}
@@ -168,7 +170,7 @@ export function DailyProgress({
                   >
                     {remaining}
                   </span>{" "}
-                  remaining
+                  {t("macros.dailyProgress.remaining")}
                 </span>
               </div>
             </div>
@@ -186,9 +188,9 @@ export function DailyProgress({
           {(protein > 0 || carbs > 0 || fat > 0) && (
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {[
-                { label: "Protein", value: protein },
-                { label: "Carbs", value: carbs },
-                { label: "Fat", value: fat },
+                { label: t("macros.dailyProgress.protein"), value: protein },
+                { label: t("macros.dailyProgress.carbs"), value: carbs },
+                { label: t("macros.dailyProgress.fat"), value: fat },
               ].map((m) => (
                 <div
                   key={m.label}
@@ -219,13 +221,13 @@ export function DailyProgress({
                   value="weight"
                   className="gap-2 text-[10px] uppercase tracking-wider h-6 px-3"
                 >
-                  <IconTrendingUp className="h-3 w-3" /> Weight
+                  <IconTrendingUp className="h-3 w-3" /> {t("macros.dailyProgress.weight")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="activity"
                   className="gap-2 text-[10px] uppercase tracking-wider h-6 px-3"
                 >
-                  <IconActivity className="h-3 w-3" /> Activity
+                  <IconActivity className="h-3 w-3" /> {t("macros.dailyProgress.activity")}
                 </TabsTrigger>
               </TabsList>
               <TooltipProvider>
@@ -237,7 +239,7 @@ export function DailyProgress({
                         size="sm"
                         className="h-8 px-2.5 text-[10px] uppercase tracking-widest text-muted-foreground/50 hover:text-foreground hover:bg-white/5 gap-2"
                       >
-                        Last 30D <IconChartBar className="h-3.5 w-3.5" />
+                        {t("macros.dailyProgress.last30D")} <IconChartBar className="h-3.5 w-3.5" />
                       </Button>
                     </Link>
                   </TooltipTrigger>
@@ -245,7 +247,7 @@ export function DailyProgress({
                     side="bottom"
                     className="bg-zinc-900 border-white/10 text-[10px] uppercase tracking-widest py-1.5 px-3"
                   >
-                    View Full Analytics
+                    {t("macros.dailyProgress.viewFullAnalytics")}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -280,8 +282,8 @@ export function DailyProgress({
                         }}
                         cursor={{ stroke: "rgba(255,255,255,0.1)" }}
                         formatter={(value: any, name: any) => [
-                          `${value} lbs`,
-                          name === "trendWeight" ? "Trend" : "Actual",
+                          `${value} ${t("macros.analytics.stats.lbs")}`,
+                          name === "trendWeight" ? t("macros.dailyProgress.trend") : t("macros.dailyProgress.actual"),
                         ]}
                       />
                       <Line
@@ -316,14 +318,14 @@ export function DailyProgress({
                 ) : (
                   <div className="h-full flex items-center justify-center border border-dashed border-white/[0.06] rounded-xl">
                     <p className="text-xs text-muted-foreground">
-                      No weight data available
+                      {t("macros.dailyProgress.noWeightData")}
                     </p>
                   </div>
                 )}
               </div>
               {weightHistory.length > 0 && (
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground/50 text-right mt-2">
-                  Current: {weightHistory[weightHistory.length - 1].weight} lbs
+                  {t("macros.dailyProgress.current")}: {weightHistory[weightHistory.length - 1].weight} {t("macros.analytics.stats.lbs")}
                 </p>
               )}
             </TabsContent>
@@ -373,8 +375,8 @@ export function DailyProgress({
                         }}
                         cursor={{ stroke: "rgba(255,255,255,0.1)" }}
                         formatter={(value: any) => [
-                          `${value} kcal`,
-                          "Net Calories",
+                          `${value} ${t("macros.analytics.stats.kcal")}`,
+                          t("macros.analytics.netCalories"),
                         ]}
                       />
                       <Area
@@ -395,7 +397,7 @@ export function DailyProgress({
                 ) : (
                   <div className="h-full flex items-center justify-center border border-dashed border-white/[0.06] rounded-xl">
                     <p className="text-xs text-muted-foreground">
-                      No activity data available
+                      {t("macros.dailyProgress.noActivityData")}
                     </p>
                   </div>
                 )}

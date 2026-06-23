@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useActionQuery } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import {
   IconBook2,
   IconCircleCheck,
@@ -75,6 +76,7 @@ const limitOptions = ["10", "25", "50", "100"];
 const groupOrder = ["knowledge", "capture", "source"];
 
 export default function SearchRoute() {
+  const { t } = useI18n();
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
   const type = params.get("type") ?? "all";
@@ -109,7 +111,7 @@ export default function SearchRoute() {
     provider !== "all" ||
     status !== "all";
   const groupedResults = useMemo(() => groupResults(results), [results]);
-  const resultFacets = useMemo(() => buildResultFacets(results), [results]);
+  const resultFacets = useMemo(() => buildResultFacets(results, t), [results, t]);
   const resultCount = results.length;
 
   function updateParam(key: string, value: string) {
@@ -129,13 +131,13 @@ export default function SearchRoute() {
   return (
     <div className="min-h-full bg-background">
       <PageHeader
-        eyebrow="Search"
-        title="Search company knowledge"
-        description="Search reviewed knowledge, raw captures, and source records, then open the cited Brain record or original source."
+        eyebrow={t("brain.search")}
+        title={t("brain.search.title")}
+        description={t("brain.search.description")}
         actions={
           <Badge variant="outline" className="gap-2">
             <IconSearch className="size-4" />
-            {searchQuery.isFetching ? "Searching" : `${resultCount} results`}
+            {searchQuery.isFetching ? t("brain.search.loading") : `${resultCount} ${t("brain.search.results")}`}
           </Badge>
         }
       />
@@ -148,7 +150,7 @@ export default function SearchRoute() {
               <Input
                 value={query}
                 onChange={(event) => updateParam("q", event.target.value)}
-                placeholder="Search decisions, customer facts, source names, transcripts, or policy snippets..."
+                placeholder={t("brain.search.placeholder")}
                 className="h-11 pl-9 text-base"
                 autoFocus
               />
@@ -160,12 +162,12 @@ export default function SearchRoute() {
                 onValueChange={(value) => updateParam("type", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Type" />
+                  <SelectValue placeholder={t("brain.search.filters.type")} />
                 </SelectTrigger>
                 <SelectContent>
                   {typeOptions.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option === "all" ? "All types" : statusLabel(option)}
+                      {option === "all" ? t("brain.search.defaultTypes.all") : statusLabel(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -176,12 +178,12 @@ export default function SearchRoute() {
                 onValueChange={(value) => updateParam("provider", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Source" />
+                  <SelectValue placeholder={t("brain.search.filters.provider")} />
                 </SelectTrigger>
                 <SelectContent>
                   {providerOptions.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option === "all" ? "All sources" : displayLabel(option)}
+                      {option === "all" ? t("brain.search.filters.allSources") : displayLabel(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -192,12 +194,12 @@ export default function SearchRoute() {
                 onValueChange={(value) => updateParam("status", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t("brain.search.filters.status")} />
                 </SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option === "all" ? "All statuses" : statusLabel(option)}
+                      {option === "all" ? t("brain.knowledge.filters.all") : statusLabel(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -208,7 +210,7 @@ export default function SearchRoute() {
                 onValueChange={(value) => updateParam("limit", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Limit" />
+                  <SelectValue placeholder={t("brain.search.filters.limit")} />
                 </SelectTrigger>
                 <SelectContent>
                   {limitOptions.map((option) => (
@@ -226,7 +228,7 @@ export default function SearchRoute() {
                 disabled={!hasFilters && limit === "25"}
               >
                 <IconRefresh className="size-4" />
-                Reset
+                {t("brain.search.reset")}
               </Button>
             </div>
 
@@ -234,6 +236,7 @@ export default function SearchRoute() {
               <ResultFacets
                 facets={resultFacets}
                 onSelect={(key, value) => updateParam(key, value)}
+                t={t}
               />
             ) : null}
           </CardContent>
@@ -243,8 +246,8 @@ export default function SearchRoute() {
           <LoadingRows rows={5} />
         ) : searchQuery.isError ? (
           <EmptyActionState
-            title="Search is unavailable"
-            detail="Refresh the page and try again once Brain has finished loading."
+            title={t("brain.search.unavailableTitle")}
+            detail={t("brain.search.unavailableDetail")}
           />
         ) : results.length ? (
           <div className="grid gap-5">
@@ -268,6 +271,7 @@ export default function SearchRoute() {
                       key={`${result.type}-${result.id}`}
                       result={result}
                       query={query}
+                      t={t}
                     />
                   ))}
                 </div>
@@ -278,13 +282,13 @@ export default function SearchRoute() {
           <EmptyActionState
             title={
               hasFilters
-                ? "No knowledge matches these filters"
-                : "Start with a company knowledge search"
+                ? t("brain.knowledge.emptyFiltered.title")
+                : t("brain.search.emptyStart")
             }
             detail={
               hasFilters
-                ? "Broaden the query or clear a filter."
-                : "Enter a phrase to search cited company knowledge."
+                ? t("brain.knowledge.emptyFiltered.detail")
+                : t("brain.search.noResultsDetail")
             }
           />
         )}
@@ -296,18 +300,20 @@ export default function SearchRoute() {
 function SearchResultRow({
   result,
   query,
+  t,
 }: {
   result: SearchEverythingResult;
   query: string;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
-  const body = result.snippet ?? result.summary ?? "No excerpt is available.";
+  const body = result.snippet ?? result.summary ?? t("brain.search.resultNoExcerpt");
   const whyMatched = explainMatch(result, query);
   const sourceLabel =
     result.sourceTitle ??
     result.source?.title ??
     result.sourceProvider ??
     result.provider ??
-    "Company knowledge";
+    t("brain.search.resultFallbackSource");
   const internalHref = internalResultHref(result);
   const sourceUrl =
     result.url ?? result.sourceUrl ?? result.citation?.sourceUrl ?? null;
@@ -344,32 +350,32 @@ function SearchResultRow({
         <div className="flex shrink-0 flex-wrap gap-2 lg:justify-end">
           {typeof result.confidence === "number" ? (
             <Badge variant="outline">
-              Confidence {formatPercent(result.confidence)}
+              {t("brain.search.resultConfidence", { pct: formatPercent(result.confidence) })}
             </Badge>
           ) : null}
           {typeof result.score === "number" ? (
-            <Badge variant="outline">Score {formatScore(result.score)}</Badge>
+            <Badge variant="outline">{t("brain.search.resultScore", { score: formatScore(result.score) })}</Badge>
           ) : null}
         </div>
       </div>
 
       <div className="flex flex-col gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className="truncate">Citation: {sourceLabel}</span>
-          {result.updatedAt ? <span>Updated {result.updatedAt}</span> : null}
+          <span className="truncate">{t("brain.search.resultCitation", { source: sourceLabel })}</span>
+                  {result.updatedAt ? <span>{t("brain.search.resultUpdated", { date: result.updatedAt })}</span> : null}
         </div>
         <div className="flex flex-wrap gap-2">
-          <SearchResultDetails result={result} query={query} />
+          <SearchResultDetails result={result} query={query} t={t} />
           {internalHref ? (
-            <Button asChild variant="ghost" size="sm">
-              <Link to={internalHref}>View in Brain</Link>
+              <Button asChild variant="ghost" size="sm">
+              <Link to={internalHref}>{t("brain.search.viewInBrain")}</Link>
             </Button>
           ) : null}
           {sourceUrl ? (
             <Button asChild variant="outline" size="sm">
               <a href={sourceUrl} target="_blank" rel="noreferrer">
                 <IconExternalLink className="size-4" />
-                Open source
+                {t("brain.search.openSource")}
               </a>
             </Button>
           ) : null}
@@ -382,11 +388,13 @@ function SearchResultRow({
 function SearchResultDetails({
   result,
   query,
+  t,
 }: {
   result: SearchEverythingResult;
   query: string;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
-  const body = result.snippet ?? result.summary ?? "No excerpt is available.";
+  const body = result.snippet ?? result.summary ?? t("brain.search.resultNoExcerpt");
   const summary = result.summary ?? result.snippet ?? null;
   const sourceProvider =
     result.sourceProvider ?? result.provider ?? result.source?.provider ?? null;
@@ -394,7 +402,7 @@ function SearchResultDetails({
     result.sourceTitle ??
     result.source?.title ??
     result.citation?.captureTitle ??
-    "Company knowledge";
+    t("brain.search.resultFallbackSource");
   const sourceUrl =
     result.url ?? result.sourceUrl ?? result.citation?.sourceUrl ?? null;
   const internalHref = internalResultHref(result);
@@ -406,7 +414,7 @@ function SearchResultDetails({
       <SheetTrigger asChild>
         <Button type="button" variant="ghost" size="sm">
           <IconInfoCircle className="size-4" />
-          Details
+          {t("brain.search.details")}
         </Button>
       </SheetTrigger>
       <SheetContent className="flex w-full max-w-full flex-col overflow-y-auto p-0 sm:max-w-xl">
@@ -431,26 +439,26 @@ function SearchResultDetails({
         <div className="grid gap-5 px-5 py-5">
           <section className="grid gap-2">
             <h3 className="text-sm font-semibold text-foreground">
-              Why this matched
+              {t("brain.search.detailsWhyMatched")}
             </h3>
             <p className="text-sm leading-6 text-muted-foreground">
-              {whyMatched ?? "This result matched the current search index."}
+              {whyMatched ?? t("brain.search.detailsWhyMatchedFallback")}
             </p>
           </section>
 
           <Separator />
 
           <section className="grid gap-3">
-            <h3 className="text-sm font-semibold text-foreground">Summary</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("brain.search.detailsSummary")}</h3>
             <p className="text-sm leading-6 text-muted-foreground">
-              {summary ?? "No summary is available for this result."}
+              {summary ?? t("brain.search.detailsSummaryNone")}
             </p>
           </section>
 
           <section className="grid gap-3">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <IconQuote className="size-4" />
-              Citation quote
+              {t("brain.search.detailsCitationQuote")}
             </h3>
             {quote ? (
               <blockquote className="rounded-md border border-border bg-muted/30 p-3 text-sm leading-6 text-muted-foreground">
@@ -458,42 +466,47 @@ function SearchResultDetails({
               </blockquote>
             ) : (
               <p className="text-sm leading-6 text-muted-foreground">
-                No citation quote is available.
+                {t("brain.search.detailsNoQuote")}
               </p>
             )}
           </section>
 
           <section className="grid gap-3">
-            <h3 className="text-sm font-semibold text-foreground">Details</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("brain.search.detailsDetails")}</h3>
             <dl className="grid gap-3 rounded-md border border-border p-3 text-sm sm:grid-cols-2">
-              <DetailItem label="Source" value={sourceTitle} />
+              <DetailItem label={t("brain.search.detailsSource")} value={sourceTitle} t={t} />
               <DetailItem
-                label="Provider"
+                label={t("brain.search.detailsProvider")}
                 value={sourceProvider ? displayLabel(sourceProvider) : null}
+                t={t}
               />
               <DetailItem
-                label="Status"
+                label={t("brain.search.detailsStatus")}
                 value={result.status ? statusLabel(result.status) : null}
+                t={t}
               />
               <DetailItem
-                label="Confidence"
+                label={t("brain.search.detailsConfidence")}
                 value={
                   typeof result.confidence === "number"
                     ? formatPercent(result.confidence)
                     : null
                 }
+                t={t}
               />
               <DetailItem
-                label="Score"
+                label={t("brain.search.detailsScore")}
                 value={
                   typeof result.score === "number"
                     ? formatScore(result.score)
                     : null
                 }
+                t={t}
               />
               <DetailItem
-                label="Updated"
+                label={t("brain.search.detailsUpdated")}
                 value={formatDateTime(result.updatedAt)}
+                t={t}
               />
             </dl>
           </section>
@@ -503,7 +516,7 @@ function SearchResultDetails({
               <Button asChild variant="outline" className="justify-start">
                 <a href={sourceUrl} target="_blank" rel="noreferrer">
                   <IconExternalLink className="size-4" />
-                  <span className="truncate">Open source URL</span>
+                  <span className="truncate">{t("brain.search.detailsOpenSourceUrl")}</span>
                 </a>
               </Button>
             ) : null}
@@ -511,14 +524,14 @@ function SearchResultDetails({
               <Button asChild variant="ghost" className="justify-start">
                 <Link to={internalHref}>
                   <IconLink className="size-4" />
-                  <span className="truncate">Open Brain record</span>
+                  <span className="truncate">{t("brain.search.detailsOpenBrainRecord")}</span>
                 </Link>
               </Button>
             ) : result.source?.id ? (
               <Button asChild variant="ghost" className="justify-start">
                 <Link to={`/sources?sourceId=${result.source.id}`}>
                   <IconLink className="size-4" />
-                  <span className="truncate">Open related source</span>
+                  <span className="truncate">{t("brain.search.detailsOpenRelatedSource")}</span>
                 </Link>
               </Button>
             ) : null}
@@ -532,9 +545,11 @@ function SearchResultDetails({
 function DetailItem({
   label,
   value,
+  t,
 }: {
   label: string;
   value?: string | null;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   return (
     <div className="min-w-0">
@@ -542,7 +557,7 @@ function DetailItem({
         {label}
       </dt>
       <dd className="mt-1 truncate text-foreground">
-        {value || "Not available"}
+        {value || t("brain.search.detailsNotAvailable")}
       </dd>
     </div>
   );
@@ -551,9 +566,11 @@ function DetailItem({
 function ResultFacets({
   facets,
   onSelect,
+  t,
 }: {
   facets: ResultFacetGroup[];
   onSelect: (key: string, value: string) => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const visibleFacets = facets.filter((facet) => facet.items.length);
   if (!visibleFacets.length) return null;
@@ -561,7 +578,7 @@ function ResultFacets({
   return (
     <div className="grid gap-2 border-t border-border pt-3">
       <div className="text-xs font-medium uppercase text-muted-foreground">
-        In these results
+        {t("brain.search.facetInTheseResults")}
       </div>
       <div className="flex flex-wrap gap-2">
         {visibleFacets.flatMap((facet) =>
@@ -610,16 +627,17 @@ type ResultFacetGroup = {
 
 function buildResultFacets(
   results: SearchEverythingResult[],
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): ResultFacetGroup[] {
   return [
     {
       key: "type",
-      label: "Type",
+      label: t("brain.search.facetType"),
       items: countFacet(results, (result) => result.type || "knowledge"),
     },
     {
       key: "provider",
-      label: "Source",
+      label: t("brain.search.facetSource"),
       items: countFacet(
         results,
         (result) =>
@@ -628,7 +646,7 @@ function buildResultFacets(
     },
     {
       key: "status",
-      label: "Status",
+      label: t("brain.search.facetStatus"),
       items: countFacet(results, (result) => result.status),
     },
   ];

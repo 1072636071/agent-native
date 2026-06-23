@@ -8,6 +8,7 @@ import {
   useRouteError,
 } from "react-router";
 import { useEffect, useRef, useState } from "react";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import { useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -52,9 +53,10 @@ function getHydrationStableThemeInitScript() {
 
 const THEME_INIT_SCRIPT = getHydrationStableThemeInitScript();
 
-export function Layout({ children }: { children: React.ReactNode }) {
+function HtmlDocument({ children }: { children: React.ReactNode }) {
+  const { lang } = useI18n();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -85,6 +87,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  );
+}
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nProvider>
+      <HtmlDocument>{children}</HtmlDocument>
+    </I18nProvider>
   );
 }
 
@@ -276,7 +286,7 @@ export default function Root() {
   );
 }
 
-function routeErrorMessage(error: unknown): string {
+function routeErrorMessage(error: unknown, t?: (key: string) => string): string {
   if (isRouteErrorResponse(error)) {
     if (typeof error.data === "string" && error.data.trim()) {
       return error.data;
@@ -293,17 +303,25 @@ function routeErrorMessage(error: unknown): string {
   }
   if (error instanceof Error && error.message.trim()) return error.message;
   if (typeof error === "string" && error.trim()) return error;
-  return "Something went wrong while loading Mail.";
+  return t ? t("mail.error.unableToLoad") : "Something went wrong while loading Mail.";
 }
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  const message = routeErrorMessage(error);
+  return (
+    <I18nProvider>
+      <ErrorBoundaryContent error={error} />
+    </I18nProvider>
+  );
+}
 
+function ErrorBoundaryContent({ error }: { error: unknown }) {
+  const { t } = useI18n();
+  const message = routeErrorMessage(error, t);
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6 text-foreground">
       <div className="w-full max-w-md text-center">
-        <p className="text-sm font-semibold">Mail could not load this view.</p>
+        <p className="text-sm font-semibold">{t("mail.error.unableToLoad")}</p>
         <p className="mt-2 text-sm text-muted-foreground">{message}</p>
         <div className="mt-5 flex justify-center gap-2">
           <Button
@@ -311,7 +329,7 @@ export function ErrorBoundary() {
             size="sm"
             onClick={() => window.history.back()}
           >
-            Back
+            {t("mail.common.back")}
           </Button>
           <Button size="sm" onClick={() => window.location.reload()}>
             Reload

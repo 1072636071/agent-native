@@ -1,5 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,6 +12,7 @@ import {
 } from "@agent-native/core/client";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ProviderCorpusJobNotifier } from "@/components/ProviderCorpusJobNotifier";
+import { I18nProvider, useI18n } from "@agent-native/i18n";
 import { CommandPalette } from "./components/layout/CommandPalette";
 import { Layout as AppLayout } from "./components/layout/Layout";
 import type { LinksFunction } from "react-router";
@@ -31,9 +32,17 @@ export const links: LinksFunction = () => [
 
 const THEME_INIT_SCRIPT = getThemeInitScript("dark", true);
 
+function HtmlLangSync() {
+  const { lang } = useI18n();
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+  return null;
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -84,16 +93,19 @@ export default function Root() {
     // toaster={null}: suppress AppProviders' built-in sonner; analytics renders
     // both its styled Sonner and the legacy shadcn Toaster explicitly below.
     <AppProviders queryClient={queryClient} defaultTheme="dark" toaster={null}>
-      <DbSyncBridge />
-      <Toaster />
-      <Sonner position="bottom-left" />
-      <AuthProvider>
-        <ProviderCorpusJobNotifier />
-        <CommandPalette />
-        <AppLayout>
-          <Outlet />
-        </AppLayout>
-      </AuthProvider>
+      <I18nProvider defaultLang="en">
+        <HtmlLangSync />
+        <DbSyncBridge />
+        <Toaster />
+        <Sonner position="bottom-left" />
+        <AuthProvider>
+          <ProviderCorpusJobNotifier />
+          <CommandPalette />
+          <AppLayout>
+            <Outlet />
+          </AppLayout>
+        </AuthProvider>
+      </I18nProvider>
     </AppProviders>
   );
 }

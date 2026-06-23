@@ -1,28 +1,25 @@
 import { useEffect } from "react";
+import { useI18n } from "@agent-native/i18n";
 import {
   AgentChatSurface,
   markAgentChatHomeHandoff,
 } from "@agent-native/core/client";
 import { TAB_ID } from "@/lib/tab-id";
 
-const SEO_TITLE =
-  "Agent-Native Brain - Open Source company knowledge base for AI agents";
-const SEO_DESCRIPTION =
-  "Open Source company knowledge base that turns Slack, meetings, transcripts, docs, and decisions into cited answers for AI agents.";
-
 export function meta() {
   return [
-    { title: SEO_TITLE },
-    { name: "description", content: SEO_DESCRIPTION },
-    { property: "og:title", content: SEO_TITLE },
-    { property: "og:description", content: SEO_DESCRIPTION },
+    { title: "brain.meta.title" },
+    { name: "description", content: "brain.meta.description" },
+    { property: "og:title", content: "brain.meta.title" },
+    { property: "og:description", content: "brain.meta.description" },
     { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: SEO_TITLE },
-    { name: "twitter:description", content: SEO_DESCRIPTION },
+    { name: "twitter:title", content: "brain.meta.title" },
+    { name: "twitter:description", content: "brain.meta.description" },
   ];
 }
 
 export default function AskRoute() {
+  const { t } = useI18n();
   useEffect(() => {
     function handleChatRunning(event: Event) {
       const detail = (event as CustomEvent).detail;
@@ -47,15 +44,15 @@ export default function AskRoute() {
         showTabBar={false}
         dynamicSuggestions={false}
         suggestions={[]}
-        emptyStateText="Ask Brain about company knowledge."
+        emptyStateText={t("brain.ask.emptyState")}
         emptyStateDisplay="hidden"
         centerComposerWhenEmpty
         composerLayoutVariant="hero"
-        composerPlaceholder="Ask about company knowledge..."
+        composerPlaceholder={t("brain.ask.composerPlaceholder")}
         composerSlot={
           <div className="brain-chat-intro">
-            <h1>What do you want to know?</h1>
-            <p>Brain answers from cited company knowledge.</p>
+            <h1>{t("brain.ask.introTitle")}</h1>
+            <p>{t("brain.ask.introDesc")}</p>
           </div>
         }
       />

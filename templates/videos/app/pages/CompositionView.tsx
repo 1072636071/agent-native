@@ -28,6 +28,7 @@ import {
 } from "@/components/TweaksPanel";
 import { CollabPresenceBar } from "@/components/CollabPresenceBar";
 import NewComposition from "@/pages/NewComposition";
+import { useI18n } from "@agent-native/i18n";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -107,6 +108,7 @@ export default function CompositionView({
 
   // Detect if there are unsaved changes in localStorage
   const hasUnsavedChanges = useUnsavedChanges();
+  const { t } = useI18n();
 
   // Tweaks panel
   const [tweaksVisible, setTweaksVisible] = useState(false);
@@ -455,7 +457,7 @@ export default function CompositionView({
                   {composition.width}x{composition.height}
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Click to edit output size</TooltipContent>
+              <TooltipContent>{t("composition.editOutputSize")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -466,7 +468,7 @@ export default function CompositionView({
                   {composition.fps}fps
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Click to edit frame rate</TooltipContent>
+              <TooltipContent>{t("composition.editFrameRate")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -477,7 +479,7 @@ export default function CompositionView({
                   {(composition.durationInFrames / composition.fps).toFixed(1)}s
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Click to edit duration</TooltipContent>
+              <TooltipContent>{t("composition.editDuration")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -491,10 +493,10 @@ export default function CompositionView({
                   )}
                 >
                   <IconAdjustments className="w-3.5 h-3.5" />
-                  Tweaks
+                  {t("composition.tweaks")}
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Toggle tweaks panel</TooltipContent>
+              <TooltipContent>{t("composition.toggleTweaks")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -511,17 +513,17 @@ export default function CompositionView({
                   )}
                 >
                   <IconDeviceFloppy className="w-3.5 h-3.5" />
-                  Save
+                  {t("common.save")}
                 </button>
               </TooltipTrigger>
               <TooltipContent>
                 {!canSave
-                  ? "Save to registry requires local development mode"
+                  ? t("composition.saveRequiresDev")
                   : hasUnsavedChanges
-                    ? "Save current settings as default for this composition"
+                    ? t("composition.saveAsDefault")
                     : composition.storage === "database"
-                      ? "All changes saved to database"
-                      : "All changes saved to registry"}
+                      ? t("composition.savedToDatabase")
+                      : t("composition.savedToRegistry")}
               </TooltipContent>
             </Tooltip>
             <Tooltip>
@@ -533,7 +535,7 @@ export default function CompositionView({
                   <IconTrash className="w-3.5 h-3.5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Delete composition</TooltipContent>
+              <TooltipContent>{t("composition.delete")}</TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -592,16 +594,14 @@ export default function CompositionView({
       <AlertDialog open={showSaveConfirm} onOpenChange={setShowSaveConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Save composition</AlertDialogTitle>
+            <AlertDialogTitle>{t("composition.saveTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Save current settings as defaults for "{composition.title}"? This
-              will update its tracks, animations, properties, and composition
-              settings.
+              {t("composition.saveDesc", { title: composition.title })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmSave}>Save</AlertDialogAction>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSave}>{t("common.save")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -616,15 +616,14 @@ export default function CompositionView({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Saved</AlertDialogTitle>
+            <AlertDialogTitle>{t("common.saved")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Saved "{composition.title}". The page will reload to pick up the
-              changes.
+              {t("composition.savedDesc", { title: composition.title })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => window.location.reload()}>
-              OK
+              {t("general.ok")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -634,16 +633,13 @@ export default function CompositionView({
       <AlertDialog open={showSaveError} onOpenChange={setShowSaveError}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Save failed</AlertDialogTitle>
+            <AlertDialogTitle>{t("composition.saveFailed")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Failed to save to registry: {saveErrorMessage}
-              {"\n\n"}This usually means the dev server needs to be restarted or
-              the API endpoint is not available. Your changes are still saved in
-              browser storage and will persist until you reload.
+              {t("composition.saveFailedDesc", { error: saveErrorMessage })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction>OK</AlertDialogAction>
+            <AlertDialogAction>{t("general.ok")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -660,13 +656,13 @@ export default function CompositionView({
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete "{composition.title}"?</AlertDialogTitle>
+            <AlertDialogTitle>{t("composition.deleteConfirm", { title: composition.title })}</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone.
+              {t("composition.deleteConfirmDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
                 // Await the delete so the dialog stays open if it fails
@@ -677,7 +673,7 @@ export default function CompositionView({
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

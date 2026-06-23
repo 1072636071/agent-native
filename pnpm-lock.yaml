@@ -1238,6 +1238,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1491,6 +1494,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@aws-sdk/client-s3':
         specifier: ^3.1044.0
         version: 3.1044.0
@@ -1654,6 +1660,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
@@ -1775,6 +1784,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@agent-native/scheduling':
         specifier: workspace:*
         version: link:../../packages/scheduling
@@ -2010,6 +2022,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
@@ -2218,6 +2233,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@ffmpeg/ffmpeg':
         specifier: ^0.12.15
         version: 0.12.15
@@ -2493,6 +2511,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -2731,6 +2752,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@agent-native/pinpoint':
         specifier: workspace:*
         version: link:../../packages/pinpoint
@@ -3051,6 +3075,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
@@ -3268,6 +3295,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
@@ -3485,6 +3515,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
@@ -4012,6 +4045,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@agent-native/pinpoint':
         specifier: workspace:*
         version: link:../../packages/pinpoint
@@ -4358,6 +4394,9 @@ importers:
       '@agent-native/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@agent-native/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@agent-native/pinpoint':
         specifier: workspace:*
         version: link:../../packages/pinpoint

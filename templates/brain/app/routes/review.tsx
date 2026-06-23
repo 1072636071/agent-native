@@ -1,4 +1,5 @@
 import { useMemo, useState, type KeyboardEvent } from "react";
+import { useI18n } from "@agent-native/i18n";
 import { useSearchParams } from "react-router";
 import { useActionMutation, useActionQuery } from "@agent-native/core/client";
 import {
@@ -105,6 +106,7 @@ export default function ReviewRoute() {
   const [previewProposal, setPreviewProposal] = useState<ReviewItem | null>(
     null,
   );
+  const { t } = useI18n();
 
   const reviewQuery = useActionQuery<ReviewQueueResponse>(
     "list-proposals" as any,
@@ -159,14 +161,14 @@ export default function ReviewRoute() {
   const summary = useMemo(() => {
     const label =
       status === "pending"
-        ? "Pending proposals"
+        ? t("brain.review.summaryPending")
         : status === "approved"
-          ? "Approved proposals"
-          : "Rejected proposals";
+          ? t("brain.review.summaryApproved")
+          : t("brain.review.summaryRejected");
     return `${label}: ${proposals.length} ${
-      proposals.length === 1 ? "item" : "items"
-    } shown`;
-  }, [proposals.length, status]);
+      proposals.length === 1 ? t("brain.review.item") : t("brain.review.items")
+    } ${t("brain.review.shown")}`;
+  }, [proposals.length, status, t]);
 
   function updateStatus(value: string) {
     const next = new URLSearchParams(params);
@@ -312,8 +314,8 @@ export default function ReviewRoute() {
     <div className="min-h-full bg-muted/20">
       <PageHeader
         eyebrow="Review"
-        title="Proposal review"
-        description="Approve only the proposed memories that have durable value, source support, and the right privacy posture."
+        title={t("brain.review.title")}
+        description={t("brain.review.description")}
         actions={
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Badge variant="outline" className="w-fit max-w-full">
@@ -321,12 +323,12 @@ export default function ReviewRoute() {
             </Badge>
             <Select value={status} onValueChange={updateStatus}>
               <SelectTrigger className="w-full sm:w-44">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t("brain.review.filter.pending")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="pending">{t("brain.review.filter.pending")}</SelectItem>
+                <SelectItem value="approved">{t("brain.review.filter.approved")}</SelectItem>
+                <SelectItem value="rejected">{t("brain.review.filter.rejected")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -356,9 +358,9 @@ export default function ReviewRoute() {
                     "shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     selected && "ring-2 ring-ring",
                   )}
-                  aria-label={
+                    aria-label={
                     canReview
-                      ? `${proposal.title}. Press A to approve, R to reject, or S to save wording changes.`
+                      ? t("brain.review.ariaReviewShortcut", { title: proposal.title })
                       : proposal.title
                   }
                 >
@@ -379,7 +381,7 @@ export default function ReviewRoute() {
                               <>
                                 <span className="hidden sm:inline">/</span>
                                 <span className="font-medium text-foreground">
-                                  Unsaved edits
+                                  {t("brain.review.unsavedEdits")}
                                 </span>
                               </>
                             ) : null}
@@ -396,7 +398,7 @@ export default function ReviewRoute() {
                     <div className="grid gap-4">
                       <p className="line-clamp-3 max-w-5xl whitespace-pre-wrap break-words text-sm leading-6 text-foreground">
                         {draftValue(proposal, "body") ||
-                          "No proposed knowledge."}
+                          t("brain.review.noProposedKnowledge")}
                       </p>
                       <ReviewSignalStrip
                         target={insight.target.label}
@@ -404,6 +406,7 @@ export default function ReviewRoute() {
                         evidenceCount={evidence.length}
                         proposedAction={proposal.proposedAction}
                         publishCanonical={publishCanonical}
+                        t={t}
                       />
                     </div>
 
@@ -412,7 +415,7 @@ export default function ReviewRoute() {
                         <div className="grid gap-4">
                           <div className="grid gap-2">
                             <Label htmlFor={`proposal-title-${proposal.id}`}>
-                              Title
+                              {t("brain.review.titleField")}
                             </Label>
                             <Input
                               id={`proposal-title-${proposal.id}`}
@@ -427,7 +430,7 @@ export default function ReviewRoute() {
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor={`proposal-body-${proposal.id}`}>
-                              Proposed knowledge
+                              {t("brain.review.proposedKnowledgeField")}
                             </Label>
                             <Textarea
                               id={`proposal-body-${proposal.id}`}
@@ -445,14 +448,14 @@ export default function ReviewRoute() {
                             <Label
                               htmlFor={`proposal-rationale-${proposal.id}`}
                             >
-                              Rationale
+                              {t("brain.review.rationaleField")}
                             </Label>
                             <Textarea
                               id={`proposal-rationale-${proposal.id}`}
                               className="min-h-20"
                               value={draftValue(proposal, "rationale")}
                               disabled={!canReview || pendingMutation}
-                              placeholder="Why this should become durable knowledge"
+                              placeholder={t("brain.review.rationalePlaceholder")}
                               onChange={(event) =>
                                 patchDraft(proposal.id, {
                                   rationale: event.target.value,
@@ -462,7 +465,7 @@ export default function ReviewRoute() {
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor={`reviewer-notes-${proposal.id}`}>
-                              Reviewer notes
+                              {t("brain.review.reviewerNotesField")}
                             </Label>
                             <Textarea
                               id={`reviewer-notes-${proposal.id}`}
@@ -473,7 +476,7 @@ export default function ReviewRoute() {
                                 ""
                               }
                               disabled={!canReview || pendingMutation}
-                              placeholder="Optional context for this decision"
+                              placeholder={t("brain.review.reviewerNotesPlaceholder")}
                               onChange={(event) =>
                                 setNotes((current) => ({
                                   ...current,
@@ -491,7 +494,7 @@ export default function ReviewRoute() {
                               className="flex items-center gap-2 text-sm font-medium"
                             >
                               <IconBook className="size-4 text-muted-foreground" />
-                              Publish as company context
+                              {t("brain.review.publishCanonical")}
                             </Label>
                             <div className="flex items-center gap-3">
                               {publishCanonical ? (
@@ -505,7 +508,7 @@ export default function ReviewRoute() {
                                   }
                                 >
                                   <IconFileText className="size-4" />
-                                  Preview
+                                  {t("brain.review.overflow.preview")}
                                 </Button>
                               ) : null}
                               <Switch
@@ -526,8 +529,8 @@ export default function ReviewRoute() {
                       <p className="text-xs leading-5 text-muted-foreground sm:max-w-xl">
                         {canReview
                           ? hasChanges
-                            ? "Approval saves wording edits first."
-                            : "Approve durable, sourced memories; reject anything too narrow or uncertain."
+                            ? t("brain.review.approveHintHasChanges")
+                            : t("brain.review.approveHint")
                           : reviewedSummary(proposal)}
                       </p>
                       <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:flex-wrap sm:justify-end">
@@ -563,7 +566,7 @@ export default function ReviewRoute() {
                             onClick={() => void saveDraft(proposal)}
                           >
                             <IconPencil className="size-4" />
-                            Save wording
+                            {t("brain.review.saveDraft")}
                           </Button>
                         ) : null}
                         {canReview ? (
@@ -576,7 +579,7 @@ export default function ReviewRoute() {
                               onClick={() => void reject(proposal)}
                             >
                               <IconX className="size-4" />
-                              Reject
+                              {t("brain.review.reject")}
                             </Button>
                             <Button
                               size="sm"
@@ -598,18 +601,18 @@ export default function ReviewRoute() {
           </div>
         ) : (
           <EmptyActionState
-            title={`No ${status} proposals`}
-            detail="New source captures appear here when Brain needs a reviewer before turning them into company knowledge."
+            title={t("brain.review.emptyFiltered.title")}
+            detail={t("brain.review.emptyFiltered.detail")}
           />
         )}
 
         {reviewQuery.isError || actionError ? (
           <EmptyActionState
-            title="Review action failed"
+            title={t("brain.review.emptyFiltered.title")}
             detail={
               actionError?.message ??
               reviewQuery.error?.message ??
-              "Brain could not load or update proposals."
+              t("brain.review.emptyFiltered.detail")
             }
           />
         ) : null}
@@ -620,7 +623,7 @@ export default function ReviewRoute() {
         preview={canonicalPreview}
         loading={previewCanonical.isPending || approveProposal.isPending}
         error={previewCanonical.error?.message ?? null}
-        primaryLabel="Approve and publish"
+        primaryLabel={t("brain.review.approve")}
         primaryDisabled={!previewProposal || pendingMutation}
         onPrimaryAction={() => void approvePreviewedProposal()}
       />
@@ -983,21 +986,23 @@ function ReviewSignalStrip({
   evidenceCount,
   proposedAction,
   publishCanonical,
+  t,
 }: {
   target: string;
   privacy: string;
   evidenceCount: number;
   proposedAction?: string | null;
   publishCanonical: boolean;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const signals = [
-    { label: "Target", value: target },
-    { label: "Privacy", value: privacy },
+    { label: t("brain.review.signalTarget"), value: target },
+    { label: t("brain.review.signalPrivacy"), value: privacy },
     {
-      label: "Evidence",
+      label: t("brain.review.signalEvidence"),
       value: evidenceCount
-        ? `${evidenceCount} ${evidenceCount === 1 ? "snippet" : "snippets"}`
-        : "No snippets",
+        ? `${evidenceCount} ${evidenceCount === 1 ? t("brain.review.signalEvidenceSnippet", { count: evidenceCount }) : t("brain.review.signalEvidenceSnippets", { count: evidenceCount })}`
+        : t("brain.review.signalNoSnippets"),
     },
   ];
 
@@ -1019,7 +1024,7 @@ function ReviewSignalStrip({
       {publishCanonical ? (
         <Badge variant="outline" className="h-5 gap-1.5">
           <IconBook className="size-3" />
-          Company context
+          {t("brain.review.signalCompanyContext")}
         </Badge>
       ) : null}
     </div>
@@ -1052,7 +1057,7 @@ function ProposalOverflowMenu({
           type="button"
           size="icon"
           variant="outline"
-          aria-label="More review actions"
+          aria-label={t("brain.review.ariaMoreActions")}
         >
           <IconDotsVertical className="size-4" />
         </Button>
@@ -1064,7 +1069,7 @@ function ProposalOverflowMenu({
             onSelect={onToggleEditing}
           >
             <IconPencil className="size-4" />
-            {editing ? "Hide editor" : "Edit wording"}
+            {editing ? t("brain.review.menuHideEditor") : t("brain.review.menuEditWording")}
           </DropdownMenuItem>
         ) : null}
         {canReview && publishCanonical ? (
@@ -1073,7 +1078,7 @@ function ProposalOverflowMenu({
             onSelect={onPreviewCanonical}
           >
             <IconFileText className="size-4" />
-            Preview company context
+            {t("brain.review.menuPreviewCompanyContext")}
           </DropdownMenuItem>
         ) : null}
         {sourceUrl && canReview ? <DropdownMenuSeparator /> : null}
@@ -1081,7 +1086,7 @@ function ProposalOverflowMenu({
           <DropdownMenuItem asChild>
             <a href={sourceUrl} target="_blank" rel="noreferrer">
               <IconExternalLink className="size-4" />
-              Open source
+              {t("brain.review.menuOpenSource")}
             </a>
           </DropdownMenuItem>
         ) : null}
@@ -1092,10 +1097,12 @@ function ProposalOverflowMenu({
 
 function EvidenceSnippet({
   item,
+  t,
 }: {
   item: NonNullable<ReviewItem["evidence"]>[number];
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
-  const source = item.captureTitle ?? item.captureId ?? "Captured source";
+  const source = item.captureTitle ?? item.captureId ?? t("brain.review.evidenceSource");
   const when = timecode(item.timestampMs);
   const detail = [source, when ? `at ${when}` : null, item.note]
     .filter(Boolean)
@@ -1104,10 +1111,10 @@ function EvidenceSnippet({
   return (
     <div className="rounded-md border border-border bg-background p-3 text-sm">
       <p className="whitespace-pre-wrap break-words leading-6">
-        {item.quote ?? "Evidence quote unavailable"}
+        {item.quote ?? t("brain.review.evidenceQuoteUnavailable")}
       </p>
       <p className="mt-2 break-words text-xs leading-5 text-muted-foreground">
-        {detail || "Captured source"}
+        {detail || t("brain.review.evidenceSource")}
       </p>
     </div>
   );
@@ -1134,24 +1141,24 @@ function ProposalDetailsSheet({
 }) {
   const queuedBody = proposal.body ?? proposal.proposedAnswer ?? "";
   const detailRows = [
-    { label: "Source", value: proposal.sourceName ?? proposal.sourceId },
-    { label: "Capture", value: proposal.captureId, mono: true },
+    { label: t("brain.review.insightSource"), value: proposal.sourceName ?? proposal.sourceId },
+    { label: t("brain.review.insightCapture"), value: proposal.captureId, mono: true },
     {
-      label: "Knowledge target",
+      label: t("brain.review.insightKnowledgeTarget"),
       value: insight.target.knowledgeId,
       mono: true,
     },
-    { label: "Supersedes", value: insight.target.supersedesId, mono: true },
-    { label: "Visibility", value: proposal.visibility },
-    { label: "Updated", value: formatDate(proposal.updatedAt) },
+    { label: t("brain.review.insightSupersedes"), value: insight.target.supersedesId, mono: true },
+    { label: t("brain.review.insightVisibility"), value: proposal.visibility },
+    { label: t("brain.review.insightUpdated"), value: formatDate(proposal.updatedAt) },
   ];
   const payloadRows = [
-    { label: "Kind", value: insight.kind },
-    { label: "Topic", value: insight.topic },
-    { label: "Publish tier", value: insight.publishTier },
-    { label: "Result status", value: insight.status },
-    { label: "Tags", value: insight.tags.join(", ") },
-    { label: "Summary", value: insight.summary },
+    { label: t("brain.review.insightKind"), value: insight.kind },
+    { label: t("brain.review.insightTopic"), value: insight.topic },
+    { label: t("brain.review.insightPublishTier"), value: insight.publishTier },
+    { label: t("brain.review.insightResultStatus"), value: insight.status },
+    { label: t("brain.review.insightTags"), value: insight.tags.join(", ") },
+    { label: t("brain.review.insightSummary"), value: insight.summary },
   ];
 
   return (
@@ -1159,7 +1166,7 @@ function ProposalDetailsSheet({
       <SheetTrigger asChild>
         <Button size="sm" variant="outline" className="w-full sm:w-auto">
           <IconListDetails className="size-4" />
-          Details
+          {t("brain.review.details.title")}
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
@@ -1172,29 +1179,29 @@ function ProposalDetailsSheet({
 
         <div className="grid gap-6 py-6">
           <section className="grid gap-3">
-            <SectionHeading icon={IconInfoCircle} title="Review signals" />
+            <SectionHeading icon={IconInfoCircle} title={t("brain.review.detailsReviewSignals")} />
             <div className="grid gap-3 sm:grid-cols-2">
               <SignalRow
                 icon={IconInfoCircle}
-                label="Why queued"
+                label={t("brain.review.detailsWhyQueued")}
                 value={insight.queueReason}
               />
               <SignalRow
                 icon={IconGitMerge}
-                label="Target context"
+                label={t("brain.review.targetContext")}
                 value={insight.target.label}
                 detail={insight.target.detail}
               />
               <SignalRow
                 icon={IconShieldCheck}
-                label="Privacy flags"
+                label={t("brain.review.detailsPrivacyFlags")}
                 value={privacySummary(insight.privacyFlags)}
                 detail={privacyDetail(insight.privacyFlags)}
               />
               <div className="grid gap-1.5 text-sm">
                 <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
                   <IconChartBar className="size-3.5" />
-                  <span>Confidence</span>
+                  <span>{t("brain.review.confidenceLevel")}</span>
                 </div>
                 <div>
                   <ConfidenceBadge confidence={insight.confidence} />
@@ -1204,43 +1211,46 @@ function ProposalDetailsSheet({
           </section>
 
           <section className="grid gap-3">
-            <SectionHeading icon={IconGitMerge} title="Target and payload" />
-            <MetadataGrid rows={detailRows} />
-            <MetadataGrid rows={payloadRows} />
+            <SectionHeading icon={IconGitMerge} title={t("brain.review.detailsTargetAndPayload")} />
+            <MetadataGrid rows={detailRows} t={t} />
+            <MetadataGrid rows={payloadRows} t={t} />
           </section>
 
           <section className="grid gap-3">
             <SectionHeading
               icon={IconPencil}
-              title={hasDraftChanges ? "Draft changes" : "Queued proposal"}
+              title={hasDraftChanges ? t("brain.review.details.draft") : t("brain.review.detailsQueuedProposal")}
             />
             <DraftDiff
-              label="Title"
+              label={t("brain.review.detailsDraftDiffTitle")}
               queued={proposal.title}
               current={draftTitle}
+              t={t}
             />
             <DraftDiff
-              label="Knowledge body"
+              label={t("brain.review.detailsDraftDiffBody")}
               queued={queuedBody}
               current={draftBody}
               multiline
+              t={t}
             />
             <DraftDiff
-              label="Rationale"
+              label={t("brain.review.detailsDraftDiffRationale")}
               queued={proposal.rationale ?? ""}
               current={draftRationale}
               multiline
+              t={t}
             />
           </section>
 
           <section className="grid gap-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <SectionHeading icon={IconFileText} title="Evidence" />
+              <SectionHeading icon={IconFileText} title={t("brain.review.details.evidence")} />
               {sourceUrl ? (
                 <Button asChild size="sm" variant="outline">
                   <a href={sourceUrl} target="_blank" rel="noreferrer">
                     <IconExternalLink className="size-4" />
-                    Open source
+                    {t("brain.review.overflow.source")}
                   </a>
                 </Button>
               ) : null}
@@ -1251,12 +1261,13 @@ function ProposalDetailsSheet({
                   <EvidenceSnippet
                     key={`${proposal.id}-detail-evidence-${index}`}
                     item={item}
+                    t={t}
                   />
                 ))}
               </div>
             ) : (
               <p className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-sm leading-6 text-muted-foreground">
-                No source snippets were attached to this proposal.
+                {t("brain.review.detailsNoEvidence")}
               </p>
             )}
           </section>
@@ -1283,8 +1294,10 @@ function SectionHeading({
 
 function MetadataGrid({
   rows,
+  t,
 }: {
   rows: Array<{ label: string; value?: string | null; mono?: boolean }>;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
@@ -1294,6 +1307,7 @@ function MetadataGrid({
           label={row.label}
           value={row.value}
           mono={row.mono}
+          t={t}
         />
       ))}
     </div>
@@ -1305,30 +1319,33 @@ function DraftDiff({
   queued,
   current,
   multiline = false,
+  t,
 }: {
   label: string;
   queued: string;
   current: string;
   multiline?: boolean;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const changed = queued !== current;
   return (
     <div className="grid gap-2 rounded-md border border-border bg-muted/20 p-3">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-medium">{label}</p>
-        {changed ? <Badge variant="outline">Edited</Badge> : null}
+        {changed ? <Badge variant="outline">{t("brain.review.detailsEdited")}</Badge> : null}
       </div>
       {changed ? (
         <div className="grid gap-2 md:grid-cols-2">
-          <DiffText label="Queued" value={queued} multiline={multiline} />
+          <DiffText label={t("brain.review.detailsQueued")} value={queued} multiline={multiline} t={t} />
           <DiffText
-            label="Current draft"
+            label={t("brain.review.detailsCurrentDraft")}
             value={current}
             multiline={multiline}
+            t={t}
           />
         </div>
       ) : (
-        <DiffText label="Current" value={current} multiline={multiline} />
+        <DiffText label={t("brain.review.detailsCurrent")} value={current} multiline={multiline} t={t} />
       )}
     </div>
   );
@@ -1338,10 +1355,12 @@ function DiffText({
   label,
   value,
   multiline,
+  t,
 }: {
   label: string;
   value: string;
   multiline: boolean;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   return (
     <div className="grid gap-1">
@@ -1354,7 +1373,7 @@ function DiffText({
           multiline && "whitespace-pre-wrap",
         )}
       >
-        {value || "Not recorded"}
+        {value || t("brain.review.detailsNotRecorded")}
       </p>
     </div>
   );
@@ -1364,10 +1383,12 @@ function MetadataRow({
   label,
   value,
   mono = false,
+  t,
 }: {
   label: string;
   value?: string | null;
   mono?: boolean;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   return (
     <div className="grid gap-1 rounded-md border border-border bg-background p-3">
@@ -1375,7 +1396,7 @@ function MetadataRow({
         {label}
       </span>
       <span className={cn("break-words text-sm", mono && "font-mono text-xs")}>
-        {value || "Not recorded"}
+        {value || t("brain.review.detailsNotRecorded")}
       </span>
     </div>
   );

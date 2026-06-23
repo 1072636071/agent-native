@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useActionQuery, useActionMutation } from "@agent-native/core/client";
+import { useI18n } from "@agent-native/i18n";
 import { format, addDays, subDays, isSameDay } from "date-fns";
 import {
   IconChevronLeft,
@@ -26,27 +27,23 @@ import {
 import { toast } from "sonner";
 import type { Meal, Exercise } from "@shared/types";
 
-const SEO_TITLE =
-  "Agent-Native Macros - Open Source AI calorie and macro tracker";
-const SEO_DESCRIPTION =
-  "Open Source AI macro tracker for logging meals, exercise, weight, calories, and nutrition by text or voice.";
-
 export function meta() {
   return [
-    { title: SEO_TITLE },
+    { title: "macros.app.seoTitle" },
     {
       name: "description",
-      content: SEO_DESCRIPTION,
+      content: "macros.app.seoDescription",
     },
-    { property: "og:title", content: SEO_TITLE },
-    { property: "og:description", content: SEO_DESCRIPTION },
+    { property: "og:title", content: "macros.app.seoTitle" },
+    { property: "og:description", content: "macros.app.seoDescription" },
     { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: SEO_TITLE },
-    { name: "twitter:description", content: SEO_DESCRIPTION },
+    { name: "twitter:title", content: "macros.app.seoTitle" },
+    { name: "twitter:description", content: "macros.app.seoDescription" },
   ];
 }
 
 export default function IndexPage() {
+  const { t } = useI18n();
   const [date, setDate] = useState(new Date());
   const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
   const [editMealDialogOpen, setEditMealDialogOpen] = useState(false);
@@ -81,16 +78,16 @@ export default function IndexPage() {
 
   const deleteMealMutation = useActionMutation("delete-meal", {
     onSuccess: () => {
-      toast.success("Meal deleted");
+      toast.success(t("macros.index.mealDeleted"));
     },
-    onError: () => toast.error("Failed to delete meal"),
+    onError: () => toast.error(t("macros.index.failedDeleteMeal")),
   });
 
   const deleteExerciseMutation = useActionMutation("delete-exercise", {
     onSuccess: () => {
-      toast.success("Exercise deleted");
+      toast.success(t("macros.index.exerciseDeleted"));
     },
-    onError: () => toast.error("Failed to delete exercise"),
+    onError: () => toast.error(t("macros.index.failedDeleteExercise")),
   });
 
   const mealTotals = meals.reduce(
@@ -132,7 +129,7 @@ export default function IndexPage() {
           <div className="min-w-[140px] sm:min-w-[160px] text-center px-3 sm:px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06]">
             <span className="text-sm font-medium text-foreground">
               {isSameDay(date, new Date())
-                ? "Today"
+                ? t("macros.index.today")
                 : format(date, "EEE, MMM d")}
             </span>
           </div>
@@ -169,7 +166,7 @@ export default function IndexPage() {
           <section className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
             <div className="flex items-center justify-between px-1">
               <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Meals
+                {t("macros.index.meals")}
               </h2>
               {editingMeal ? (
                 <AddMealDialog
@@ -197,10 +194,10 @@ export default function IndexPage() {
                     <IconToolsKitchen2 className="h-5 w-5 text-emerald-500/50" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    No meals logged
+                    {t("macros.index.noMeals")}
                   </p>
                   <p className="text-xs text-muted-foreground/50 mt-1">
-                    Add your first meal
+                    {t("macros.index.addFirstMeal")}
                   </p>
                 </div>
               ) : (
@@ -230,7 +227,7 @@ export default function IndexPage() {
           <section className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
             <div className="flex items-center justify-between px-1">
               <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Exercise
+                {t("macros.index.exercise")}
               </h2>
               {editingExercise ? (
                 <AddExerciseDialog
@@ -255,10 +252,10 @@ export default function IndexPage() {
                     <IconBarbell className="h-5 w-5 text-orange-500/50" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    No exercises logged
+                    {t("macros.index.noExercises")}
                   </p>
                   <p className="text-xs text-muted-foreground/50 mt-1">
-                    Log activity to burn
+                    {t("macros.index.logActivity")}
                   </p>
                 </div>
               ) : (

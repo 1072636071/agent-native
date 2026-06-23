@@ -3,30 +3,33 @@ import { useDecks } from "@/context/DeckContext";
 import { useHeaderTitle, useHeaderActions } from "./HeaderActions";
 import { AgentToggleButton } from "@agent-native/core/client";
 import { RunsTray } from "@agent-native/core/client/progress";
+import { useI18n } from "@agent-native/i18n";
 
 const pageTitles: Record<string, string> = {
-  "/": "Decks",
-  "/design-systems": "Design Systems",
-  "/team": "Team",
-  "/settings": "Settings",
-  "/extensions": "Extensions",
+  "/": "slides.pageTitle.decks",
+  "/design-systems": "slides.pageTitle.designSystems",
+  "/team": "slides.pageTitle.team",
+  "/settings": "slides.pageTitle.settings",
+  "/extensions": "slides.pageTitle.extensions",
 };
 
 function DeckTitle({ id }: { id: string }) {
+  const { t } = useI18n();
   const { getDeck } = useDecks();
   const deck = getDeck(id);
   return (
     <h1 className="text-lg font-semibold tracking-tight truncate">
-      {deck?.title || "Deck"}
+      {deck?.title || t("slides.common.deck")}
     </h1>
   );
 }
 
 function ResolvedTitle({ pathname }: { pathname: string }) {
+  const { t } = useI18n();
   if (pageTitles[pathname]) {
     return (
       <h1 className="text-lg font-semibold tracking-tight truncate">
-        {pageTitles[pathname]}
+        {t(pageTitles[pathname])}
       </h1>
     );
   }
@@ -36,12 +39,16 @@ function ResolvedTitle({ pathname }: { pathname: string }) {
 
   if (pathname.startsWith("/extensions/")) {
     return (
-      <h1 className="text-lg font-semibold tracking-tight truncate">Tool</h1>
+      <h1 className="text-lg font-semibold tracking-tight truncate">
+        {t("slides.common.tool")}
+      </h1>
     );
   }
 
   return (
-    <h1 className="text-lg font-semibold tracking-tight truncate">Slides</h1>
+    <h1 className="text-lg font-semibold tracking-tight truncate">
+      {t("slides.app.title")}
+    </h1>
   );
 }
 

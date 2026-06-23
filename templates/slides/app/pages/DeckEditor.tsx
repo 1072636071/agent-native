@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { ComponentType } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router";
+import { useI18n } from "@agent-native/i18n";
 import {
   DndContext,
   closestCenter,
@@ -92,22 +93,23 @@ function MissingDeckAccessPane({
   onRetry: () => void;
   onBack: () => void;
 }) {
+  const { t } = useI18n();
   const Icon =
     hasTeamJoinOption || orgLoading || orgError ? IconBuilding : IconLock;
   const title = orgLoading
-    ? "Looking for this deck"
+    ? t("slides.editor.lookingForDeck")
     : orgError
-      ? "Couldn't check team access"
+      ? t("slides.editor.cantCheckAccess")
       : hasTeamJoinOption
-        ? "Join your team to open this deck"
-        : "Deck unavailable";
+        ? t("slides.editor.joinTeamToOpen")
+        : t("slides.editor.deckUnavailable");
   const description = orgLoading
-    ? "Checking whether this presentation is shared with your account."
+    ? t("slides.editor.checkingDesc")
     : orgError
-      ? "We couldn't verify whether this presentation is shared with your account. Try again to reload team access and the deck."
+      ? t("slides.editor.orgErrorDesc")
       : hasTeamJoinOption
-        ? "This link points to a team presentation. Join the team shown above and the deck will open here automatically."
-        : "This deck may have been removed, or your account does not have access to it.";
+        ? t("slides.editor.joinTeamDesc")
+        : t("slides.editor.deckRemoved");
 
   return (
     <div className="flex flex-1 items-center justify-center bg-background px-4 py-10">
@@ -120,7 +122,7 @@ function MissingDeckAccessPane({
             <h1 className="text-base font-semibold text-foreground">{title}</h1>
             {deckId && (
               <p className="truncate text-xs text-muted-foreground">
-                Deck ID: {deckId}
+                {t("slides.editor.deckId")} {deckId}
               </p>
             )}
           </div>
@@ -129,7 +131,7 @@ function MissingDeckAccessPane({
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={onBack}>
             <IconArrowLeft className="size-4" />
-            Back to Decks
+            {t("slides.editor.backToDecks")}
           </Button>
           <Button
             type="button"
@@ -139,7 +141,7 @@ function MissingDeckAccessPane({
             <IconRefresh
               className={refreshing ? "size-4 animate-spin" : "size-4"}
             />
-            Try again
+            {t("slides.editor.tryAgain")}
           </Button>
         </div>
       </div>
@@ -148,6 +150,7 @@ function MissingDeckAccessPane({
 }
 
 export default function DeckEditor() {
+  const { t } = useI18n();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -250,9 +253,8 @@ export default function DeckEditor() {
     handleSubmit: handleQuestionSubmit,
     handleSkip: handleQuestionSkip,
   } = useGuidedQuestionFlow({
-    submitMessage: "Here are my answers — go ahead and create the slides.",
-    skipMessage:
-      "Skip the questions — just go ahead and create the slides with your best judgment.",
+    submitMessage: t("slides.editor.submitAnswers"),
+    skipMessage: t("slides.editor.skipQuestions"),
     buildSubmitContext: ({ formattedAnswers }) =>
       [
         "The user answered the pre-generation questions.",
@@ -388,16 +390,16 @@ export default function DeckEditor() {
           updateSlide(id, targetSlide.id, { content: updatedContent });
         }
         toast({
-          title: "Image added",
+          title: t("slides.editor.imageAdded"),
           description: file.name,
         });
       } catch (error) {
         toast({
-          title: "Image upload failed",
+          title: t("slides.editor.imageUploadFailed"),
           description:
             error instanceof Error
               ? error.message
-              : "Something went wrong uploading this image.",
+              : t("slides.editor.imageUploadError"),
           variant: "destructive",
         });
       }
@@ -473,25 +475,25 @@ export default function DeckEditor() {
         );
       })();
       deleteSlide(deckId, slideId);
-      const t = toast({
-        title: `${slideTitle} deleted`,
-        description: `Press ${shortcutLabel("cmd+z")} or click Undo to restore.`,
+      const toastInstance = toast({
+        title: t("slides.editor.slideDeleted", { slideTitle }),
+        description: t("slides.editor.slideDeletedDesc", { shortcut: shortcutLabel("cmd+z") }),
         action: (
           <ToastAction
-            altText="Undo delete"
+            altText={t("slides.editor.undo")}
             data-undo-button
             onClick={() => {
               undo();
-              t.dismiss();
+              toastInstance.dismiss();
             }}
           >
-            Undo
+            {t("slides.editor.undo")}
           </ToastAction>
         ),
       });
       // Auto-dismiss after 6 seconds (shadcn toast's TOAST_REMOVE_DELAY is
       // intentionally enormous, so we trigger it manually).
-      setTimeout(() => t.dismiss(), 6000);
+      setTimeout(() => toastInstance.dismiss(), 6000);
     },
     [deck, deleteSlide, undo],
   );
@@ -821,8 +823,8 @@ export default function DeckEditor() {
             const slideIds = deck.slides.map((s) => s.id);
             if (slideIds.length === 0) {
               toast({
-                title: "Export failed",
-                description: "Deck has no slides.",
+                title: t("slides.editor.exportFailed"),
+                description: t("slides.editor.exportFailedNoSlides"),
                 variant: "destructive",
               });
               return;
@@ -831,9 +833,9 @@ export default function DeckEditor() {
           } catch (err) {
             console.error("[pdf-export] failed:", err);
             toast({
-              title: "Export failed",
+              title: t("slides.editor.exportFailed"),
               description:
-                err instanceof Error ? err.message : "Could not render PDF.",
+                err instanceof Error ? err.message : t("slides.editor.exportFailedDesc"),
               variant: "destructive",
             });
           }
@@ -922,10 +924,9 @@ export default function DeckEditor() {
 
         {isNewDeckGenerating && deck.slides.length > 0 && !showQuestionFlow && (
           <div className="pointer-events-none absolute left-1/2 top-3 z-30 -translate-x-1/2 rounded-lg border border-border bg-popover/95 px-3 py-2 text-sm text-popover-foreground shadow-lg backdrop-blur">
-            <span className="font-medium">Building deck</span>
+            <span className="font-medium">{t("slides.editor.buildingDeck")}</span>
             <span className="ml-2 text-muted-foreground">
-              {deck.slides.length} slide{deck.slides.length === 1 ? "" : "s"}{" "}
-              added
+              {t("slides.editor.slidesAdded", { n: deck.slides.length })}
             </span>
           </div>
         )}
