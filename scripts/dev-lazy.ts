@@ -870,6 +870,7 @@ function startApp(app: TemplateApp): void {
     {
       cwd: ROOT,
       stdio: ["ignore", "pipe", "pipe"],
+      shell: process.platform === "win32",
       detached: process.platform !== "win32",
       env: devWatcherEnv({
         ...process.env,
