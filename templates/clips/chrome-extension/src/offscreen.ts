@@ -3,15 +3,25 @@
 // This document holds the getDisplayMedia()/getUserMedia() stream and the
 // MediaRecorder. Living in an offscreen document (reason DISPLAY_MEDIA) is what
 // lets a recording survive page navigations — the capture is decoupled from any
-// tab. The camera bubble and controls are rendered as on-page overlays by the
-// content script, so we no longer composite the camera into a canvas here; for
-// screen modes we record the display stream directly (+ mixed mic audio), and
-// the bubble shows up in the recording naturally when a full screen/window/tab
-// surface that contains it is captured.
+// tab. Controls render as on-page overlays. For SCREEN+CAMERA we capture the
+// camera HERE and composite it (canvas) into the recording, because the on-page
+// bubble can't get the camera on pages that send `Permissions-Policy: camera=()`
+// (an iframe can't escape its parent's policy). Screen-only records the display
+// directly; camera-only records the webcam directly.
 //
 // Lifecycle: ACQUIRE (show picker, hold stream) → BEGIN (start recorder after
 // the countdown) → PAUSE/RESUME → STOP/CANCEL, plus RESTART (discard and start
 // over on the same stream).
+//
+// MIME selection and the chunk-upload URL/param protocol are shared with the web
+// app recorder via @shared/recording-core so the server contract can't drift.
+
+import { scheduleReadyChime } from "@shared/recording-audio";
+import { chunkUploadUrl, pickMimeType } from "@shared/recording-core";
+
+import { captureExtensionError, initExtensionSentry } from "./sentry";
+
+initExtensionSentry("offscreen");
 
 type CaptureMode = "screen" | "camera";
 
@@ -21,6 +31,9 @@ type AcquireMessage = {
   mode: CaptureMode;
   surface: "browser" | "window" | "monitor";
   includeMicrophone: boolean;
+  // Screen+camera: capture the camera here and composite it into the recording
+  // (the on-page bubble can be blocked by the page's Permissions-Policy).
+  includeCamera: boolean;
 };
 
 type BeginMessage = {
@@ -94,6 +107,13 @@ type ActiveRecording = {
   restarting: boolean;
   // Pending pre-roll timer; non-null means the recorder hasn't started yet.
   startTimer: ReturnType<typeof setTimeout> | null;
+  // Canvas compositor draw loop (screen+camera only); stop it on teardown.
+  stopCompositor: (() => void) | null;
+  // Original capture streams, kept distinct so restart can re-home exactly the
+  // right ones (sourceStreams also holds the derived canvas stream).
+  displaySource: MediaStream | null;
+  cameraSource: MediaStream | null;
+  micSource: MediaStream | null;
   dimensions: { width: number; height: number };
   hasAudio: boolean;
   hasCamera: boolean;
@@ -101,6 +121,8 @@ type ActiveRecording = {
   resolveStopped: (result: UploadResult) => void;
   rejectStopped: (error: Error) => void;
 };
+
+const UPLOAD_SLICE_BYTES = 3 * 1024 * 1024;
 
 let prepared: PreparedStreams | null = null;
 let activeRecording: ActiveRecording | null = null;
@@ -116,20 +138,6 @@ function reportStatus(
     status,
     ...extra,
   });
-}
-
-function chooseMimeType(): string {
-  const preferred = [
-    "video/webm;codecs=vp9,opus",
-    "video/webm;codecs=vp8,opus",
-    "video/webm;codecs=opus",
-    "video/webm",
-  ];
-  if (typeof MediaRecorder === "undefined") return "video/webm";
-  return (
-    preferred.find((type) => MediaRecorder.isTypeSupported(type)) ??
-    "video/webm"
-  );
 }
 
 function waitForMetadata(video: HTMLVideoElement): Promise<void> {
@@ -194,20 +202,138 @@ function displayConstraints(
   } as MediaStreamConstraints;
 }
 
-async function getMicStream(): Promise<MediaStream | null> {
+// The user's chosen camera/mic devices (set in the popup, saved to storage).
+async function readDeviceIds(): Promise<{ video: string; audio: string }> {
   try {
-    return await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-        channelCount: 1,
-      },
-      video: false,
-    });
+    const v = await chrome.storage.sync.get(["videoDeviceId", "audioDeviceId"]);
+    return {
+      video: typeof v.videoDeviceId === "string" ? v.videoDeviceId : "",
+      audio: typeof v.audioDeviceId === "string" ? v.audioDeviceId : "",
+    };
+  } catch {
+    return { video: "", audio: "" };
+  }
+}
+
+function cameraConstraints(deviceId: string): MediaTrackConstraints {
+  const base: MediaTrackConstraints = {
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+  };
+  if (deviceId) base.deviceId = { exact: deviceId };
+  else base.facingMode = "user";
+  return base;
+}
+
+async function getMicStream(deviceId: string): Promise<MediaStream | null> {
+  const audio: MediaTrackConstraints = {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true,
+    channelCount: 1,
+  };
+  if (deviceId) audio.deviceId = { exact: deviceId };
+  try {
+    return await navigator.mediaDevices.getUserMedia({ audio, video: false });
   } catch {
     return null;
   }
+}
+
+/* ----------------------------------------------------- camera compositing --- */
+
+// On many pages the on-page camera bubble can't run (the page sets
+// `Permissions-Policy: camera=()`, which an iframe cannot escape). So for
+// screen+camera we capture the camera HERE in the offscreen document (extension
+// origin — always allowed) and draw it into a canvas on top of the screen, then
+// record the canvas. The face ends up in the video on every page.
+
+async function readyVideo(stream: MediaStream): Promise<HTMLVideoElement> {
+  const video = document.createElement("video");
+  video.muted = true;
+  video.playsInline = true;
+  video.srcObject = stream;
+  await waitForMetadata(video).catch(() => undefined);
+  await video.play().catch(() => undefined);
+  return video;
+}
+
+function drawCameraBubble(
+  ctx: CanvasRenderingContext2D,
+  camera: HTMLVideoElement,
+  canvas: HTMLCanvasElement,
+): void {
+  const size = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
+  const margin = Math.round(Math.min(canvas.width, canvas.height) * 0.035);
+  const cx = margin + size / 2;
+  const cy = canvas.height - margin - size / 2;
+  const r = size / 2;
+  const vw = camera.videoWidth || size;
+  const vh = camera.videoHeight || size;
+  const scale = Math.max(size / vw, size / vh);
+  const dw = vw * scale;
+  const dh = vh * scale;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  // Mirror the camera horizontally to match how people expect to see themselves.
+  ctx.translate(cx, cy);
+  ctx.scale(-1, 1);
+  ctx.drawImage(camera, -dw / 2, -dh / 2, dw, dh);
+  ctx.restore();
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - 1, 0, Math.PI * 2);
+  ctx.lineWidth = Math.max(3, Math.round(size * 0.03));
+  ctx.strokeStyle = "rgba(255,255,255,0.92)";
+  ctx.stroke();
+  ctx.restore();
+}
+
+type Compositor = {
+  videoTrack: MediaStreamTrack;
+  canvasStream: MediaStream;
+  stop: () => void;
+};
+
+async function buildCompositor(
+  displayStream: MediaStream,
+  cameraStream: MediaStream,
+  dims: { width: number; height: number },
+): Promise<Compositor> {
+  const displayVideo = await readyVideo(displayStream);
+  const cameraVideo = await readyVideo(cameraStream);
+  const canvas = document.createElement("canvas");
+  canvas.width = dims.width;
+  canvas.height = dims.height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas 2D context unavailable for compositing.");
+
+  let running = true;
+  let raf = 0;
+  const draw = () => {
+    if (!running) return;
+    ctx.drawImage(displayVideo, 0, 0, canvas.width, canvas.height);
+    if (cameraVideo.readyState >= 2) drawCameraBubble(ctx, cameraVideo, canvas);
+    raf = requestAnimationFrame(draw);
+  };
+  raf = requestAnimationFrame(draw);
+
+  const canvasStream = canvas.captureStream(30);
+  return {
+    videoTrack: canvasStream.getVideoTracks()[0],
+    canvasStream,
+    stop: () => {
+      running = false;
+      cancelAnimationFrame(raf);
+      displayVideo.srcObject = null;
+      cameraVideo.srcObject = null;
+    },
+  };
 }
 
 async function createMixedAudio(
@@ -230,21 +356,6 @@ async function createMixedAudio(
   return { audioContext, tracks: destination.stream.getAudioTracks() };
 }
 
-function appendUploadParams(
-  uploadUrl: string,
-  params: Record<string, string | number | boolean | undefined>,
-): string {
-  const url = new URL(uploadUrl);
-  for (const [key, value] of Object.entries(params)) {
-    if (value === undefined) continue;
-    url.searchParams.set(
-      key,
-      typeof value === "boolean" ? (value ? "1" : "0") : String(value),
-    );
-  }
-  return url.toString();
-}
-
 async function uploadChunk(
   recording: ActiveRecording,
   blob: Blob,
@@ -259,10 +370,10 @@ async function uploadChunk(
     hasCamera?: boolean;
   } = {},
 ): Promise<UploadResult> {
-  const url = appendUploadParams(recording.uploadUrl, {
+  const url = chunkUploadUrl(recording.uploadUrl, {
     index,
     total: extra.total,
-    isFinal: extra.isFinal ? 1 : 0,
+    isFinal: extra.isFinal,
     mimeType: recording.mimeType,
     durationMs: extra.durationMs,
     width: extra.width,
@@ -287,11 +398,51 @@ async function uploadChunk(
   const text = await res.text().catch(() => "");
   const data = text ? (JSON.parse(text) as UploadResult) : {};
   if (!res.ok) {
-    throw new Error(
+    console.error(
+      "[clips-offscreen] chunk upload failed",
+      res.status,
+      "hadAuth:",
+      Boolean(recording.authToken),
+      text.slice(0, 200),
+    );
+    const error = new Error(
       data?.error || `Upload failed (${res.status}): ${text || res.statusText}`,
     );
+    captureExtensionError(error, {
+      tags: {
+        surface: "offscreen",
+        recordingStep: "chunk-upload",
+        httpStatus: String(res.status),
+        isFinal: extra.isFinal ? "true" : "false",
+      },
+      extra: {
+        recordingId: recording.recordingId,
+        chunkIndex: index,
+        chunkBytes: blob.size,
+        total: extra.total,
+        mimeType: blob.type || recording.mimeType,
+        responseBodyTail: text.slice(0, 2000),
+        hadAuth: Boolean(recording.authToken),
+      },
+    });
+    throw error;
   }
   return data;
+}
+
+async function uploadBlobInSlices(
+  recording: ActiveRecording,
+  blob: Blob,
+): Promise<void> {
+  const totalSlices = Math.max(1, Math.ceil(blob.size / UPLOAD_SLICE_BYTES));
+  for (let sliceIndex = 0; sliceIndex < totalSlices; sliceIndex += 1) {
+    if (recording.cancelled || recording.uploadFailure) return;
+    const start = sliceIndex * UPLOAD_SLICE_BYTES;
+    const end = Math.min(start + UPLOAD_SLICE_BYTES, blob.size);
+    const slice = blob.slice(start, end, blob.type || recording.mimeType);
+    const index = recording.chunkIndex++;
+    await uploadChunk(recording, slice, index);
+  }
 }
 
 function stopStreams(streams: (MediaStream | null)[]): void {
@@ -310,6 +461,7 @@ function disposePrepared(): void {
 }
 
 function cleanup(recording: ActiveRecording): void {
+  recording.stopCompositor?.();
   stopStreams([recording.outputStream, ...recording.sourceStreams]);
   void recording.audioContext?.close().catch(() => undefined);
 }
@@ -329,22 +481,29 @@ async function acquire(message: AcquireMessage): Promise<{
   let displayStream: MediaStream | null = null;
   let micStream: MediaStream | null = null;
   let cameraStream: MediaStream | null = null;
+  const devices = await readDeviceIds();
 
   if (message.mode === "camera") {
     cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-        facingMode: "user",
-      },
-      audio: message.includeMicrophone,
+      video: cameraConstraints(devices.video),
+      audio: message.includeMicrophone
+        ? devices.audio
+          ? { deviceId: { exact: devices.audio } }
+          : true
+        : false,
     });
   } else {
     // Native "Choose what to share" picker. This is the screenshot Steve showed.
     displayStream = await navigator.mediaDevices.getDisplayMedia(
       displayConstraints(message.surface),
     );
-    if (message.includeMicrophone) micStream = await getMicStream();
+    if (message.includeMicrophone)
+      micStream = await getMicStream(devices.audio);
+    // The screen+camera face comes from the on-page bubble (captured in the
+    // display pixels), NOT composited here: canvas/requestAnimationFrame does
+    // not run in a hidden offscreen document, so compositing produced an empty
+    // recording ("No chunks found"). We record the display stream directly.
+    void message.includeCamera;
   }
 
   const videoStream = displayStream ?? cameraStream;
@@ -401,8 +560,24 @@ async function begin(message: BeginMessage): Promise<{
   if (activeRecording) throw new Error("Clips is already recording.");
 
   const videoStream = ready.displayStream ?? ready.cameraStream;
-  const videoTrack = videoStream?.getVideoTracks()[0];
-  if (!videoTrack) throw new Error("Capture video track was lost.");
+  const directVideoTrack = videoStream?.getVideoTracks()[0];
+  if (!directVideoTrack) throw new Error("Capture video track was lost.");
+
+  // Screen + camera → composite the camera bubble into a canvas and record that,
+  // so the face is in the video even on pages that block the on-page bubble.
+  let compositor: Compositor | null = null;
+  let videoTrack = directVideoTrack;
+  if (ready.displayStream && ready.cameraStream) {
+    compositor = await buildCompositor(
+      ready.displayStream,
+      ready.cameraStream,
+      {
+        width: ready.width,
+        height: ready.height,
+      },
+    );
+    videoTrack = compositor.videoTrack;
+  }
 
   const audioInputs = [
     ...(ready.displayStream ? [ready.displayStream] : []),
@@ -414,7 +589,7 @@ async function begin(message: BeginMessage): Promise<{
   const mixedAudio = await createMixedAudio(audioInputs);
 
   const outputStream = new MediaStream([videoTrack, ...mixedAudio.tracks]);
-  const mimeType = chooseMimeType();
+  const mimeType = pickMimeType() || "video/webm";
   const recorder = new MediaRecorder(outputStream, {
     mimeType,
     // Crisp 1080p capture — matches the web/desktop recorders. Files upload
@@ -444,6 +619,7 @@ async function begin(message: BeginMessage): Promise<{
       ...(ready.displayStream ? [ready.displayStream] : []),
       ...(ready.micStream ? [ready.micStream] : []),
       ...(ready.cameraStream ? [ready.cameraStream] : []),
+      ...(compositor ? [compositor.canvasStream] : []),
     ],
     audioContext: mixedAudio.audioContext,
     chunkIndex: 0,
@@ -452,6 +628,10 @@ async function begin(message: BeginMessage): Promise<{
     cancelled: false,
     restarting: false,
     startTimer: null,
+    stopCompositor: compositor?.stop ?? null,
+    displaySource: ready.displayStream,
+    cameraSource: ready.cameraStream,
+    micSource: ready.micStream,
     dimensions: { width: ready.width, height: ready.height },
     hasAudio: outputStream.getAudioTracks().length > 0,
     hasCamera:
@@ -475,15 +655,29 @@ async function begin(message: BeginMessage): Promise<{
     ) {
       return;
     }
-    const index = recording.chunkIndex++;
-    const upload = uploadChunk(recording, event.data, index).catch((err) => {
+    // Record the failure and stop, but do NOT re-throw: re-throwing leaves a
+    // rejected promise that surfaces as an "Uncaught (in promise)" error (bad
+    // look in a Chrome Web Store review). finalizeStop reads recording.upload-
+    // Failure and surfaces it through the normal error path instead.
+    const upload = uploadBlobInSlices(recording, event.data).catch((err) => {
       recording.uploadFailure =
         err instanceof Error ? err : new Error(String(err));
+      captureExtensionError(recording.uploadFailure, {
+        tags: {
+          surface: "offscreen",
+          recordingStep: "dataavailable-upload",
+        },
+        extra: {
+          recordingId: recording.recordingId,
+          blobBytes: event.data.size,
+          chunkIndex: recording.chunkIndex,
+          mimeType: event.data.type || recording.mimeType,
+        },
+      });
       reportStatus(recording.sessionId, "error", {
         error: recording.uploadFailure.message,
       });
       if (recorder.state !== "inactive") recorder.stop();
-      throw recording.uploadFailure;
     });
     recording.uploadPromises.push(upload);
   });
@@ -513,11 +707,28 @@ async function begin(message: BeginMessage): Promise<{
   };
 }
 
+// The canonical Clips "ready" chime when recording starts — shared with the web
+// app recorder (and matching the desktop app) so every surface sounds the same.
+function playStartChime(): void {
+  try {
+    const ctx = new AudioContext();
+    void ctx.resume().catch(() => undefined);
+    void scheduleReadyChime(ctx).finally(() => {
+      void ctx.close().catch(() => undefined);
+    });
+  } catch {
+    /* audio unavailable */
+  }
+}
+
 function startRecorderNow(recording: ActiveRecording): void {
   if (recording.cancelled) return;
   try {
+    // Chime first (on "Go") so it mostly lands before the recording begins.
+    playStartChime();
     recording.recorder.start(2000);
     recording.startedAtMs = Date.now();
+    console.log("[clips-offscreen] recorder.start ok");
     reportStatus(recording.sessionId, "recording", {
       recordingId: recording.recordingId,
       width: recording.dimensions.width,
@@ -526,6 +737,20 @@ function startRecorderNow(recording: ActiveRecording): void {
       hasCamera: recording.hasCamera,
     });
   } catch (err) {
+    captureExtensionError(err, {
+      tags: {
+        surface: "offscreen",
+        recordingStep: "recorder-start",
+      },
+      extra: {
+        recordingId: recording.recordingId,
+        mimeType: recording.mimeType,
+        width: recording.dimensions.width,
+        height: recording.dimensions.height,
+        hasAudio: recording.hasAudio,
+        hasCamera: recording.hasCamera,
+      },
+    });
     reportStatus(recording.sessionId, "error", {
       recordingId: recording.recordingId,
       error: err instanceof Error ? err.message : "Could not start recording.",
@@ -559,6 +784,27 @@ async function finalizeStop(recording: ActiveRecording): Promise<void> {
         : new Error(String(rejected.reason));
     }
     const durationMs = Math.max(0, Date.now() - recording.startedAtMs);
+    // Surface WHY a finalize might fail before the server's cryptic "No chunks
+    // found": 0 chunks means the recorder emitted no non-empty data (empty
+    // capture / never started), which is a different problem than an auth 401.
+    if (recording.chunkIndex === 0) {
+      console.warn(
+        "[clips-offscreen] finalizing with 0 chunks — empty recording.",
+        "recorderStarted:",
+        recording.startedAtMs > 0,
+        "durationMs:",
+        durationMs,
+        "hadAuth:",
+        Boolean(recording.authToken),
+      );
+    } else {
+      console.log(
+        "[clips-offscreen] finalizing",
+        recording.chunkIndex,
+        "chunk(s), durationMs:",
+        durationMs,
+      );
+    }
     const result = await uploadChunk(
       recording,
       new Blob([], { type: recording.mimeType }),
@@ -584,6 +830,18 @@ async function finalizeStop(recording: ActiveRecording): Promise<void> {
     cleanup(recording);
     if (activeRecording === recording) activeRecording = null;
     const error = err instanceof Error ? err : new Error(String(err));
+    captureExtensionError(error, {
+      tags: {
+        surface: "offscreen",
+        recordingStep: "finalize-stop",
+      },
+      extra: {
+        recordingId: recording.recordingId,
+        chunkCount: recording.chunkIndex,
+        mimeType: recording.mimeType,
+        durationMs: Math.max(0, Date.now() - recording.startedAtMs),
+      },
+    });
     reportStatus(recording.sessionId, "error", {
       recordingId: recording.recordingId,
       error: error.message,
@@ -685,22 +943,18 @@ async function restart(
   recording.restarting = true;
   recording.cancelled = true;
   if (recording.recorder.state !== "inactive") recording.recorder.stop();
-  // Close only the old mixing context; keep the capture tracks alive.
+  // Tear down the old compositor + mixing context; keep the capture tracks alive
+  // so the next BEGIN can build a fresh compositor/recorder on the same streams.
+  recording.stopCompositor?.();
   void recording.audioContext?.close().catch(() => undefined);
   activeRecording = null;
 
-  const videoStream =
-    recording.sourceStreams.find((s) => s.getVideoTracks().length) ?? null;
-  const isCamera = recording.mode === "camera";
   prepared = {
     sessionId: recording.sessionId,
     mode: recording.mode,
-    displayStream: isCamera ? null : videoStream,
-    cameraStream: isCamera ? videoStream : null,
-    micStream:
-      recording.sourceStreams.find(
-        (s) => s.getAudioTracks().length && s !== videoStream,
-      ) ?? null,
+    displayStream: recording.displaySource,
+    cameraStream: recording.cameraSource,
+    micStream: recording.micSource,
     width: recording.dimensions.width,
     height: recording.dimensions.height,
     endedListener: null,

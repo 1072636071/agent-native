@@ -1,5 +1,6 @@
-import { and, eq, isNull, or } from "drizzle-orm";
 import { getDbExec } from "@agent-native/core/db";
+import { and, eq, isNull, or } from "drizzle-orm";
+
 import { getDb, schema } from "../db/index.js";
 
 export interface AnalyticsScope {
@@ -184,6 +185,10 @@ function normalizeTimestamp(value: unknown): string {
   return nowIso();
 }
 
+function eventDateFromTimestamp(timestamp: string): string {
+  return timestamp.slice(0, 10);
+}
+
 function urlParts(url: string | null): {
   url: string | null;
   path: string | null;
@@ -201,6 +206,36 @@ function urlParts(url: string | null): {
   } catch {
     return { url, path: null, hostname: null };
   }
+}
+
+export function resolveAnalyticsEventDimensions({
+  properties,
+  context,
+  hostname,
+}: {
+  properties: Record<string, unknown>;
+  context: Record<string, unknown>;
+  hostname: string | null;
+}): { app: string | null; template: string | null } {
+  const app =
+    asString(properties.app) ||
+    asString((properties as any).agent_native_app) ||
+    asString((properties as any).agentNativeApp) ||
+    asString((context as any).app) ||
+    asString((context as any).agent_native_app) ||
+    asString((context as any).agentNativeApp) ||
+    (hostname ? hostname.split(".")[0] : null);
+  const template =
+    asString(properties.template) ||
+    asString((properties as any).templateId) ||
+    asString((properties as any).agent_native_template) ||
+    asString((properties as any).agentNativeTemplate) ||
+    asString((context as any).template) ||
+    asString((context as any).templateId) ||
+    asString((context as any).agent_native_template) ||
+    asString((context as any).agentNativeTemplate) ||
+    app;
+  return { app, template };
 }
 
 export function parseAnalyticsTrackPayload(raw: unknown): {
@@ -279,31 +314,34 @@ export async function recordAnalyticsEvents(
       parts.hostname ||
       asString(properties.hostname) ||
       asString((context as any).hostname);
-    const app =
-      asString(properties.app) ||
-      asString((context as any).app) ||
-      (hostname ? hostname.split(".")[0] : null);
-    const template =
-      asString(properties.template) ||
-      asString((properties as any).templateId) ||
-      app;
+    const { app, template } = resolveAnalyticsEventDimensions({
+      properties,
+      context,
+      hostname,
+    });
     const signedIn =
       asString((properties as any).signed_in) ||
       asString((properties as any).signedIn) ||
       asString((context as any).signed_in) ||
       asString((context as any).signedIn);
+    const userId = event.userId ?? asString((properties as any).userId);
+    const anonymousId =
+      event.anonymousId ??
+      asString((properties as any).anonymousId) ??
+      asString((properties as any).distinctId);
+    const userKey = userId || anonymousId;
+    const timestamp = normalizeTimestamp(event.timestamp);
 
     return {
       id: id("evt"),
       publicKeyId: key.id,
       eventName: event.event,
-      userId: event.userId ?? asString((properties as any).userId),
-      anonymousId:
-        event.anonymousId ??
-        asString((properties as any).anonymousId) ??
-        asString((properties as any).distinctId),
+      userId,
+      anonymousId,
+      userKey,
       sessionId: event.sessionId ?? asString((properties as any).sessionId),
-      timestamp: normalizeTimestamp(event.timestamp),
+      timestamp,
+      eventDate: eventDateFromTimestamp(timestamp),
       receivedAt,
       url: parts.url,
       path: parts.path ?? asString(properties.path),
@@ -392,6 +430,9 @@ export function validateFirstPartyAnalyticsSql(sql: string): void {
     throw new Error("Only read-only SELECT queries are allowed");
   }
   if (stripped.includes("?")) {
+    throw new Error("Bind placeholders are not supported in dashboard SQL");
+  }
+  if (/\$\d+\b/.test(stripped)) {
     throw new Error("Bind placeholders are not supported in dashboard SQL");
   }
 

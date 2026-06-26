@@ -1314,6 +1314,17 @@ body[data-clips-route="recording-pill"] #root {
   gap: 6px;
 }
 
+.setup-section-heading {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
 .setup-advanced {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -1636,6 +1647,11 @@ body[data-clips-route="recording-pill"] #root {
   padding-top: 10px;
   border-top: 1px solid var(--border);
   font-size: 12px;
+}
+
+.setup-account--no-border {
+  border-top: none;
+  padding-top: 0;
 }
 
 .setup-account-email {
@@ -2083,7 +2099,7 @@ body[data-clips-route="recording-pill"] #root {
 
 .countdown-control-skip {
   /* center at +200px from row center: 200 - (64 / 2) = 168px */
-  right: -232px;
+  left: 168px;
 }
 
 .countdown-control:hover {
@@ -2101,13 +2117,37 @@ body[data-clips-route="recording-pill"] #root {
   outline-offset: 2px;
 }
 
+/*
+ * Absolutely centers the number without contributing width to .countdown-controls.
+ * This keeps the controls div at zero width so the cancel/skip button positions
+ * (left: -232px, left: 168px) line up exactly with the Rust cursor-poll hit-rects
+ * (CONTROL_OFFSET_X = 200.0) measured from the window center.
+ */
+.countdown-number-wrap {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 .countdown-number {
   font-size: 240px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: #ffffff;
-  -webkit-text-stroke: 1px rgba(17, 24, 39, 0.22);
+  /*
+   * Do NOT use -webkit-text-stroke here: it joins with a hard miter and no way
+   * to set stroke-linejoin, so at this size/weight the sharp concave corner of
+   * the "2" (where the curved top meets the flat bottom bar) sprouts star-shaped
+   * miter spikes. We fake a soft dark edge with a 4-direction 1px shadow halo
+   * instead, which has no join geometry and cannot spike.
+   */
   text-shadow:
+    1px 0 1px rgba(17, 24, 39, 0.22),
+    -1px 0 1px rgba(17, 24, 39, 0.22),
+    0 1px 1px rgba(17, 24, 39, 0.22),
+    0 -1px 1px rgba(17, 24, 39, 0.22),
     0 2px 4px rgba(0, 0, 0, 0.48),
     0 12px 34px rgba(0, 0, 0, 0.36),
     0 0 2px rgba(0, 0, 0, 0.72);
@@ -2420,8 +2460,12 @@ body[data-clips-route="recording-pill"] #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  /* Pin content to the top in BOTH states. The primary controls are
+     centered inside their own fixed-height zone (.toolbar-v-primary), so
+     the collapsed→expanded growth only adds room BELOW them. Without this,
+     flipping justify-content center→flex-start on hover yanked the Stop
+     button up toward the bar's top edge. */
+  justify-content: flex-start;
   /* Equal inset on all four sides from the pill edge to the buttons. */
   padding: 10px;
   overflow: hidden;
@@ -2440,13 +2484,27 @@ body[data-clips-route="recording-pill"] #root {
 
 .toolbar-v:hover,
 .toolbar-v:focus-within {
-  height: 234px;
-  justify-content: flex-start;
+  /* Matches TOOLBAR_EXPANDED_HEIGHT in toolbar.tsx — the fixed 130px primary
+     zone + 88px hover actions (+2 margin) + 20px vertical padding. */
+  height: 240px;
   border-radius: 26px;
 }
 
 .toolbar-v:active {
   cursor: grabbing;
+}
+
+/* Fixed-height home for Stop / time / Pause. Its height equals the collapsed
+   pill's content box (150px − 20px vertical padding = 130px), so the trio is
+   centered exactly as before when collapsed and never shifts when the pill
+   grows on hover — the extra height flows into .toolbar-v-hover-actions below. */
+.toolbar-v-primary {
+  flex: 0 0 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .toolbar-v-stop {
@@ -2618,11 +2676,46 @@ body[data-clips-route="recording-pill"] #root {
   cursor: not-allowed;
 }
 
+.toolbar-v-disk-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f59e0b;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.toolbar-v-disk-indicator-critical {
+  color: #ef4444;
+  animation: toolbar-v-disk-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes toolbar-v-disk-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.toolbar-v-disk-warning {
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.toolbar-v-disk-critical {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .toolbar-v,
   .toolbar-v-hover-actions,
   .toolbar-v-action {
     transition: none;
+  }
+  .toolbar-v-disk-indicator-critical {
+    animation: none;
   }
 }
 
@@ -4172,9 +4265,9 @@ body[data-clips-route="recording-pill"] #root {
 
 .whisper-status {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px 6px;
   margin-top: 6px;
   font-size: 11px;
   line-height: 1.4;
@@ -4209,8 +4302,7 @@ body[data-clips-route="recording-pill"] #root {
 }
 
 .whisper-status-path {
-  display: block;
-  margin-top: 2px;
+  flex-basis: 100%;
   font-size: 10px;
   color: var(--fg-subtle);
   word-break: break-all;

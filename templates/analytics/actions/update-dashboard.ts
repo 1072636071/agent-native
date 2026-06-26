@@ -1,20 +1,21 @@
 import { defineAction, embedApp } from "@agent-native/core";
 import {
+  hasCollabState,
+  applyText,
+  seedFromText,
+} from "@agent-native/core/collab";
+import {
   getRequestUserEmail,
   getRequestOrgId,
   buildDeepLink,
 } from "@agent-native/core/server";
 import { z } from "zod";
-import { getDashboard, upsertDashboard } from "../server/lib/dashboards-store";
-import { dryRunQuery } from "../server/lib/bigquery";
-import { parseDemoDescriptor } from "../server/lib/demo-source";
+
 import { interpolate } from "../app/pages/adhoc/sql-dashboard/interpolate";
+import { dryRunQuery } from "../server/lib/bigquery";
+import { getDashboard, upsertDashboard } from "../server/lib/dashboards-store";
+import { parseDemoDescriptor } from "../server/lib/demo-source";
 import { validateFirstPartyAnalyticsSql } from "../server/lib/first-party-analytics.js";
-import {
-  hasCollabState,
-  applyText,
-  seedFromText,
-} from "@agent-native/core/collab";
 
 /**
  * Same validation shape used in the sql-dashboard save path.
@@ -265,9 +266,8 @@ function validateDashboardConfig(
     if (!p || typeof p !== "object") {
       return `panel[${i}] must be an object`;
     }
-    // Section panels are pure layout dividers — they have no query, so source
-    // and sql are optional. They still need id/title/chartType/width so the
-    // grid renders them.
+    // Section panels are pure layout dividers, so source and sql are optional.
+    // Width stays required for backward-compatible dashboard payloads.
     const isSection = p.chartType === "section";
     const required = isSection
       ? (["id", "title", "chartType", "width"] as const)
@@ -276,7 +276,7 @@ function validateDashboardConfig(
       const v = p[field];
       if (field === "width") {
         if (!isValidColumnCount(v)) {
-          return `panel[${i}].width must be an integer between 1 and 6 (number of grid columns to span)`;
+          return `panel[${i}].width must be an integer between 1 and 6 (legacy layout field)`;
         }
         continue;
       }
@@ -416,6 +416,7 @@ export default defineAction({
     "it resolves org vs. user scope correctly so the edit lands on the row the UI actually renders. " +
     "BATCH ALL EDITS INTO A SINGLE CALL. Never call this action repeatedly in a loop: hosted agent runs have a ~40s budget, and many sequential update-dashboard calls time out mid-way and leave the dashboard in a partial state even though earlier calls looked like they succeeded. Put every change you want to make into one `ops` array (or one `config`). " +
     "`ops` is an array of { op, path, from?, value? } applied in order in a single atomic save. " +
+    "When calling this as a native tool, pass `ops` as a real array, not a JSON string; the shell examples quote JSON only for CLI parsing. If a call fails because `ops` was stringified, retry this action with a native array instead of switching to db-patch or settings writes. " +
     "`op` is one of: set | replace | remove | insert | move | move-before. " +
     "`path` is a JSON Pointer into the config (e.g. `/panels/3` is the 4th panel, `/panels/3/title` is its title, `/name` is the dashboard name). The special index `-` means the end of an array: `/panels/-` appends. " +
     "`value` is the panel or object to set/insert. `from` is the source JSON Pointer for move / move-before. " +
@@ -467,7 +468,9 @@ export default defineAction({
       .optional()
       .describe("Replace the whole dashboard config (or a JSON string)."),
   }),
-  http: false,
+  // The SQL dashboard editor persists user edits through callAction(), which
+  // needs this action mounted under /_agent-native/actions/update-dashboard.
+  http: { method: "POST" },
   mcpApp: {
     compactCatalog: true,
     resource: embedApp({

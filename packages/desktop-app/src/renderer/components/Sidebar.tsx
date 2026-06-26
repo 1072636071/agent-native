@@ -1,3 +1,4 @@
+import type { AppDefinition } from "@shared/app-registry";
 import {
   IconMail,
   IconCalendar,
@@ -20,11 +21,13 @@ import {
   IconNote,
   IconMicrophone,
   IconCalendarTime,
+  IconLayoutBoard,
   IconPlus,
+  IconRoute,
   IconWorld,
   IconPhoto,
 } from "@tabler/icons-react";
-import type { AppDefinition } from "@shared/app-registry";
+
 import { UpdateIndicator } from "./UpdateIndicator.js";
 
 const agentNativeIconUrl = new URL(
@@ -37,6 +40,7 @@ const ICON_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
   Mail: IconMail,
   CalendarDays: IconCalendar,
   FileText: IconFileText,
+  LayoutBoard: IconLayoutBoard,
   BarChart2: IconChartBar,
   GalleryHorizontal: IconPresentation,
   Video: IconVideo,
@@ -46,6 +50,7 @@ const ICON_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
   Code: IconCode,
   Contract: IconContract,
   MessageCircle: IconMessageCircle,
+  Route: IconRoute,
   ScreenShare: IconScreenShare,
   Brush: IconBrush,
   Brain: IconBrain,
